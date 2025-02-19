@@ -1,6 +1,5 @@
-export interface IFilter {
-    limit?: number;
-    offset?: number;
+export interface IParams {
+    page?: string;
     category?: string;
     location?: string;
     title?: string;
