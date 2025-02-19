@@ -180,7 +180,7 @@ model Route {
   idRoute      BigInt        @id @default(autoincrement()) @map("id_route")
   idUser       String        @map("id_user") @db.Uuid
   title        String        @db.VarChar(128)
-  description  String        @db.VarChar(255)
+  description  String        
   distance     Int
   duration     Int
   difficulty   String        @db.VarChar(255)
@@ -191,6 +191,7 @@ model Route {
   start        DateTime?     @db.Timestamp(0)
   slug         String        @unique(map: "uniq_32d5c2b3989d9b62") @db.VarChar(128)
   idCategory   BigInt        @map("id_category")
+  location     String        @db.VarChar(128)
   comments     Comment[]
   favorites    Favorite[]
   imagesRoutes ImageRoute[]

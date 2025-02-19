@@ -1,5 +1,7 @@
-const BASE_URL = process.env.SYMFONY_API_URL || 'http://localhost:8000/api'
 import axios, { AxiosInstance, AxiosRequestConfig } from "axios";
+import { GetTokenCookie } from "@/auth/clientCookies";
+
+const BASE_URL = process.env.SYMFONY_API_URL || 'http://localhost:8001/api'
 
 // Crear una instancia de Axios con configuración base
 export const axiosApi: AxiosInstance = axios.create({
@@ -8,13 +10,15 @@ export const axiosApi: AxiosInstance = axios.create({
 
 // Agregar un interceptor de solicitud
 axiosApi.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token');
+    async (config) => {
+        const token = GetTokenCookie('token');
+        // console.log('token', token);
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
         }
         return config;
     },
+
     (error) => {
         return Promise.reject(error);
     }
@@ -73,7 +77,8 @@ const apiService = {
     },
 
     handleError(error: any): never {
-        throw new Error(error?.response?.data?.message || error.message || "An error occurred");
+        // throw new Error(error?.response?.data?.message || error.message || "An error occurred");
+        throw error;
     },
 };
 
