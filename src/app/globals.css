@@ -2,20 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* .react-datepicker__day--selected,
+.react-datepicker__day--selected:hover {
+    background-color: #72ba0e !important;
+    border-color: #65a30d !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.react-datepicker__day--today {
+    background-color: #64a30d5b !important;
+    border-color: #64a30d5b !important;
+    border-radius: 0.35rem;
+} */
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    /* IE y Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari y Opera */
 }

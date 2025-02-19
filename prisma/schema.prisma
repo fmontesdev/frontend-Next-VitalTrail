@@ -1,0 +1,252 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Achievement {
+  idAchievements   BigInt            @id @default(autoincrement()) @map("id_achievements")
+  title            String            @db.VarChar(255)
+  description      String            @db.VarChar(255)
+  imgAchievement   String            @map("img_achievement") @db.VarChar(255)
+  achievementUsers AchievementUser[]
+
+  @@map("achievements")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model AchievementUser {
+  idAchievements BigInt      @map("id_achievements")
+  idUser         String      @map("id_user") @db.Uuid
+  user           User        @relation(fields: [idUser], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_71b157006b3ca4b")
+  achievement    Achievement @relation(fields: [idAchievements], references: [idAchievements], onDelete: Cascade, onUpdate: NoAction, map: "fk_71b15700f2e30b8c")
+
+  @@id([idAchievements, idUser])
+  @@index([idUser], map: "idx_71b157006b3ca4b")
+  @@index([idAchievements], map: "idx_71b15700f2e30b8c")
+  @@map("achievements_users")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Admin {
+  idAdmin BigInt  @id @default(autoincrement()) @map("id_admin")
+  idUser  String? @unique(map: "uniq_a2e0150f6b3ca4b") @map("id_user") @db.Uuid
+  user    User?   @relation(fields: [idUser], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_a2e0150f6b3ca4b")
+
+  @@map("admins")
+}
+
+model BlacklistToken {
+  idBlacklist  BigInt @id @default(autoincrement()) @map("id_blacklist")
+  refreshToken String @map("refresh_token") @db.VarChar(500)
+
+  @@map("blacklist_tokens")
+}
+
+model CategoryRoute {
+  idCategory  BigInt  @id @default(autoincrement()) @map("id_category")
+  title       String  @db.VarChar(128)
+  imgCategory String  @map("img_category") @db.VarChar(255)
+  description String
+  routes      Route[]
+
+  @@map("categories_routes")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Client {
+  idClient BigInt  @id @default(autoincrement()) @map("id_client")
+  idUser   String? @unique(map: "uniq_c82e746b3ca4b") @map("id_user") @db.Uuid
+  phone    String? @db.VarChar(20)
+  user     User?   @relation(fields: [idUser], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_c82e746b3ca4b")
+
+  @@map("clients")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Comment {
+  idComment BigInt   @id @default(autoincrement()) @map("id_comment")
+  idUser    String?  @map("id_user") @db.Uuid
+  idRoute   BigInt?  @map("id_route")
+  body      String
+  createAt  DateTime @default(now()) @map("create_at") @db.Timestamp(0)
+  user      User?    @relation(fields: [idUser], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_5f9e962a6b3ca4b")
+  route     Route?   @relation(fields: [idRoute], references: [idRoute], onDelete: Cascade, onUpdate: NoAction, map: "fk_5f9e962aec416149")
+  rating    Rating?
+
+  @@index([idUser], map: "idx_5f9e962a6b3ca4b")
+  @@index([idRoute], map: "idx_5f9e962aec416149")
+  @@map("comments")
+}
+
+model DoctrineMigrationVersion {
+  version       String    @id @db.VarChar(191)
+  executedAt    DateTime? @map("executed_at") @db.Timestamp(0)
+  executionTime Int?      @map("execution_time")
+
+  @@map("doctrine_migration_versions")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Favorite {
+  idRoute BigInt @map("id_route")
+  idUser  String @map("id_user") @db.Uuid
+  user    User   @relation(fields: [idUser], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_e46960f56b3ca4b")
+  route   Route  @relation(fields: [idRoute], references: [idRoute], onDelete: Cascade, onUpdate: NoAction, map: "fk_e46960f5ec416149")
+
+  @@id([idRoute, idUser])
+  @@index([idUser], map: "idx_e46960f56b3ca4b")
+  @@index([idRoute], map: "idx_e46960f5ec416149")
+  @@map("favorites")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Follow {
+  idFollower   String @map("id_follower") @db.Uuid
+  idFollowed   String @map("id_followed") @db.Uuid
+  followedUser User   @relation("follows_id_followedTousers", fields: [idFollowed], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_4b638a731dd95082")
+  followerUser User   @relation("follows_id_followerTousers", fields: [idFollower], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_4b638a73e90de5d3")
+
+  @@id([idFollower, idFollowed])
+  @@index([idFollowed], map: "idx_4b638a731dd95082")
+  @@index([idFollower], map: "idx_4b638a73e90de5d3")
+  @@map("follows")
+}
+
+model ImageRoute {
+  idImg    BigInt  @id @default(autoincrement()) @map("id_img")
+  idRoute  BigInt? @map("id_route")
+  imgRoute String  @map("img_route") @db.VarChar(255)
+  route    Route?  @relation(fields: [idRoute], references: [idRoute], onDelete: Cascade, onUpdate: NoAction, map: "fk_f02f05f5ec416149")
+
+  @@index([idRoute], map: "idx_f02f05f5ec416149")
+  @@map("images_routes")
+}
+
+model Notification {
+  idNotification    BigInt             @id @default(autoincrement()) @map("id_notification")
+  title             String             @db.VarChar(255)
+  description       String             @db.VarChar(255)
+  createAt          DateTime           @default(now()) @map("create_at") @db.Timestamp(0)
+  notificationUsers NotificationUser[]
+
+  @@map("notifications")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model NotificationUser {
+  idNotification BigInt       @map("id_notification")
+  idUser         String       @map("id_user") @db.Uuid
+  user           User         @relation(fields: [idUser], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_5201e4c06b3ca4b")
+  notification   Notification @relation(fields: [idNotification], references: [idNotification], onDelete: Cascade, onUpdate: NoAction, map: "fk_5201e4c09c9503b8")
+
+  @@id([idNotification, idUser])
+  @@index([idUser], map: "idx_5201e4c06b3ca4b")
+  @@index([idNotification], map: "idx_5201e4c09c9503b8")
+  @@map("notifications_users")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Rating {
+  idRating  BigInt   @id @default(autoincrement()) @map("id_rating")
+  idUser    String?  @map("id_user") @db.Uuid
+  idRoute   BigInt?  @map("id_route")
+  idComment BigInt?  @unique(map: "uniq_ceb607c94ae9fb1c") @map("id_comment")
+  rating    Int      @db.SmallInt
+  createAt  DateTime @default(now()) @map("create_at") @db.Timestamp(0)
+  comment   Comment? @relation(fields: [idComment], references: [idComment], onDelete: Cascade, onUpdate: NoAction, map: "fk_ceb607c94ae9fb1c")
+  user      User?    @relation(fields: [idUser], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_ceb607c96b3ca4b")
+  route     Route?   @relation(fields: [idRoute], references: [idRoute], onDelete: Cascade, onUpdate: NoAction, map: "fk_ceb607c9ec416149")
+
+  @@index([idUser], map: "idx_ceb607c96b3ca4b")
+  @@index([idRoute], map: "idx_ceb607c9ec416149")
+  @@map("ratings")
+}
+
+model RefreshToken {
+  id           Int      @id @default(autoincrement())
+  refreshToken String   @unique(map: "uniq_9bace7e1c74f2195") @map("refresh_token") @db.VarChar(128)
+  username     String   @db.VarChar(255)
+  valid        DateTime @db.Timestamp(0)
+
+  @@map("refresh_tokens")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Route {
+  idRoute      BigInt        @id @default(autoincrement()) @map("id_route")
+  idUser       String        @map("id_user") @db.Uuid
+  title        String        @db.VarChar(128)
+  description  String        
+  distance     Int
+  duration     Int
+  difficulty   String        @db.VarChar(255)
+  typeRoute    String        @map("type_route") @db.VarChar(255)
+  coordinates  Json          @db.Json
+  createAt     DateTime      @default(now()) @map("create_at") @db.Timestamp(0)
+  updateAt     DateTime      @default(now()) @map("update_at") @db.Timestamp(0)
+  start        DateTime?     @db.Timestamp(0)
+  slug         String        @unique(map: "uniq_32d5c2b3989d9b62") @db.VarChar(128)
+  idCategory   BigInt        @map("id_category")
+  location     String        @db.VarChar(128)
+  comments     Comment[]
+  favorites    Favorite[]
+  imagesRoutes ImageRoute[]
+  ratings      Rating[]
+  category     CategoryRoute @relation(fields: [idCategory], references: [idCategory], onDelete: Cascade, onUpdate: NoAction, map: "fk_32d5c2b35697f554")
+  user         User          @relation(fields: [idUser], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_32d5c2b36b3ca4b")
+
+  @@index([idCategory], map: "idx_32d5c2b35697f554")
+  @@index([idUser], map: "idx_32d5c2b36b3ca4b")
+  @@map("routes")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model Suscription {
+  idSuscription BigInt   @id @default(autoincrement()) @map("id_suscription")
+  idUser        String?  @map("id_user") @db.Uuid
+  idPlan        BigInt   @map("id_plan")
+  idPayment     BigInt   @map("id_payment")
+  startDate     DateTime @default(now()) @map("start_date") @db.Timestamp(0)
+  endDate       DateTime @map("end_date") @db.Timestamp(0)
+  isActive      Boolean  @default(true) @map("is_active")
+  createAt      DateTime @default(now()) @map("create_at") @db.Timestamp(0)
+  updateAt      DateTime @default(now()) @map("update_at") @db.Timestamp(0)
+  user          User?    @relation(fields: [idUser], references: [idUser], onDelete: Cascade, onUpdate: NoAction, map: "fk_1f186e0e6b3ca4b")
+
+  @@index([idUser], map: "idx_1f186e0e6b3ca4b")
+  @@map("suscriptions")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model User {
+  idUser            String             @id @map("id_user") @db.Uuid
+  email             String             @unique(map: "uniq_1483a5e9e7927c74") @db.VarChar(180)
+  username          String             @unique(map: "uniq_1483a5e9f85e0677") @db.VarChar(32)
+  password          String             @db.VarChar(255)
+  name              String             @db.VarChar(64)
+  surname           String             @db.VarChar(132)
+  birthday          DateTime?          @db.Date
+  bio               String?            @db.VarChar(255)
+  imgUser           String?            @map("img_user") @db.VarChar(255)
+  rol               String             @db.VarChar(255)
+  isActive          Boolean            @default(false) @map("is_active")
+  isDeleted         Boolean            @default(false) @map("is_deleted")
+  isPremium         Boolean            @default(false) @map("is_premium")
+  achievementUsers  AchievementUser[]
+  admin             Admin?
+  client            Client?
+  comments          Comment[]
+  favorites         Favorite[]
+  followers         Follow[]           @relation("follows_id_followedTousers")
+  following         Follow[]           @relation("follows_id_followerTousers")
+  notificationUsers NotificationUser[]
+  ratings           Rating[]
+  routes            Route[]
+  suscriptions      Suscription[]
+
+  @@map("users")
+}
