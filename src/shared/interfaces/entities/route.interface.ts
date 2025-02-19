@@ -7,26 +7,29 @@ export interface IRoute {
     slug: string;
     category: string;
     title: string;
+    description: string;
+    location: string;
     distance: number;
     duration: string;
     difficulty: string;
     typeRoute: string;
-    coordinates: Array<Coordinates>;
+    coordinates: Array<ICoordinates>;
     createdAt: string;
     updatedAt: string;
     favorited: boolean;
     favoritesCount: number;
-    user: IUser;
+    user?: IUser | string;
     images: Array<IImageRoute>;
-    comments: Array<IComment>;
+    comments?: Array<IComment>;
     averageRatings: number;
 }
 
 export interface IRoutes {
     routes: Array<IRoute>;
+    routesCount: number;
 }
 
-export interface Coordinates {
+export interface ICoordinates {
     lat: number;
     lng: number;
 }
