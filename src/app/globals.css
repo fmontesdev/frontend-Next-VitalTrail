@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* .react-datepicker__day--selected,
+.react-datepicker__day--selected:hover {
+    background-color: #72ba0e !important;
+    border-color: #65a30d !important;
+}
+
+.react-datepicker__day--today {
+    background-color: #64a30d5b !important;
+    border-color: #64a30d5b !important;
+    border-radius: 0.35rem;
+} */
+
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    /* IE y Edge */
+    scrollbar-width: none;
+    /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+    /* Chrome, Safari y Opera */
+}
