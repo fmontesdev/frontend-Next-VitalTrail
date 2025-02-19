@@ -1,6 +1,8 @@
+import { IUser } from "./user.interface";
+
 export interface IComment {
     idComment: number;
-    user: string;
+    user: IUser;
     route: number;
     body: string;
     rating?: number;
@@ -9,4 +11,5 @@ export interface IComment {
 
 export interface IComments {
     comments: Array<IComment>;
+    averageRatings: number;
 }

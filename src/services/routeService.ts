@@ -12,24 +12,19 @@ export const RouteService = {
         return apiService.get<IRoutes>(`routes?${queryParams}`);
     },
 
-    // getFiltered(filters: Filter): Promise<Routes> {
-    //     const queryParams = new URLSearchParams(Object.entries(filters)).toString();
-    //     return apiService.get<Routes>(`routes?${queryParams}`).then((data) => {
-    //         console.log(filters, queryParams, data);
-    //         return data;
-    //     });
-    // },
-
-    getById(id:string): Promise<IRoute> {
-        return apiService.get<IRoute>(`routes/${id}`);
+    getById(id: string): Promise<IRoute> {
+        return apiService.get<{route: IRoute}>(`routes/${id}`).then((data) => {
+            return data.route;
+        });
     },
     
     getBySlug(slug: string): Promise<IRoute> {
-        return apiService.get<IRoute>(`routes/${slug}`);
+        return apiService.get<{route: IRoute}>(`routes/${slug}`).then((data) => {
+            return data.route;
+        });
     },
 
     createRoute(data: Partial<IRoute>): Promise<IRoute> {
-        
         return apiService.post<IRoute>('/routes', data);
     },
 

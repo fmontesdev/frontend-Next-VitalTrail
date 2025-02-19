@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import CategoryCarouselSlide from './CategoryCarouselSlide';
-import { ICategoriesCarouselProps } from '@/shared/interfaces/props/props.interface';
+import CategoriesCarouselSlide from './CategoriesCarouselSlide';
+import { ICategoryRoutes } from '@/shared/interfaces/entities/categoryRoute.interface';
 
-const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({ categories }) => {
+const CategoriesCarousel: React.FC<ICategoryRoutes> = ({ categories }) => {
     const slideHeight = 300;        // Altura fija de cada slide
     const gap = 24;                 // Espacio extra entre slides (24px)
     const effectiveHeight = slideHeight + gap; // Altura "efectiva" de cada slide
@@ -37,7 +37,7 @@ const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({ categories }) 
     }, [current, numSlides]);
 
     return (
-        <div className="relative mb-20">
+        <div className="relative mb-16">
             {/* Contenedor de slides con overflow-hidden */}
             <div
                 className="overflow-hidden"
@@ -50,7 +50,7 @@ const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({ categories }) 
                 >
                     {extendedSlides.map((cat, index) => (
                         <div key={index}>
-                            <CategoryCarouselSlide category={cat} />
+                            <CategoriesCarouselSlide category={cat} />
                         </div>
                     ))}
                 </motion.div>
@@ -65,7 +65,7 @@ const CategoriesCarousel: React.FC<ICategoriesCarouselProps> = ({ categories }) 
                     <button
                         key={idx}
                         onClick={() => setCurrent(idx)}
-                        className={`w-3 h-3 rounded-full transition-colors ${idx === (current % numSlides) ? 'bg-teal-700' : 'bg-gray-300'
+                        className={`w-3 h-3 rounded-full transition-colors ${idx === (current % numSlides) ? 'bg-lime-600' : 'bg-gray-300'
                             }`}
                         aria-label={`Ir al slide ${idx + 1}`}
                     ></button>
