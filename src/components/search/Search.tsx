@@ -62,7 +62,7 @@ export default function Search() {
                 onFocus={handleFocus}
                 placeholder="Busca tus rutas"
                 className="
-                    border rounded-full pl-10 pr-4 py-2 w-full text-teal-600 font-semibold text-base md:text-lg
+                    border rounded-full pl-10 pr-4 py-2 w-full text-teal-700 font-semibold text-base md:text-lg
                     focus:outline-none focus:ring-1 focus:ring-teal-600
             "/>
 
@@ -70,7 +70,11 @@ export default function Search() {
             {query && (
                 <button
                     type="button"
-                    onClick={() => setQuery("")} // Al hacer clic, borra el texto
+                    onClick={() => {
+                        // Borra el texto y redirecciona
+                        setQuery("");
+                        routerApp.push(`/routes`);
+                    }}
                     className="
                         absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full
                         p-1 text-gray-500 bg-gray-100 hover:text-white hover:bg-red-300"
@@ -99,10 +103,10 @@ export default function Search() {
                                 key={route.idRoute}
                                 className="py-2 px-4 text-gray-500 hover:bg-gray-100 cursor-pointer"
                                 onClick={() => {
-                                    // Fijamos valor en el input, cerramos dropdown o redireccionamos
+                                    // Fijamos valor en el input, cerramos dropdown y redireccionamos
                                     setQuery(capitalizeFirstLetter(route.title));
                                     setShowDropdown(false);
-                                    // routerApp.push(`/routes/${route.slug}`);
+                                    routerApp.push(`/routes?title=${route.title}`);
                                 }}
                             >
                                 {capitalizeFirstLetter(route.title)}
@@ -114,4 +118,3 @@ export default function Search() {
         </div>
     );
 }
-
