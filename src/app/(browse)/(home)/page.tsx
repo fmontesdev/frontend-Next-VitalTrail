@@ -1,16 +1,19 @@
 import { Metadata } from "next";
+import { cache } from 'react'
 import getCategoriesRoutes from '@/actions/getCategoriesRoutes';
-import CategoriesCarousel from "@/components/carousel/CategoriesCarousel";
-import LoadingSpinner from "@/components/common/LoadingSpinner";
+import CategoriesCarousel from "@/components/carousels/CategoriesCarousel/CategoriesCarousel";
 import { Suspense } from "react";
-// import { ErrorBoundary } from 'react-error-boundary';
-// import ErrorFallback from "@/components/common/ErrorFallback";
+import { SunIcon, MapIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import { ICategoryRoute } from "@/shared/interfaces/entities/categoryRoute.interface";
 
-// Compartir la promesa para no duplicar la consulta
-const categoriesPromise = getCategoriesRoutes();
+// Función cacheada para obtener categorías
+const getCategories = cache(async() => {
+    return getCategoriesRoutes();
+});
 
 export async function generateMetadata(): Promise<Metadata> {
-    const categories = await categoriesPromise;
+    const categories: ICategoryRoute[] = await getCategories();
     const categoryKeywords = categories.map(category => category.title.toLowerCase());
     
     return {
@@ -28,19 +31,17 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-    const categories = await categoriesPromise;
+    const categories: ICategoryRoute[] = await getCategories();
+    console.log(categories);
 
     return (
-        <main className="container mx-auto md:px-8 lg:px-12 flex-grow">
-            <h1 className="text-center text-2xl md:text-3xl font-bold text-gray-500 pt-8 pb-3 md:pb-4">
-                No te pierdas nuestras rutas
+        <main className="container mx-auto md:px-8 lg:px-16 xl:px-32 flex-grow">
+            <h1 className="flex items-center gap-2 text-2xl md:text-3xl font-semibold text-lime-600 pl-4 pt-6 pb-2 md:pb-3">
+                <MapPinIcon strokeWidth={2} className="w-8 h-8" />
+                Encuentra tu camino
             </h1>
             <Suspense fallback={<LoadingSpinner />}>
-                {/* <ErrorBoundary
-                    FallbackComponent={ErrorFallback}
-                > */}
                     <CategoriesCarousel categories={categories} />
-                {/* </ErrorBoundary> */}
             </Suspense>
         </main>
     );

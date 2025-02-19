@@ -4,3 +4,7 @@ export interface ICategoryRoute {
     imgCategory: string;
     description: string;
 }
+
+export interface ICategoryRoutes {
+    categories: Array<ICategoryRoute>;
+}
