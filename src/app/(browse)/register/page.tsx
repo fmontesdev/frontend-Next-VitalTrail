@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { merienda } from '@/app/fonts';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
@@ -9,7 +8,6 @@ import * as Yup from 'yup';
 import { IRegister } from "@/shared/interfaces/entities/user.interface";
 
 export default function RegisterPage() {
-    const router = useRouter();
     const { register } = useAuth();
 
     const validationSchema = Yup.object({

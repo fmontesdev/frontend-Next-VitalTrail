@@ -3,7 +3,6 @@
 import React from 'react';
 import { useFilteredRoutes } from '@/queries/routeQuery';
 import { useSearchParams } from 'next/navigation';
-import LoadingSpinner from "@/components/common/LoadingSpinner";
 import RouteCard from '../routes/RouteCard';
 import Pagination from '../pagination/pagination';
 import { IRoute } from '@/shared/interfaces/entities/route.interface';

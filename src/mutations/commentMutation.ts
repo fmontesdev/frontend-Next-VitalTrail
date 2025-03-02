@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { CommentService } from '@/services/commentService';
-import { IComment, IComments } from '@/shared/interfaces/entities/comment.interface';
+import { IComment } from '@/shared/interfaces/entities/comment.interface';
 
 // const key = 'comments'
 
@@ -20,7 +20,6 @@ export const useCreateComment = (routeSlug: string) => {
             //     }
             // );
 
-            // Invalidar queries para asegurar datos frescos
             // Invalidar queries para asegurar datos frescos
             queryClient.invalidateQueries({
                 predicate: (query) =>

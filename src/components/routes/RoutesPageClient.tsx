@@ -7,6 +7,7 @@ import RouteListMap from "@/components/routeListMap/RouteListMap";
 import { IRoutesPageClientProps } from '@/shared/interfaces/props/props.interface';
 
 export default function RoutesPageClient({ initialRoutes, initialParams, limit }: IRoutesPageClientProps) {
+    // console.log('initialParams: ', initialParams);
     const [filters, setFilters] = useSyncFilters(initialParams);
 
     return (

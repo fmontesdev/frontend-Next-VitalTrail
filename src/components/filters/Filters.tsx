@@ -14,7 +14,7 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
     const [typeRoute, setTypeRoute] = useState<string>(initialParams.typeRoute || '');
     const [location, setLocation] = useState<string>(initialParams.location || '');
 
-    const { data: categoriesData, isLoading, isError } = useCategoryRoutes();
+    const { data: categoriesData } = useCategoryRoutes();
 
     // Aplicamos delay al valor de "distance"
     const distanceDelay = useDistanceDelay(distance, 300);

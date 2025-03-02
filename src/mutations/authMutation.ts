@@ -2,20 +2,16 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { UserService } from '@/services/userService';
 import { SetTokenCookie, RemoveTokenCookie } from '@/auth/clientCookies';
 import { useRouter } from 'next/navigation';
-import { IUser, ILogin, IUserLogin, IRegister } from "@/shared/interfaces/entities/user.interface";
+import { ILogin, IUserLogin, IRegister } from "@/shared/interfaces/entities/user.interface";
 
 const key = 'auth'
 
 export const useRegisterMutation = () => {
-    const queryClient = useQueryClient();
     const router = useRouter();
 
     return useMutation({
         mutationFn: ( data: IRegister ) => UserService.register(data),
-        onSuccess: (registerUser: IUser) => {
-            // console.log('Register: ', registerUser);
-
-            // Redirigir hacia el login
+        onSuccess: () => {
             router.push("/login");
         },
         onError: (error) => {

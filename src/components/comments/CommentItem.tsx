@@ -16,7 +16,7 @@ export default function CommentItem({ comment }: {comment: IComment}) {
     const isAuthor = useIsAuthor(comment.user.username);
 
     function createRating(rating: number) {
-        let stars = [];
+        const stars = [];
         for (let i = 0; i < rating; i++) {
             stars.push(<StarIcon key={i} className="w-4 h-4 text-amber-500" />)
         }

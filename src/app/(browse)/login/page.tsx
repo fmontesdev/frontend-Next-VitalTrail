@@ -1,14 +1,12 @@
 'use client';
 
 import { useAuth } from "@/hooks/useAuth";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { ILogin } from "@/shared/interfaces/entities/user.interface";
 
 export default function LoginPage() {
-    const router = useRouter();
     const { login } = useAuth();
 
 

@@ -10,7 +10,7 @@ const getOneRoute = cache(async(slug: string) => {
     return RouteService.getBySlug(slug);
 });
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
     // Obtiene el slug de los parámetros
     const { slug } = await params;
 
@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     const routeKeywords = route.title?.toLowerCase();
 
     return {
-        metadataBase: new URL('https://vitaltrail.com/routes/${slug}'),
+        metadataBase: new URL(`https://vitaltrail.com/routes/${slug}`),
         description: route.title,
         keywords: [
             'rutas', 'senderismo', 'montaña', 'naturaleza', 'aire libre', 'equilibrio', 'vida sana',

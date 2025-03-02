@@ -1,13 +1,10 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { IRoute } from '@/shared/interfaces/entities/route.interface';
-
-import { StarIcon } from "@heroicons/react/24/solid";
 
 export default function OneRouteMap({ route }: { route: IRoute }) {
     // const router = useRouter();
@@ -39,10 +36,6 @@ export default function OneRouteMap({ route }: { route: IRoute }) {
 
     // Genera un id único solo una vez para el contenedor del mapa
     const mapKey = useMemo(() => `map-${Date.now()}`, []);
-
-    // Función para capitalizar la primera letra de un texto
-    const capitalizeFirstLetter = (text: string) => 
-        text.charAt(0).toUpperCase() + text.slice(1);
 
     return (
         <MapContainer

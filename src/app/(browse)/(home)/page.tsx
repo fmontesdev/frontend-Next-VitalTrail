@@ -3,7 +3,7 @@ import { cache } from 'react'
 import getCategoriesRoutes from '@/actions/getCategoriesRoutes';
 import CategoriesCarousel from "@/components/carousels/CategoriesCarousel/CategoriesCarousel";
 import { Suspense } from "react";
-import { SunIcon, MapIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import { MapPinIcon } from "@heroicons/react/24/outline";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { ICategoryRoute } from "@/shared/interfaces/entities/categoryRoute.interface";
 
@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
     const categories: ICategoryRoute[] = await getCategories();
-    console.log(categories);
+    // console.log(categories);
 
     return (
         <main className="container mx-auto md:px-8 lg:px-16 xl:px-32 flex-grow">
