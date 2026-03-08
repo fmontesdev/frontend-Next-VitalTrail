@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useFilteredRoutes } from '@/queries/routeQuery';
 import RouteCard from './RouteCard';
 import Pagination from '../pagination/pagination';
@@ -8,9 +8,26 @@ import { IRoutesListProps } from '@/shared/interfaces/props/props.interface';
 import { IRoute } from '@/shared/interfaces/entities/route.interface';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 
-export default function RoutesList({ totalRoutes, limit, params }: IRoutesListProps) {
-    const offset = (parseInt(params.page || '1') - 1) * limit;
-    const { data: routes, isLoading, isError } = useFilteredRoutes({ ...params, limit, offset });
+// Normaliza orden de claves para comparación estable
+const stableStringify = (obj: Record<string, any>) => {
+    const entries = Object.entries(obj ?? {}).filter(([,v]) => v !== undefined);
+    entries.sort(([a],[b]) => a.localeCompare(b));
+    return JSON.stringify(Object.fromEntries(entries));
+};
+
+export default function RoutesList({ initialRoutes, initialFilters, totalRoutes, limit, params }: IRoutesListProps) {
+    const offset = (parseInt((params.page ?? '1'), 10) - 1) * limit;
+    const currentFilters = { ...params, limit, offset };
+
+    // Memo para definir si es la key inicial (evita re-render innecesarios)
+    const isInitialKey = useMemo(() =>
+        stableStringify(currentFilters) === stableStringify({ ...initialFilters, limit, offset: (parseInt((initialFilters?.page ?? '1'), 10) - 1)*limit }),
+    [currentFilters, initialFilters, limit]);
+
+    const { data: routes, isLoading, isError } = useFilteredRoutes(
+        currentFilters,
+        isInitialKey ? initialRoutes : undefined // pasa initialRoutes solo en el primer render
+    );
 
     if (isLoading) return (
         <div className="flex flex-col w-full md:w-[55%] space-y-6">

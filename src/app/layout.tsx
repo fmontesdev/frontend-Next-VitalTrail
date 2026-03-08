@@ -3,7 +3,6 @@ import { quicksand } from "./fonts";
 import "./globals.css";
 
 import { QueryCliProvider } from "./(browse)/QueryClientProvider";
-import Header from "@/components/header/Header";
 import Footer from "@/components/footer/Footer";
 
 export const metadata: Metadata = {
@@ -25,17 +24,12 @@ export const metadata: Metadata = {
     },
 };
 
-export default function RootLayout({
-    children,
-}: Readonly<{
-    children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="es">
             <body className={`${quicksand.className} antialiased flex flex-col min-h-screen`}>
                 <QueryCliProvider>
-                    <Header />
-                        {children}
+                    {children}
                     <Footer />
                 </QueryCliProvider>
             </body>

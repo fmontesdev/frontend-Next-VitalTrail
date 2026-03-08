@@ -9,9 +9,18 @@ import RoutesPageClient from '@/components/routes/RoutesPageClient';
 const limit = 5;
 
 // Función cacheada para obtener rutas
-const getRoutes = cache(async(searchParams: IParams) => {
+const getRoutes = cache(async(searchParams: IParams): Promise<IRoutes> => {
     // Capturar parámetros de búsqueda desde la URL
-    const { page='1', category='', location='', title='', distance='', difficulty='', typeRoute='', author='' } = await searchParams;
+    const {
+        page='1',
+        category='',
+        location='',
+        title='',
+        distance='',
+        difficulty='',
+        typeRoute='',
+        author=''
+    } = await searchParams;
     const offset = (parseInt(page) - 1) * limit;
 
     return RouteService.getFiltered({

@@ -1,14 +1,24 @@
 'use client';
 
 import { useProfile } from '@/queries/profileQuery';
-import { useCanFollow } from '@/auth/authorizations';
+import { useCanFollow, useCanEdit, useIsPremium } from '@/auth/authorizations';
 import FollowButton from '../buttons/followButton/FollowButton';
 import Image from 'next/image';
+import { MapIcon, BellAlertIcon, CurrencyEuroIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import { ProfileSidebarProps } from '@/shared/interfaces/props/props.interface';
 
-export default function ProfileSidebar({ username }: { username: string }) {
+export default function ProfileSidebar({ username, activeTab, setActiveTab }: ProfileSidebarProps) {
     const { data: profile, isLoading, isError } = useProfile(username);
     const { canFollow } = useCanFollow(username);
+    const { canEdit } = useCanEdit(username);
+    const isPremium = useIsPremium();
     // console.log(profile);
+
+    // Funciones para cambiar la pestaña
+    const showMyContent = () => setActiveTab('miContenido');
+    const showMyNotifications = () => setActiveTab('misNotificaciones');
+    const showMySubscription = () => setActiveTab('miSuscripción');
+    const showUpdateProfile = () => setActiveTab('editarPerfil');
 
     if (isLoading)
         return (
@@ -58,7 +68,7 @@ export default function ProfileSidebar({ username }: { username: string }) {
                 </div>
 
                 {canFollow && (
-                    <div className="w-16 flex justify-center mt-1">
+                    <div className="w-16 flex justify-center items-center mt-1">
                         <FollowButton initialFollowing={profile.following} username={profile.username} />
                     </div>
                 )}
@@ -69,10 +79,67 @@ export default function ProfileSidebar({ username }: { username: string }) {
                 <h2 className="text-2xl text-teal-700 font-bold pb-2">
                     {profile.name} {profile.surname}
                 </h2>
-                <p className="text-sm text-gray-400 font-semibold pb-1">
+                {/* <p className="text-sm text-gray-400 font-semibold pb-1">
                     Fecha de nacimiento: {profile.birthday}
                 </p>
-                <p className="text-md text-gray-600 font-semibold">{profile.bio}</p>
+                <p className="text-md text-gray-600 font-semibold">{profile.bio}</p> */}
+            </div>
+
+            {/* Contenidos */}
+            <div className="mt-1 text-base text-gray-400 font-bold">
+                <button
+                    onClick={showMyContent}
+                    className={`flex items-center gap-2 px-1 pt-1 pb-2 hover:text-gray-500 transition duration-250 ease-in-out
+                        ${activeTab === 'miContenido'
+                        ? 'text-teal-700 hover:text-teal-700'
+                        : ''}
+                    `}
+                >
+                    <MapIcon strokeWidth={2} className="h-5 w-5" />
+                    Mi contenido
+                </button>
+
+                {canEdit && (
+                    <>
+                        <button
+                            onClick={showMyNotifications}
+                            className={`flex items-center gap-2 px-1 pt-1 pb-2 hover:text-gray-500 transition duration-250 ease-in-out
+                                ${activeTab === 'misNotificaciones'
+                                ? 'text-teal-700 hover:text-teal-700'
+                                : ''}
+                            `}
+                        >
+                            <BellAlertIcon strokeWidth={2} className="h-5 w-5" />
+                            Mis notificaciones
+                        </button>
+                        
+                        {isPremium && (
+                            <button
+                                onClick={showMySubscription}
+                                className={`flex items-center gap-2 px-1 pt-1 pb-2 hover:text-gray-500 transition duration-250 ease-in-out
+                                    ${activeTab === 'miSuscripción'
+                                    ? 'text-teal-700 hover:text-teal-700'
+                                    : ''}
+                                `}
+                            >
+                                <CurrencyEuroIcon strokeWidth={2} className="h-5 w-5" />
+                                Mi suscripción
+                            </button>
+                        )}
+
+                        <button
+                            onClick={showUpdateProfile}
+                            className={`flex items-center gap-2 px-1 pt-1 pb-2 hover:text-gray-500 transition duration-250 ease-in-out
+                                ${activeTab === 'editarPerfil'
+                                ? 'text-teal-700 hover:text-teal-700'
+                                : ''}
+                            `}
+                        >
+                            <PencilSquareIcon strokeWidth={2} className="h-5 w-5" />
+                            Editar Perfil
+                        </button>
+                    </>
+                )}
             </div>
         </aside>
     );

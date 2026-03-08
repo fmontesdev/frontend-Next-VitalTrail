@@ -11,8 +11,8 @@ export interface IUser {
     isActive?: boolean;
     isDeleted?: boolean;
     isPremium?: boolean;
-    admin?: IAdmin;
-    client?: IClient;
+    admin?: IAdmin | null;
+    client?: IClient | null;
 }
 
 export interface IAdmin {
@@ -21,9 +21,11 @@ export interface IAdmin {
 }
 
 export interface IClient {
-    idClient: number;
-    user: string;
-    phone: string;
+    idClient?: number;
+    user?: string;
+    phone?: string | null;
+    customerId?: string | null;
+    paymentMethodId?: string | null;
 }
 
 export interface ILogin {
@@ -76,8 +78,8 @@ export interface IProfile {
     birthday?: string;
     bio?: string;
     imgUser: string;
-    admin?: IAdmin;
-    client?: IClient;
+    admin?: IAdmin | null;
+    client?: IClient | null;
     following: boolean;
     countFollowers: number;
     countFollowings: number;

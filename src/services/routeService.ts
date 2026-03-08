@@ -9,17 +9,17 @@ export const RouteService = {
 
     getFiltered(filters: IFilter): Promise<IRoutes> {
         const queryParams = new URLSearchParams(Object.entries(filters)).toString();
-        return apiService.get<IRoutes>(`routes?${queryParams}`);
+        return apiService.get<IRoutes>(`/routes?${queryParams}`);
     },
 
     getById(id: string): Promise<IRoute> {
-        return apiService.get<{route: IRoute}>(`routes/${id}`).then((data) => {
+        return apiService.get<{route: IRoute}>(`/routes/${id}`).then((data) => {
             return data.route;
         });
     },
     
     getBySlug(slug: string): Promise<IRoute> {
-        return apiService.get<{route: IRoute}>(`routes/${slug}`).then((data) => {
+        return apiService.get<{route: IRoute}>(`/routes/${slug}`).then((data) => {
             return data.route;
         });
     },

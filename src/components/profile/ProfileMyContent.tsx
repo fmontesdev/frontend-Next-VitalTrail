@@ -1,18 +1,16 @@
 'use client';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useCanEdit, useCanManageAdmin } from '@/auth/authorizations';
-import MyRoutesList from '../profile/MyRouteList';
+import MyRoutesList from './MyRouteList';
 import ProfileCommentsList from './ProfileCommentsList';
 import FollowingList from './FollowingList';
 import FollowersList from './FollowersList';
-import UpdateProfile from './UpdateProfile';
-import { PencilSquareIcon } from '@heroicons/react/24/outline';
 
-export default function ProfileContent({ username }: { username: string }) {
+export default function ProfileMyContent({ username }: { username: string }) {
     // State para controlar qué vista se muestra
     const [activeTab, setActiveTab] =
-        useState<'rutas' | 'favoritos' | 'comentarios' | 'siguiendo' | 'seguidos' | 'editarPerfil'>('rutas');
+        useState<'rutas' | 'favoritos' | 'comentarios' | 'siguiendo' | 'seguidos'>('rutas');
     // Contadores
     const [commentsCount, setCommentsCount] = useState<number>();
     const { canEdit } = useCanEdit(username);
@@ -24,7 +22,6 @@ export default function ProfileContent({ username }: { username: string }) {
     const showComments = () => setActiveTab('comentarios');
     const showFollowing = () => setActiveTab('siguiendo');
     const showFollowers = () => setActiveTab('seguidos');
-    const showUpdateProfile = () => setActiveTab('editarPerfil');
 
     return (
         <div className="
@@ -91,20 +88,6 @@ export default function ProfileContent({ username }: { username: string }) {
                 >
                     Seguidores
                 </button>
-
-                {canEdit && (
-                    <button
-                        onClick={showUpdateProfile}
-                        className={`flex items-center gap-1 px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
-                            ${activeTab === 'editarPerfil'
-                            ? 'text-teal-700 border-b-2 border-teal-700 hover:text-teal-700'
-                            : ''}
-                        `}
-                    >
-                        <PencilSquareIcon strokeWidth={2} className="h-5 w-5" />
-                        Editar Perfil
-                    </button>
-                )}
             </div>
 
             {/* Contenido dinámico */}
@@ -114,7 +97,6 @@ export default function ProfileContent({ username }: { username: string }) {
                 {activeTab === 'comentarios' && <ProfileCommentsList username={username} onCommentsCount={(count) => setCommentsCount(count)}/>}
                 {activeTab === 'siguiendo' && <FollowingList username={username} />}
                 {activeTab === 'seguidos'  && <FollowersList username={username} />}
-                {activeTab === 'editarPerfil' && <UpdateProfile username={username} />}
             </div>
         </div>
     );

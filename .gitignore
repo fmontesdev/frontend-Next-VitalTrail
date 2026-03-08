@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# VS Code
+/.vscode
+
 # production
 /build
 
@@ -39,3 +42,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# OpenCode
+.opencode/node_modules/
+.opencode/sessions/
+.opencode/cache/
+.opencode/tmp/
+.opencode/*.log

@@ -16,8 +16,14 @@ export default function RoutesPageClient({ initialRoutes, initialParams, limit }
                 <Filters initialParams={filters} onFilterChange={setFilters} />
             </div>
 
-            <section className="flex min-h-[calc(100vh-150px)] gap-6 mb-6">
-                <RoutesList totalRoutes={initialRoutes.routesCount} limit={limit} params={filters} />
+            <section className="flex min-h-[calc(100vh-64px-64px)] gap-6 mb-6">
+                <RoutesList
+                    initialRoutes={initialRoutes}
+                    totalRoutes={initialRoutes.routesCount}
+                    initialFilters={initialParams} 
+                    limit={limit}
+                    params={filters}
+                />
                 <div className="
                     hidden md:block sticky top-0 w-[44%] h-[calc(100vh-92px)]
                     bg-stone-100 border border-stone-200 rounded-2xl"

@@ -16,6 +16,7 @@ export interface IMobileMenuProps {
         user: IUser | null;
         isAuthenticated: boolean;
     };
+    isPremium: boolean | null;
     onLogout: () => void;
 }
 
@@ -26,7 +27,9 @@ export interface IRoutesPageClientProps {
 }
 
 export interface IRoutesListProps {
+    initialRoutes?: IRoutes;
     totalRoutes: number;
+    initialFilters?: IParams;
     limit: number;
     params: IParams;
 }
@@ -71,4 +74,15 @@ export interface ICommentsListProps {
 export interface IProfileCommentsListProps {
     username: string;
     onCommentsCount: (count: number) => void;
+}
+
+export interface StripePricingTableProps {
+    pricingTableId: string;
+    publishableKey: string;
+}
+
+export interface ProfileSidebarProps {
+    username: string;
+    activeTab: 'miContenido' | 'misNotificaciones' | 'miSuscripción' | 'editarPerfil';
+    setActiveTab: React.Dispatch<React.SetStateAction<'miContenido' | 'misNotificaciones' | 'miSuscripción' | 'editarPerfil'>>;
 }

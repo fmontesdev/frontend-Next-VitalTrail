@@ -9,17 +9,22 @@ export const useSearchRoutes = (title: string) => {
     return useQuery({
         queryKey: ['searchRoute', title],
         queryFn: () => RouteService.getFiltered({ title }),
-        staleTime: 1000 * 120, // 2 minutos
+        staleTime: 1000 * 60 * 4, // 4 minutos
         enabled: title.length > 0,
     });
 }
 
-export const useFilteredRoutes = (filters: IFilter, initialData?: IRoutes ) => {
+export const useFilteredRoutes = (filters: IFilter, initialData?: IRoutes) => {
     return useQuery({
         queryKey: ['filteredRoutes', filters],
         queryFn: () => RouteService.getFiltered(filters),
         initialData: initialData,
-        staleTime: 1000 * 120, // 2 minutos
+        staleTime: 1000 * 60 * 4, // 4 minutos
+        refetchOnMount: false, // evita refetch en hidratación
+        refetchOnWindowFocus: false, // evita refetch al enfocar ventana
+        refetchOnReconnect: false, // evita refetch al reconectar
+        networkMode: 'offlineFirst', // intenta usar cache si está offline
+        ...(initialData ? { keepPreviousData: true } : {}), // mantiene datos previos mientras carga nuevos
     });
 }
 
@@ -28,6 +33,6 @@ export const useRoute = (slug: string, initialData?: IRoute ) => {
         queryKey: ['route', slug],
         queryFn: () => RouteService.getBySlug(slug),
         initialData: initialData,
-        staleTime: 1000 * 120, // 2 minutos
+        staleTime: 1000 * 60 * 4, // 4 minutos
     });
 }

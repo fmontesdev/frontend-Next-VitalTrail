@@ -4,8 +4,12 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import CategoriesCarouselSlide from './CategoriesCarouselSlide';
 import { ICategoryRoutes } from '@/shared/interfaces/entities/categoryRoute.interface';
+import { useCategoryRoutes } from '@/queries/categoryRouteQuery';
 
 const CategoriesCarousel: React.FC<ICategoryRoutes> = ({ categories }) => {
+    // Cargamos en caché las rutas de categorías
+    const {} = useCategoryRoutes(categories);
+
     const slideHeight = 300;        // Altura fija de cada slide
     const gap = 24;                 // Espacio extra entre slides (24px)
     const effectiveHeight = slideHeight + gap; // Altura "efectiva" de cada slide

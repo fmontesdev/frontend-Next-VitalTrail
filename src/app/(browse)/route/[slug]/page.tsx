@@ -43,7 +43,7 @@ export default async function DetailsRoutePage({ params }: { params: { slug: str
 
     return (
         <main className="container mx-auto md:px-8 lg:px-12 flex-grow mt-5">
-            <section className="flex min-h-[calc(100vh-150px)] gap-6 mb-8">
+            <section className="flex min-h-[calc(100vh-64px-64px)] gap-6 mb-8">
                 <DetailsRoute
                     slug={slug}
                     initialRoute={route}

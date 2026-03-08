@@ -62,7 +62,7 @@ export default function Search() {
                 onFocus={handleFocus}
                 placeholder="Busca tus rutas"
                 className="
-                    border rounded-full pl-10 pr-4 py-2 w-full text-teal-700 font-semibold text-base md:text-lg
+                    border rounded-full pl-10 pr-4 py-1.5 w-full text-teal-700 font-semibold text-base md:text-lg
                     focus:outline-none focus:ring-1 focus:ring-teal-600
             "/>
 

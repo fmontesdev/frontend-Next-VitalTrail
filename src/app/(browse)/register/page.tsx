@@ -27,15 +27,28 @@ export default function RegisterPage() {
                 name: values.name,
                 surname: values.surname,
                 imgUser: '4043260-avatar-male-man-portrait_113269.png',
-                rol: 'ROLE_CLIENT'
+                rol: 'ROLE_CLIENT',
+                client: {
+                    phone: null,
+                }
             }
         };
         register.mutateAsync(registerUser);
     };
 
     return (
-        <main className="min-h-[calc(100vh-500px-64px)] flex items-center justify-center bg-stone-100 py-14">
-            <div className="bg-white p-8 rounded-3xl shadow-md w-[26rem] text-center">
+        <main className="min-h-[calc(100vh-64px-64px)] w-full flex items-center justify-center py-14"
+            style={{ 
+                backgroundImage: 'url("/backgrounds/register.jpg")',
+                backgroundSize: '100% auto', // Estira al ancho completo sin recortar altura
+                backgroundPosition: 'center center', // Posiciona desde arriba
+                backgroundRepeat: 'no-repeat', // Evita que se repita
+                backgroundBlendMode: 'overlay',
+                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                // backgroundAttachment: 'fixed', // Mantiene la imagen fija al hacer scroll
+            }}
+        >
+            <div className="bg-white p-8 rounded-3xl shadow-xl w-[26rem] text-center">
                 <p className={`${merienda.className} antialiased text-3xl font-black text-white pb-2`}>
                     <span className="text-lime-500">Vital</span>
                     <span className="text-teal-500">Trail</span>
@@ -125,7 +138,7 @@ export default function RegisterPage() {
                         <button
                             type="submit"
                             className="
-                                w-full bg-lime-500 text-base text-white font-semibold p-2.5 rounded-full
+                                w-full bg-lime-500 text-base text-white font-bold p-2.5 rounded-full
                                 hover:bg-lime-600 transition transform duration-200"
                         >
                             Regístrate

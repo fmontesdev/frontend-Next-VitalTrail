@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useFavorite, useUnfavorite } from "@/mutations/favoriteMutation";
 import { HeartIcon as HeartIconOutline } from "@heroicons/react/24/outline";
 import { HeartIcon as HearIconSolid } from "@heroicons/react/24/solid";
@@ -37,6 +37,15 @@ export default function FavoriteButton({ initialIsFavorite, initialCount, slug, 
             });
         }
     };
+
+    // Actualiza el estado si las props iniciales cambian. Cambia el color del corazón y el conteo.
+    useEffect(() => {
+        setIsFavorite(initialIsFavorite);
+    }, [initialIsFavorite]);
+
+    useEffect(() => {
+        setCount(initialCount);
+    }, [initialCount]);
 
     return (
         <button
