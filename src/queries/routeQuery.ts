@@ -36,3 +36,12 @@ export const useRoute = (slug: string, initialData?: IRoute ) => {
         staleTime: 1000 * 60 * 4, // 4 minutos
     });
 }
+
+export const useTrendingRoutes = () => {
+    return useQuery({
+        queryKey: ['routes', 'trending'],
+        queryFn: () => RouteService.getTrending(),
+        staleTime: 10 * 60 * 1000,
+        select: (data) => [...data].sort((a, b) => b.favoritesCount - a.favoritesCount),
+    });
+};

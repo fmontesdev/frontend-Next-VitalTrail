@@ -8,4 +8,6 @@ export interface IFilter {
     difficulty?: string;
     typeRoute?: string;
     author?: string;
+    sortBy?: string;
+    order?: 'asc' | 'desc';
 }

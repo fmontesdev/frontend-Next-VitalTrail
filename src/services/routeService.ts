@@ -8,20 +8,23 @@ export const RouteService = {
     },
 
     getFiltered(filters: IFilter): Promise<IRoutes> {
-        const queryParams = new URLSearchParams(Object.entries(filters)).toString();
+        const queryParams = new URLSearchParams(
+            Object.entries(filters).filter(([, v]) => v !== undefined) as [string, string][]
+        ).toString();
         return apiService.get<IRoutes>(`/routes?${queryParams}`);
     },
 
+    getTrending(): Promise<IRoute[]> {
+        return apiService.get<IRoutes>('/routes?sortBy=favoritesCount&order=desc&limit=8')
+            .then((data) => data.routes);
+    },
+
     getById(id: string): Promise<IRoute> {
-        return apiService.get<{route: IRoute}>(`/routes/${id}`).then((data) => {
-            return data.route;
-        });
+        return apiService.get<{route: IRoute}>(`/routes/${id}`).then((data) => data.route);
     },
     
     getBySlug(slug: string): Promise<IRoute> {
-        return apiService.get<{route: IRoute}>(`/routes/${slug}`).then((data) => {
-            return data.route;
-        });
+        return apiService.get<{route: IRoute}>(`/routes/${slug}`).then((data) => data.route);
     },
 
     createRoute(data: Partial<IRoute>): Promise<IRoute> {
