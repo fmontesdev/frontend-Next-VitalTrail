@@ -1,23 +1,46 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useSearchRoutes } from '@/queries/routeQuery';
-import { IRoute } from '@/shared/interfaces/entities/route.interface';
-import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon, XMarkIcon, MapIcon, MapPinIcon } from '@heroicons/react/24/outline';
+
+// Unión discriminada para resultados del buscador
+type TSearchResult =
+    | { kind: 'route'; id: number; title: string; slug: string }
+    | { kind: 'location'; location: string };
 
 export default function Search() {
-    // Estado para el texto de búsqueda
-    const [query, setQuery] = useState<string>('');
+    // Estado para el texto de búsqueda — recuperado de localStorage si viene de otra página
+    const [query, setQuery] = useState<string>(() => {
+        if (typeof window === 'undefined') return '';
+        return localStorage.getItem('searchQuery') ?? '';
+    });
     // Para mostrar/ocultar el dropdown
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     // Referencia para detectar clics fuera
     const containerRef = useRef<HTMLDivElement>(null);
     // Hook para redireccionar
     const routerApp = useRouter();
+    const pathname = usePathname();
 
-    // React Query para fetch de rutas en la API
-    const { data, isLoading, isError } = useSearchRoutes(query);
+    // Una sola búsqueda por título — las localizaciones se extraen de sus resultados
+    const { data: routeData, isLoading, isError } = useSearchRoutes(query);
+
+    // Máximo 5 resultados de rutas por título
+    const routeItems: TSearchResult[] = (routeData?.routes ?? [])
+        .slice(0, 5)
+        .map(r => ({ kind: 'route' as const, id: r.idRoute, title: r.title, slug: r.slug }));
+
+    // Mostrar localización solo si más de una ruta comparte la misma localización
+    const locationCounts = (routeData?.routes ?? []).reduce<Record<string, number>>((acc, r) => {
+        acc[r.location] = (acc[r.location] ?? 0) + 1;
+        return acc;
+    }, {});
+
+    const locationItems: TSearchResult[] = Object.entries(locationCounts)
+        .filter(([, count]) => count > 1)
+        .map(([location]) => ({ kind: 'location' as const, location }));
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -46,8 +69,23 @@ export default function Search() {
     }, []);
 
     // Función para capitalizar la primera letra de un texto
-    const capitalizeFirstLetter = (text: string) => 
+    const capitalizeFirstLetter = (text: string) =>
         text.charAt(0).toUpperCase() + text.slice(1);
+
+    // Maneja la selección de un resultado — guarda en localStorage y navega
+    function handleResultClick(result: TSearchResult) {
+        setShowDropdown(false);
+        if (result.kind === 'route') {
+            const text = capitalizeFirstLetter(result.title);
+            setQuery(text);
+            localStorage.setItem('searchQuery', text);
+            routerApp.push(`/route/${result.slug}`);
+        } else {
+            setQuery(result.location);
+            localStorage.setItem('searchQuery', result.location);
+            routerApp.push(`/routes?location=${encodeURIComponent(result.location)}`);
+        }
+    }
 
     return (
         <div className="relative" ref={containerRef}>
@@ -60,7 +98,7 @@ export default function Search() {
                 value={query}
                 onChange={handleInputChange}
                 onFocus={handleFocus}
-                placeholder="Busca tus rutas"
+                placeholder="Busca por ciudad o nombre de la ruta…"
                 className="
                     border rounded-full pl-10 pr-4 py-1.5 w-full text-teal-700 font-semibold text-base md:text-lg
                     focus:outline-none focus:ring-1 focus:ring-teal-600
@@ -71,9 +109,13 @@ export default function Search() {
                 <button
                     type="button"
                     onClick={() => {
-                        // Borra el texto y redirecciona
-                        setQuery("");
-                        routerApp.push(`/routes`);
+                        setQuery('');
+                        setShowDropdown(false);
+                        localStorage.removeItem('searchQuery');
+                        // En el list, eliminar todos los filtros
+                        if (pathname === '/routes') {
+                            routerApp.push('/routes');
+                        }
                     }}
                     className="
                         absolute right-3 top-1/2 transform -translate-y-1/2 rounded-full
@@ -86,32 +128,59 @@ export default function Search() {
             {/* Dropdown */}
             {showDropdown && (
                 <div className="
-                    absolute left-0 right-0 mt-1 max-h-64 overflow-hidden
+                    absolute left-0 right-0 mt-1 max-h-64 overflow-hidden z-50
                     bg-white border border-gray-200 rounded-2xl text-left
                 ">
                     <div className="overflow-y-auto max-h-64">
                         {isLoading && <div className="p-2 text-gray-500">Cargando...</div>}
                         {isError && <div className="p-2 text-red-500">Error al cargar</div>}
-                        
-                        {/* Si no hay datos y no está cargando ni en error */}
-                        {!isLoading && !isError && data && data.routes.length === 0 && (
+
+                        {/* Sin resultados en ninguna categoría */}
+                        {!isLoading && !isError && routeItems.length === 0 && locationItems.length === 0 && (
                             <div className="p-2 text-gray-500">No hay resultados</div>
                         )}
-                        {/* Si hay datos y no está cargando ni en error */}
-                        {!isLoading && !isError && data && data.routes.map((route: IRoute) => (
-                            <div
-                                key={route.idRoute}
-                                className="py-2 px-4 text-gray-500 hover:bg-gray-100 cursor-pointer"
-                                onClick={() => {
-                                    // Fijamos valor en el input, cerramos dropdown y redireccionamos
-                                    setQuery(capitalizeFirstLetter(route.title));
-                                    setShowDropdown(false);
-                                    routerApp.push(`/routes?title=${route.title}`);
-                                }}
-                            >
-                                {capitalizeFirstLetter(route.title)}
-                            </div>
-                        ))}
+
+                        {/* Sección de localización */}
+                        {locationItems.length > 0 && (
+                            <ul>
+                                <li className="px-4 pt-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                                    Localización
+                                </li>
+                                {locationItems.map(item => (
+                                    item.kind === 'location' && (
+                                        <li
+                                            key={item.location}
+                                            className="flex items-center gap-2 py-2 px-4 text-gray-500 hover:bg-gray-100 cursor-pointer"
+                                            onClick={() => handleResultClick(item)}
+                                        >
+                                            <MapPinIcon className="h-5 w-5 shrink-0" />
+                                            {item.location}
+                                        </li>
+                                    )
+                                ))}
+                            </ul>
+                        )}
+
+                        {/* Sección de rutas */}
+                        {routeItems.length > 0 && (
+                            <ul>
+                                <li className="px-4 pt-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                                    Rutas
+                                </li>
+                                {routeItems.map(item => (
+                                    item.kind === 'route' && (
+                                        <li
+                                            key={item.id}
+                                            className="flex items-center gap-2 py-2 px-4 text-gray-500 hover:bg-gray-100 cursor-pointer"
+                                            onClick={() => handleResultClick(item)}
+                                        >
+                                            <MapIcon className="h-5 w-5 shrink-0" />
+                                            {capitalizeFirstLetter(item.title)}
+                                        </li>
+                                    )
+                                ))}
+                            </ul>
+                        )}
                     </div>
                 </div>
             )}

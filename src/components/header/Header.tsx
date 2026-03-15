@@ -42,7 +42,7 @@ export default function Header() {
                 {/* Primera fila: Logo + Links */}
                 <div className="container mx-auto flex justify-between items-center px-5">
                     {/* Logo */}
-                    <Link href="/" aria-label="Inicio">
+                    <Link href="/" aria-label="Inicio" onClick={() => localStorage.removeItem('searchQuery')}>
                         <span className={`${merienda.className} antialiased text-3xl font-black text-white`}>
                             <span className="text-lime-500">Vital</span>
                             <span className="text-teal-500">Trail</span>

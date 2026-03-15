@@ -10,7 +10,7 @@ import { IFiltersProps } from '@/shared/interfaces/props/props.interface';
 export default function Filters({ initialParams, onFilterChange }: IFiltersProps) {
     const [category, setCategory] = useState<string>(initialParams.category || '');
     const [difficulty, setDifficulty] = useState<string>(initialParams.difficulty || '');
-    const [distance, setDistance] = useState<string>(initialParams.distance || '');
+    const [distance, setDistance] = useState<string>(initialParams.distance || '0');
     const [typeRoute, setTypeRoute] = useState<string>(initialParams.typeRoute || '');
     const [location, setLocation] = useState<string>(initialParams.location || '');
 
@@ -19,6 +19,15 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
     // Aplicamos delay al valor de "distance"
     const distanceDelay = useDistanceDelay(distance, 300);
 
+    // Sincroniza el estado local cuando los filtros se resetean externamente (ej: desde el buscador)
+    useEffect(() => {
+        setCategory(initialParams.category || '');
+        setDifficulty(initialParams.difficulty || '');
+        setDistance(initialParams.distance || '0');
+        setTypeRoute(initialParams.typeRoute || '');
+        setLocation(initialParams.location || '');
+    }, [initialParams]);
+
     // Cuando cambien los filtros, enviamos la actualización al padre
     useEffect(() => {
         onFilterChange({
@@ -26,7 +35,7 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
             page: "1",
             category,
             difficulty,
-            distance: distanceDelay.toString(),
+            distance: distance === '0' ? '' : distance,
             typeRoute,
             location
         });
@@ -38,7 +47,7 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
             {/* Filtro categoría */}
             <div className="relative">
                 <label htmlFor="category" className="sr-only">
-                    Actividad
+                    Intención
                 </label>
                 <select
                     id="category"
@@ -50,7 +59,7 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
                         ${category !== "" ? "!bg-lime-600/60 text-white " : ""}
                     `}
                 >
-                    <option value="">Actividad</option>
+                    <option value="">Intención</option>
                     {categoriesData?.map((cat) => (
                         <option key={cat.idCategory} value={cat.title}>
                             {CapitalizeFirstLetter(cat.title)}
@@ -168,16 +177,16 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
                 className={`
                     px-4 py-2 text-sm text-gray-600 bg-white border border-stone-300 rounded-xl cursor-pointer
                     focus:outline-none focus:ring-lime-600/80 focus:border-lime-600/80 hover:bg-stone-100 shadow
-                    ${category !== "" || difficulty !== "" || distance !== "" || typeRoute !== "" || location !== ""
+                    ${category !== "" || difficulty !== "" || distance !== "0" || typeRoute !== ""
                         ? "!border !border-red-300 !bg-red-300 !text-white hover:!bg-red-400"
                         : ""}
                 `}
                 onClick={() => {
                     setCategory('');
                     setDifficulty('');
-                    setDistance('');
+                    setDistance('0');
                     setTypeRoute('');
-                    setLocation('');
+                    // setLocation('');
                 }}
             >
                 Borrar filtros
