@@ -11,11 +11,8 @@ type TSearchResult =
     | { kind: 'location'; location: string };
 
 export default function Search() {
-    // Estado para el texto de búsqueda — recuperado de localStorage si viene de otra página
-    const [query, setQuery] = useState<string>(() => {
-        if (typeof window === 'undefined') return '';
-        return localStorage.getItem('searchQuery') ?? '';
-    });
+    // Estado para el texto de búsqueda — inicializado vacío para que SSR y cliente coincidan
+    const [query, setQuery] = useState<string>('');
     // Para mostrar/ocultar el dropdown
     const [showDropdown, setShowDropdown] = useState<boolean>(false);
     // Referencia para detectar clics fuera
@@ -23,6 +20,13 @@ export default function Search() {
     // Hook para redireccionar
     const routerApp = useRouter();
     const pathname = usePathname();
+
+    // Recuperar búsqueda guardada de localStorage tras el montaje — evita hydration mismatch
+    // (localStorage no está disponible en SSR; el useEffect solo se ejecuta en el cliente)
+    useEffect(() => {
+        const saved = localStorage.getItem('searchQuery');
+        if (saved) setQuery(saved);
+    }, []);
 
     // Una sola búsqueda por título — las localizaciones se extraen de sus resultados
     const { data: routeData, isLoading, isError } = useSearchRoutes(query);
