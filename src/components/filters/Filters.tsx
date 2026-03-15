@@ -186,7 +186,6 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
                     setDifficulty('');
                     setDistance('0');
                     setTypeRoute('');
-                    // setLocation('');
                 }}
             >
                 Borrar filtros

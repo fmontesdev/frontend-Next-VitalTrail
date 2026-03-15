@@ -40,11 +40,11 @@ export default function HeaderHome() {
 
     return (
         <>
-            <header className="relative w-full h-[300px] md:h-[420px] text-base">
+            <header className="relative w-full h-[280px] md:h-[300px] text-base">
                 {/* Imagen de fondo */}
                 <div className="absolute inset-0">
                     <Image
-                        src="/header/header-background1.jpg"
+                        src="/header/header-background.png"
                         alt="Header de VitalTrail"
                         fill
                         className="object-cover"
@@ -56,7 +56,7 @@ export default function HeaderHome() {
 
                 <div className="relative z-10 h-full flex flex-col">
                     {/* Primera fila: Logo + Links */}
-                    <div className="container mx-auto flex justify-between items-center py-4 px-5">
+                    <div className="container mx-auto flex justify-between items-center pt-4 px-5">
                         {/* Logo */}
                         <Link href="/" aria-label="Inicio" onClick={() => localStorage.removeItem('searchQuery')}>
                             <span className={`${merienda.className} antialiased text-3xl font-black text-white`}>
@@ -122,7 +122,7 @@ export default function HeaderHome() {
                     </div>
 
                     {/* Segunda fila: Texto + Search */}
-                    <div className="flex-1 flex flex-col justify-center items-center text-center px-6">
+                    <div className="flex-1 flex flex-col justify-center items-center text-center pb-4 px-6">
                         <h1 className="text-3xl md:text-5xl font-bold text-white drop-shadow-lg text-center">
                             Mueve tu cuerpo,{' '}
                             <span className="bg-gradient-to-r from-lime-400 to-teal-400 bg-clip-text text-transparent">
