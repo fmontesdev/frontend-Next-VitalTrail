@@ -31,6 +31,7 @@ export const useFavorite = () => {
                 ['route', updatedRoute.slug],
                 updatedRoute
             );
+            queryClient.invalidateQueries({ queryKey: ['profileFavorites'] });
             
             // Invalidar queries para asegurar datos frescos
             // queryClient.invalidateQueries({ queryKey: ['filteredRoutes'] });
@@ -71,6 +72,7 @@ export const useUnfavorite = () => {
                 ['route', updatedRoute.slug],
                 updatedRoute
             );
+            queryClient.invalidateQueries({ queryKey: ['profileFavorites'] });
             
             // Invalidar queries para asegurar datos frescos
             // queryClient.invalidateQueries({ queryKey: ['filteredRoutes'] });

@@ -16,6 +16,7 @@ export interface IRoute {
     coordinates: Array<ICoordinates>;
     createdAt: string;
     updatedAt: string;
+    start?: string | null;
     favorited: boolean;
     favoritesCount: number;
     user?: IUser | string;
@@ -27,6 +28,11 @@ export interface IRoute {
 export interface IRoutes {
     routes: Array<IRoute>;
     routesCount: number;
+}
+
+export interface IFavoriteRoutes {
+    favoriteRoutes: Array<IRoute>;
+    favoritesRoutesCount: number;
 }
 
 export interface ICoordinates {

@@ -24,3 +24,12 @@ export const useFollowerProfiles = (username: string) => {
         staleTime: 1000 * 120, // 2 minutos
     });
 }
+
+export const useProfileFavorites = (username: string) => {
+    return useQuery({
+        queryKey: ['profileFavorites', username],
+        queryFn: () => ProfileService.getFavorites(username),
+        staleTime: 1000 * 120,
+        enabled: !!username,
+    });
+};

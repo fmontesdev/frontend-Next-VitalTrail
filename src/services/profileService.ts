@@ -1,5 +1,6 @@
 import apiService from "./apiService";
 import { IProfile, IProfiles } from "@/shared/interfaces/entities/user.interface";
+import { IFavoriteRoutes } from '@/shared/interfaces/entities/route.interface';
 
 export const ProfileService = {
     getProfile(username: string): Promise<IProfile> {
@@ -26,5 +27,9 @@ export const ProfileService = {
         return apiService.delete<{profile: IProfile}>(`/profiles/${username}/unfollow`).then((response) => {
             return response.profile;
         });
+    },
+
+    getFavorites: (username: string): Promise<IFavoriteRoutes> => {
+        return apiService.get<IFavoriteRoutes>(`/profiles/${username}/favorites`);
     },
 };
