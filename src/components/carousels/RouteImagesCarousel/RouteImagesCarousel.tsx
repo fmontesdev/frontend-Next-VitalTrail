@@ -10,12 +10,14 @@ const RouteImagesCarousel: React.FC<{ images: IImageRoute[] }> = ({ images }) =>
     const [currentIndex, setCurrentIndex] = useState(0);
 
     // Botón next
-    const handleNext = () => {
+    const handleNext = (e: React.MouseEvent) => {
+        e.stopPropagation();
         setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
     };
 
     // Botón prev
-    const handlePrev = () => {
+    const handlePrev = (e: React.MouseEvent) => {
+        e.stopPropagation();
         setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
     };
 

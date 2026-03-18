@@ -51,7 +51,7 @@ export default function FavoriteButton({ initialIsFavorite, initialCount, slug, 
         <button
             onClick={handleClick}
             className="
-                flex items-center space-x-1 text-sm text-gray-700 font-medium
+                flex items-center space-x-0.5 text-xs text-gray-700 font-medium pr-0.5
                 transform transition-transform duration-300 hover:scale-110
         ">
             {isFavorite ? (
