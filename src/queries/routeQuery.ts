@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { RouteService } from '@/services/routeService';
 import { IFilter } from '@/shared/interfaces/filters/filters.interface';
 import { IRoute, IRoutes } from '@/shared/interfaces/entities/route.interface';
@@ -43,5 +43,18 @@ export const useTrendingRoutes = () => {
         queryFn: () => RouteService.getTrending(),
         staleTime: 10 * 60 * 1000,
         select: (data) => [...data].sort((a, b) => b.favoritesCount - a.favoritesCount),
+    });
+};
+
+export const useInfiniteMyRoutes = (author: string) => {
+    return useInfiniteQuery({
+        queryKey: ['myRoutes', author],
+        queryFn: ({ pageParam }) => RouteService.getFiltered({ limit: 6, offset: pageParam as number, author }),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, allPages) => {
+            const loaded = allPages.flatMap(p => p.routes).length;
+            return loaded < lastPage.routesCount ? loaded : undefined;
+        },
+        enabled: !!author,
     });
 };

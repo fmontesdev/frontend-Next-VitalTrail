@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { ProfileService } from '@/services/profileService';
 
 export const useProfile = (username: string) => {
@@ -25,11 +25,15 @@ export const useFollowerProfiles = (username: string) => {
     });
 }
 
-export const useProfileFavorites = (username: string) => {
-    return useQuery({
+export const useInfiniteProfileFavorites = (username: string) => {
+    return useInfiniteQuery({
         queryKey: ['profileFavorites', username],
-        queryFn: () => ProfileService.getFavorites(username),
-        staleTime: 1000 * 120,
+        queryFn: ({ pageParam }) => ProfileService.getFavorites(username, { limit: 6, offset: pageParam as number }),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, allPages) => {
+            const loaded = allPages.flatMap(p => p.favoriteRoutes).length;
+            return loaded < lastPage.favoritesRoutesCount ? loaded : undefined;
+        },
         enabled: !!username,
     });
 };

@@ -29,7 +29,7 @@ export const ProfileService = {
         });
     },
 
-    getFavorites: (username: string): Promise<IFavoriteRoutes> => {
-        return apiService.get<IFavoriteRoutes>(`/profiles/${username}/favorites`);
+    getFavorites: (username: string, params?: { limit?: number; offset?: number }): Promise<IFavoriteRoutes> => {
+        return apiService.get<IFavoriteRoutes>(`/profiles/${username}/favorites`, false, { params });
     },
 };
