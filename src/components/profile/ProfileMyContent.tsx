@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import { useCanEdit, useCanManageAdmin } from '@/auth/authorizations';
-import MyRoutesList from './MyRouteList';
-import ProfileCommentsList from './ProfileCommentsList';
+import MyRoutesList from './MyRoutesList';
+import ProfileCommentsList from './MyCommentsList';
 import FollowingList from './FollowingList';
 import FollowersList from './FollowersList';
+import ProfileFavoritesList from './MyFavoritesRoutesList';
 
 export default function ProfileMyContent({ username }: { username: string }) {
     // State para controlar qué vista se muestra
@@ -24,8 +25,7 @@ export default function ProfileMyContent({ username }: { username: string }) {
     const showFollowers = () => setActiveTab('seguidos');
 
     return (
-        <div className="
-            w-3/4 h-auto bg-stone-100 border border-stone-20 rounded-2xl px-7 py-4">
+        <div className="w-3/4 bg-stone-100 border border-stone-200 rounded-2xl px-7 py-4">
             {/* Barra de pestañas */}
             <div className="flex gap-3 border-b text-gray-400 font-bold">
                 {canManageAdmin && (
@@ -93,7 +93,7 @@ export default function ProfileMyContent({ username }: { username: string }) {
             {/* Contenido dinámico */}
             <div className="mt-4">
                 {activeTab === 'rutas' && <MyRoutesList username={username} />}
-                {activeTab === 'favoritos'}
+                {activeTab === 'favoritos' && <ProfileFavoritesList username={username} />}
                 {activeTab === 'comentarios' && <ProfileCommentsList username={username} onCommentsCount={(count) => setCommentsCount(count)}/>}
                 {activeTab === 'siguiendo' && <FollowingList username={username} />}
                 {activeTab === 'seguidos'  && <FollowersList username={username} />}
