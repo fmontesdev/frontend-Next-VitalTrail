@@ -34,6 +34,7 @@ export const useRoute = (slug: string, initialData?: IRoute ) => {
         queryFn: () => RouteService.getBySlug(slug),
         initialData: initialData,
         staleTime: 1000 * 60 * 4, // 4 minutos
+        enabled: !!slug,
     });
 }
 
