@@ -1,31 +1,51 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useRoute } from '@/queries/routeQuery';
 import FavoriteButton from '@/components/buttons/FavoriteButton/FavoriteButton';
 import DetailsRouteImagesPreview from '@/components/detailsRouteImage/DetailsRouteImages';
 import DetailsRouteMap from '@/components/detailsRouteMap/DetailsRouteMap';
 import CommentsList from '@/components/comments/CommentsList';
 import Avatar from '@/components/avatar/Avatar';
+import SessionButton from '@/components/detailsRoute/components/SessionButton';
+import WellbeingCheckinForm from '@/components/wellbeingCheckin/WellbeingCheckinForm';
 import { useAuth } from '@/hooks/useAuth';
 import { FormatDate } from '@/shared/utils/formatDate';
 import { CapitalizeFirstLetter } from '@/shared/utils/capitalizeFirstLetter';
 import { ToSingular } from '@/shared/utils/toSingular';
 import { ToHoursAndMinutes } from '@/shared/utils/toHoursAndMinutes';
 import { IRoute } from '@/shared/interfaces/entities/route.interface';
-import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
-import { ArrowLongRightIcon, ArrowPathIcon, MapPinIcon } from "@heroicons/react/24/outline";
-import { StarIcon } from "@heroicons/react/24/solid";
+import { ExclamationTriangleIcon, ArrowLongRightIcon, ArrowPathIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { StarIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 
 export default function DetailsRoute({ slug, initialRoute }: { slug: string, initialRoute: IRoute }) {
-    const { currentUser } = useAuth(); 
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const { currentUser } = useAuth();
     const [commentsCount, setCommentsCount] = useState<number>(initialRoute.comments?.length || 0);
-    // Carga la ruta con React Query pasando initialData
-    const { data: route, isLoading, isError } = useRoute(
-        slug,
-        // initialRoute
-    );
+
+    // Param ?checkin=<idSession> → mostrar WellbeingCheckinForm tras volver de /tracking
+    const checkinParam = searchParams.get('checkin');
+    const checkinSessionId = checkinParam !== null && !isNaN(Number(checkinParam))
+        ? Number(checkinParam)
+        : null;
+
+    // Retraso de 1 s para que la página cargue antes de abrir el modal
+    const [showCheckin, setShowCheckin] = useState(false);
+    useEffect(() => {
+        if (checkinSessionId === null) return;
+        const timer = setTimeout(() => setShowCheckin(true), 1000);
+        return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [checkinSessionId]);
+
+    const handleCheckinDone = () => {
+        router.replace(`/route/${slug}`);
+    };
+
+    const { data: route, isLoading, isError } = useRoute(slug);
 
     if (isLoading) return (
         <div className="container mx-auto px-4 animate-pulse">
@@ -56,6 +76,7 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
     );
 
     return (
+        <>
         <div className="container mx-auto flex flex-row flex-wrap gap-1">
             <section className="w-full">
                 <p className="text-sm font-medium text-gray-600 flex items-center gap-2 px-4">
@@ -75,29 +96,41 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
                     </Link>
                 </p>
 
-                <h1 className="w-full text-2xl md:text-3xl font-bold text-teal-700 pt-2 pb-1 md:pb-2 px-4">
-                    {CapitalizeFirstLetter(route.title)}
-                    {/* Reserva espacio para el botón de favoritos */}
-                    <span className="inline-block w-10 visibility-hidden"></span>
-                </h1>
+                {/* Fila título + botón de sesión */}
+                <div className="w-full flex items-end justify-between gap-3 pt-0.5 pb-0.5 md:pb-0.5 px-4">
+                    <h1 className="text-2xl md:text-3xl font-bold text-teal-700 leading-tight">
+                        {CapitalizeFirstLetter(route.title)}
+                    </h1>
 
-                <div className="relative w-full flex flex-wrap justify-start text-base font-semibold text-gray-700 pb-3 px-4">
-                    <div className="flex items-center gap-1 shrink-0">
-                        <span className="text-sm font-medium text-gray-600">
-                            Reseñas:
+                    {currentUser.isAuthenticated && (
+                        <div className="shrink-0">
+                            <SessionButton
+                                idRoute={route.idRoute}
+                                routeSlug={route.slug}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                {/* Fila meta: reseñas/dificultad + favorito al margen derecho */}
+                <div className="w-full flex items-center justify-between flex-wrap gap-y-1 text-base font-semibold text-gray-700 pb-3 px-4">
+                    <div className="flex flex-wrap items-center gap-x-1">
+                        <div className="flex items-center gap-1 shrink-0">
+                            <span className="text-sm font-medium text-gray-600">
+                                Reseñas:
+                            </span>
+                            <StarIcon className="w-5 h-5 text-amber-500" /> {route.averageRatings}&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
+                        </div>
+                        <span className="gap-x-2">
+                            <span className="text-sm font-medium text-gray-600">Dificultad:&nbsp;&nbsp;</span>
+                            <Link
+                                href={`/routes?difficulty=${route.difficulty}`}
+                                className="hover:text-gray-700 hover:underline underline-offset-2 transition duration-300"
+                            >
+                                {CapitalizeFirstLetter(route.difficulty)}
+                            </Link>
+                            &nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
                         </span>
-                        <StarIcon className="w-5 h-5 text-amber-500" /> {route.averageRatings}&nbsp;&nbsp;&nbsp;•&nbsp;&nbsp;&nbsp;
-                    </div>
-                    <span className="gap-x-2">
-                        <span className="text-sm font-medium text-gray-600">Dificultad:&nbsp;&nbsp;</span>
-                        <Link
-                            href={`/routes?difficulty=${route.difficulty}`}
-                            className="hover:text-gray-700 hover:underline underline-offset-2 transition duration-300"
-                        >
-                            {CapitalizeFirstLetter(route.difficulty)}
-                        </Link>
-                    </span>
-                    <div className="absolute top-[-34] right-4 sm:top-0">
                         <FavoriteButton
                             initialIsFavorite={route.favorited}
                             initialCount={route.favoritesCount}
@@ -139,7 +172,7 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
 
                     <div className="flex flex-col items-center">
                         <span className="text-teal-700">
-                            {route.typeRoute === "circular"
+                            {route.typeRoute === 'circular'
                                 ? <ArrowPathIcon strokeWidth={3} className="w-12 h-12" />
                                 : <ArrowLongRightIcon strokeWidth={3} className="w-10 h-10 lg:w-12 lg:h-12" />
                             }
@@ -195,16 +228,26 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
                 </div>
             </section>
 
-            <section className="w-full order-6  border-t border-stone-200 pt-5 px-4">
+            <section className="w-full order-6 border-t border-stone-200 pt-5 px-4">
                 <h2 className="text-lg font-bold text-gray-500 px-24 pt-2 pb-3">
                     Comentarios ({commentsCount})
                 </h2>
-                <CommentsList 
-                    routeSlug={route.slug} 
+                <CommentsList
+                    routeSlug={route.slug}
                     initialComments={{comments: route.comments || [], averageRatings: route.averageRatings}}
                     onCommentsCount={(count) => setCommentsCount(count)}
                 />
             </section>
         </div>
+
+        {/* Modal check-in post-ruta — se activa via ?checkin=<idSession> con retardo */}
+        {showCheckin && checkinSessionId !== null && (
+            <WellbeingCheckinForm
+                idSession={checkinSessionId}
+                onClose={handleCheckinDone}
+                onSuccess={handleCheckinDone}
+            />
+        )}
+        </>
     );
 }
