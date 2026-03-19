@@ -7,11 +7,12 @@ import ProfileCommentsList from './MyCommentsList';
 import FollowingList from './FollowingList';
 import FollowersList from './FollowersList';
 import ProfileFavoritesList from './MyFavoritesRoutesList';
+import MySessionsList from './MySessionsList';
 
 export default function ProfileMyContent({ username }: { username: string }) {
     // State para controlar qué vista se muestra
     const [activeTab, setActiveTab] =
-        useState<'rutas' | 'favoritos' | 'comentarios' | 'siguiendo' | 'seguidos'>('rutas');
+        useState<'rutas' | 'favoritos' | 'comentarios' | 'sesiones' | 'siguiendo' | 'seguidos'>('rutas');
     // Contadores
     const [commentsCount, setCommentsCount] = useState<number>();
     const { canEdit } = useCanEdit(username);
@@ -20,6 +21,7 @@ export default function ProfileMyContent({ username }: { username: string }) {
     // Funciones para cambiar la pestaña
     const showRoutes = () => setActiveTab('rutas');
     const showFavorites = () => setActiveTab('favoritos');
+    const showSessions = () => setActiveTab('sesiones');
     const showComments = () => setActiveTab('comentarios');
     const showFollowing = () => setActiveTab('siguiendo');
     const showFollowers = () => setActiveTab('seguidos');
@@ -56,6 +58,19 @@ export default function ProfileMyContent({ username }: { username: string }) {
 
                 {canEdit && (
                     <button
+                        onClick={showSessions}
+                        className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
+                            ${activeTab === 'sesiones'
+                            ? 'text-teal-700 border-b-2 border-teal-700 hover:text-teal-700'
+                            : ''}
+                        `}
+                    >
+                        Mis Sesiones
+                    </button>
+                )}
+
+                {canEdit && (
+                    <button
                         onClick={showComments}
                         className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
                             ${activeTab === 'comentarios'
@@ -63,7 +78,7 @@ export default function ProfileMyContent({ username }: { username: string }) {
                             : ''}
                         `}
                     >
-                        Mis Comentarios {commentsCount !== undefined && commentsCount > 0 ? `(${commentsCount})` : ''}
+                        Mis Comentarios
                     </button>
                 )}
 
@@ -95,6 +110,7 @@ export default function ProfileMyContent({ username }: { username: string }) {
                 {activeTab === 'rutas' && <MyRoutesList username={username} />}
                 {activeTab === 'favoritos' && <ProfileFavoritesList username={username} />}
                 {activeTab === 'comentarios' && <ProfileCommentsList username={username} onCommentsCount={(count) => setCommentsCount(count)}/>}
+                {activeTab === 'sesiones' && <MySessionsList />}
                 {activeTab === 'siguiendo' && <FollowingList username={username} />}
                 {activeTab === 'seguidos'  && <FollowersList username={username} />}
             </div>

@@ -39,6 +39,7 @@ export interface ICreateSessionPayload {
 
 export interface IEndSessionPayload {
     session: {
+        /** Distancia recorrida en metros */
         distance: number;
     };
 }

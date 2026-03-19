@@ -46,7 +46,7 @@ export const RouteSessionService = {
             .then((data) => data.session);
     },
 
-    /** PATCH /sessions/:id/end — finaliza la sesión con la distancia recorrida */
+    /** PATCH /sessions/:id/end — finaliza la sesión con la distancia recorrida en metros */
     end(id: number, distance: number): Promise<IRouteSession> {
         const payload: IEndSessionPayload = { session: { distance } };
         return apiService
