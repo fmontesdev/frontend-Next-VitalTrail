@@ -163,8 +163,8 @@ export default function UpdateProfile({ username }: { username: string }) {
                     <button
                         type="submit"
                         className="
-                            bg-lime-500 text-base text-white font-semibold rounded-full
-                            px-6 py-2 hover:bg-lime-600 transition transform duration-200"
+                            bg-lime-600 text-base text-white font-semibold rounded-full
+                            px-6 py-2 hover:bg-lime-700 transition transform duration-200"
                     >
                         Actualizar
                     </button>

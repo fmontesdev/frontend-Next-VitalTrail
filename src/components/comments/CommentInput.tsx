@@ -28,8 +28,8 @@ export default function CommentInput({ routeSlug }: {routeSlug: string }) {
                 <button
                     onClick={handleSubmit}
                     className="
-                        w-32 bg-lime-500 text-md text-white font-semibold rounded-full
-                        mt-4 px-4 py-2 md:mt-0 md:ml-4 hover:bg-lime-600
+                        w-32 bg-lime-600 text-md text-white font-semibold rounded-full
+                        mt-4 px-4 py-2 md:mt-0 md:ml-4 hover:bg-lime-700
                         active:scale-95 transition transform duration-150"
                     disabled={isPending}
                 >

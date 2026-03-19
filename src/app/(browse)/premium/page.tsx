@@ -79,7 +79,7 @@ const SubscriptionPage = () => {
                         {/* Espaciador flexible para empujar el botón hacia abajo */}
                         <div className="flex-grow"></div>
 
-                        <div className="absolute -bottom-4 bg-lime-500 text-white font-semibold py-2 px-6 rounded-full">
+                        <div className="absolute -bottom-4 bg-lime-600 text-white font-semibold py-2 px-6 rounded-full">
                             Suscríbete
                         </div>
                     </div>
@@ -123,7 +123,7 @@ const SubscriptionPage = () => {
                         {/* Espaciador flexible para empujar el botón hacia abajo */}
                         <div className="flex-grow"></div>
 
-                        <div className="absolute -bottom-4 bg-lime-500 text-white font-semibold py-2 px-6 rounded-full">
+                        <div className="absolute -bottom-4 bg-lime-600 text-white font-semibold py-2 px-6 rounded-full">
                             Suscríbete
                         </div>
                     </div>

@@ -57,11 +57,11 @@ export default function FavoriteButton({ initialIsFavorite, initialCount, slug, 
             {isFavorite ? (
                 origin === "routesList"
                     ? <HearIconSolid strokeWidth={2} className="w-5 h-5 text-red-500" />
-                    : <HearIconSolid strokeWidth={2} className="w-6 h-6 text-red-500" />
+                    : <HearIconSolid strokeWidth={2} className="w-5 h-5 text-red-500" />
             ) : (
                 origin === "routesList"
                     ? <HeartIconOutline strokeWidth={2} className="w-5 h-5 text-gray-600" />
-                    : <HeartIconOutline strokeWidth={2} className="w-6 h-6 text-gray-600" />
+                    : <HeartIconOutline strokeWidth={2} className="w-5 h-5 text-gray-600" />
             )}
             <span>{count}</span>
         </button>

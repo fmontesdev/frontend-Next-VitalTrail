@@ -55,7 +55,7 @@ export default function Pagination({ totalRoutes, limit, params, url }: IPaginat
                     className={`
                         px-3.5 py-1.5 rounded-full transition
                         ${currentPage === page
-                            ? "bg-lime-500 text-white font-bold"
+                            ? "bg-lime-600 text-white font-bold"
                             : "bg-stone-300 text-white font-bold hover:bg-stone-400"
                         }
                     `}

@@ -75,8 +75,8 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             className="
-                                w-full bg-lime-500 text-base text-white font-bold p-2.5 rounded-full
-                                hover:bg-lime-600 transition transform duration-200"
+                                w-full bg-lime-600 text-base text-white font-bold p-2.5 rounded-full
+                                hover:bg-lime-700 transition transform duration-200"
                         >
                             Inicia sesión
                         </button>

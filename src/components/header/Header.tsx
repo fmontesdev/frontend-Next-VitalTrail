@@ -96,11 +96,11 @@ export default function Header() {
                                         </Link>
                                     </>
                                 ) : (
-                                    <Link
-                                        href="/login"
-                                        className="bg-lime-500 border-2 border-lime-500 rounded-full px-4 py-1 text-white
-                                            hover:bg-lime-600 hover:border-lime-600 transition durantion-200 ease-in-out"
-                                    >
+                        <Link
+                                href="/login"
+                                className="bg-lime-600 border-2 border-lime-600 rounded-full px-4 py-1 text-white
+                                    hover:bg-lime-700 hover:border-lime-700 transition durantion-200 ease-in-out"
+                            >
                                         Inicia sesión
                                     </Link>
                                 )}
