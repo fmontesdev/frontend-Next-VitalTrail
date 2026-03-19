@@ -133,7 +133,7 @@ export default function TrackingPage() {
         const slug = routeSlugRef.current ?? session.slug;
         const idSession = session.idSession;
         isLeavingRef.current = true;
-        endSession(idSession, {
+        endSession({ sessionId: idSession, distance: Math.round(distanceCovered) }, {
             onSuccess: () => {
                 router.push(`/route/${slug}?checkin=${idSession}`);
             },

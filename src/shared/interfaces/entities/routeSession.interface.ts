@@ -3,9 +3,22 @@ export interface IRouteSession {
     idUser: string;
     idRoute: number;
     slug: string;
+    title: string;
+    distance: number | null;
     startAt: string;
     endAt: string | null;
     createdAt: string;
+}
+
+/** Sesión enriquecida con checkin embebido — usada en GET /sessions (lista paginada) */
+export interface IRouteSessionSummary extends IRouteSession {
+    checkin: IWellbeingCheckin | null;
+}
+
+/** Respuesta paginada de GET /sessions */
+export interface ISessionsPage {
+    sessions: IRouteSessionSummary[];
+    sessionsCount: number;
 }
 
 export interface IWellbeingCheckin {
@@ -21,6 +34,12 @@ export interface IWellbeingCheckin {
 export interface ICreateSessionPayload {
     session: {
         idRoute: number;
+    };
+}
+
+export interface IEndSessionPayload {
+    session: {
+        distance: number;
     };
 }
 

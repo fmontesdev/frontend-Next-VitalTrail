@@ -1,11 +1,14 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery } from '@tanstack/react-query';
 import { RouteSessionService } from '@/services/routeSessionService';
+
+const SESSIONS_PAGE_SIZE = 10;
 
 /** Query keys factory */
 export const sessionKeys = {
     all: ['sessions'] as const,
     active: () => [...sessionKeys.all, 'active'] as const,
     detail: (id: number) => [...sessionKeys.all, id] as const,
+    list: () => [...sessionKeys.all, 'list'] as const,
     checkins: () => [...sessionKeys.all, 'checkins'] as const,
     checkin: (sessionId: number) => [...sessionKeys.all, sessionId, 'checkin'] as const,
 };
@@ -60,5 +63,23 @@ export const useSessionCheckin = (sessionId: number) => {
         },
         enabled: sessionId > 0,
         staleTime: 1000 * 60 * 5,
+    });
+};
+
+/**
+ * Lista paginada de sesiones cerradas con scroll infinito.
+ * Cada página carga SESSIONS_PAGE_SIZE sesiones.
+ */
+export const useInfiniteSessionsList = () => {
+    return useInfiniteQuery({
+        queryKey: sessionKeys.list(),
+        queryFn: ({ pageParam }) =>
+            RouteSessionService.getAll({ limit: SESSIONS_PAGE_SIZE, offset: pageParam }),
+        initialPageParam: 0,
+        getNextPageParam: (lastPage, allPages) => {
+            const loaded = allPages.reduce((acc, page) => acc + page.sessions.length, 0);
+            return loaded < lastPage.sessionsCount ? loaded : undefined;
+        },
+        staleTime: 1000 * 60 * 2,
     });
 };

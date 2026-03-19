@@ -126,6 +126,16 @@ const apiService = {
         }
     },
 
+    async patch<T>(url: string, data?: any, useSpringBoot: boolean = false, config?: AxiosRequestConfig): Promise<T> {
+        try {
+            const instance = getApiInstance(useSpringBoot);
+            const response = await instance.patch<T>(url, data, config);
+            return response.data;
+        } catch (error) {
+            return handleError(error);
+        }
+    },
+
     async update<T>(url: string, slug: string, data?: any, useSpringBoot: boolean = false, config?: AxiosRequestConfig): Promise<T> {
         try {
             const instance = getApiInstance(useSpringBoot);

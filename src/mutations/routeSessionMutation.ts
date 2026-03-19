@@ -22,15 +22,17 @@ export const useStartSession = () => {
 };
 
 /**
- * Finaliza la sesión activa (POST /sessions/:id/end).
+ * Finaliza la sesión activa (PATCH /sessions/:id/end).
+ * Recibe la distancia recorrida en metros para enviarla al backend.
  * Invalida la sesión activa para que el banner desaparezca.
  */
 export const useEndSession = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (sessionId: number) => RouteSessionService.end(sessionId),
-        onSuccess: (_, sessionId) => {
+        mutationFn: ({ sessionId, distance }: { sessionId: number; distance: number }) =>
+            RouteSessionService.end(sessionId, distance),
+        onSuccess: (_, { sessionId }) => {
             queryClient.invalidateQueries({ queryKey: sessionKeys.active() });
             queryClient.invalidateQueries({ queryKey: sessionKeys.detail(sessionId) });
         },

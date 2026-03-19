@@ -1,8 +1,10 @@
 import apiService from './apiService';
 import {
     IRouteSession,
+    ISessionsPage,
     IWellbeingCheckin,
     ICreateSessionPayload,
+    IEndSessionPayload,
     ICreateCheckinPayload,
 } from '@/shared/interfaces/entities/routeSession.interface';
 
@@ -17,11 +19,10 @@ export const WATCH_POSITION_OPTIONS: PositionOptions = {
 };
 
 export const RouteSessionService = {
-    /** GET /sessions — lista todas las sesiones del usuario autenticado */
-    getAll(): Promise<IRouteSession[]> {
+    /** GET /sessions — lista paginada de sesiones cerradas del usuario autenticado */
+    getAll(params: { limit: number; offset: number }): Promise<ISessionsPage> {
         return apiService
-            .get<{ sessions: IRouteSession[] }>('/sessions')
-            .then((data) => data.sessions);
+            .get<ISessionsPage>('/sessions', false, { params });
     },
 
     /** GET /sessions/active — devuelve la sesión activa o lanza 404 si no hay ninguna */
@@ -45,10 +46,11 @@ export const RouteSessionService = {
             .then((data) => data.session);
     },
 
-    /** POST /sessions/:id/end — finaliza la sesión; sin body */
-    end(id: number): Promise<IRouteSession> {
+    /** PATCH /sessions/:id/end — finaliza la sesión con la distancia recorrida */
+    end(id: number, distance: number): Promise<IRouteSession> {
+        const payload: IEndSessionPayload = { session: { distance } };
         return apiService
-            .post<{ session: IRouteSession }>(`/sessions/${id}/end`)
+            .patch<{ session: IRouteSession }>(`/sessions/${id}/end`, payload)
             .then((data) => data.session);
     },
 
