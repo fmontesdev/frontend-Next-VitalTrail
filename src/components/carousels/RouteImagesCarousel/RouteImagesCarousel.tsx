@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import RouteImagesCarouselSlide from "./RouteImagesCarouselSlide";
 import { IImageRoute } from "@/shared/interfaces/entities/imageRoute.interface";
-import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, ChevronRightIcon, PhotoIcon } from "@heroicons/react/24/outline";
 
 const RouteImagesCarousel: React.FC<{ images: IImageRoute[] }> = ({ images }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -20,6 +20,14 @@ const RouteImagesCarousel: React.FC<{ images: IImageRoute[] }> = ({ images }) =>
         e.stopPropagation();
         setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
     };
+
+    if (!images || images.length === 0) {
+        return (
+            <div className="w-full h-full bg-stone-200 flex items-center justify-center">
+                <PhotoIcon className="w-8 h-8 text-stone-400" />
+            </div>
+        );
+    }
 
     return (
         <div className="relative w-full h-full overflow-hidden group">

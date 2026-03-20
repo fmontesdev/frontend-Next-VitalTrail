@@ -6,7 +6,7 @@ import FavoriteButton from '@/components/buttons/FavoriteButton/FavoriteButton';
 import { CapitalizeFirstLetter } from '@/shared/utils/capitalizeFirstLetter';
 import { ToSingular } from '@/shared/utils/toSingular';
 import { IRoute } from '@/shared/interfaces/entities/route.interface';
-import { ClockIcon, FlagIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, FlagIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { FireIcon, StarIcon } from '@heroicons/react/24/solid';
 
 export default function ProfileRouteCard({ route }: { route: IRoute }) {
@@ -19,7 +19,13 @@ export default function ProfileRouteCard({ route }: { route: IRoute }) {
         >
             {/* Imagen con overlay y controles */}
             <div className="relative h-44 w-full shrink-0">
-                <RouteImagesCarousel images={route.images} />
+                {route.images && route.images.length > 0 ? (
+                    <RouteImagesCarousel images={route.images} />
+                ) : (
+                    <div className="w-full h-full bg-stone-200 flex items-center justify-center">
+                        <PhotoIcon className="w-8 h-8 text-stone-400" />
+                    </div>
+                )}
 
                 {/* Gradiente inferior */}
                 <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-black/50 via-black/10 to-transparent pointer-events-none" />

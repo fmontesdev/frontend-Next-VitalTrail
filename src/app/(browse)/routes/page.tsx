@@ -50,10 +50,12 @@ export async function generateMetadata({ searchParams }: { searchParams: IParams
         openGraph: {
             description: 'Explora rutas de senderismo únicas y conéctate con la naturaleza',
             url: 'https://vitaltrail.com/routes',
-            images: routes.routes.map(route => ({
-                url: `/route_images/${route.images[0].imgRoute}`,
-                alt: route.title
-            }))
+            images: routes.routes
+                .filter(route => route.images && route.images.length > 0)
+                .map(route => ({
+                    url: `/route_images/${route.images![0].imgRoute}`,
+                    alt: route.title
+                }))
         }
     };
 }

@@ -79,7 +79,7 @@ export default function RouteMap({ routes }: { routes: IRoutes | [] }) {
                             <Popup>
                                 <div className="cursor-pointer text-center">
                                     {/* Imagen de la ruta */}
-                                    {route.images && (
+                                    {route.images && route.images.length > 0 && (
                                         <img
                                             src={`/route_images/${route.images[0].imgRoute}`}
                                             alt={`Ruta ${route.title}`}

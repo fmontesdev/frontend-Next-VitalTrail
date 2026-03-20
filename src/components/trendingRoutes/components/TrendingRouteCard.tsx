@@ -10,7 +10,7 @@ interface ITrendingRouteCardProps {
 }
 
 const TrendingRouteCard: React.FC<ITrendingRouteCardProps> = ({ route }) => {
-    const imgRoute = route.images[0]?.imgRoute;
+    const imgRoute = route.images?.[0]?.imgRoute;
     const imageUrl = imgRoute ? `/route_images/${imgRoute}` : null;
 
     return (

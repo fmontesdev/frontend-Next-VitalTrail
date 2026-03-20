@@ -6,7 +6,7 @@ import FavoriteButton from "@/components/buttons/FavoriteButton/FavoriteButton";
 import { CapitalizeFirstLetter } from "@/shared/utils/capitalizeFirstLetter";
 import { ToSingular } from "@/shared/utils/toSingular";
 import { IRoute } from "@/shared/interfaces/entities/route.interface";
-import { MapPinIcon } from "@heroicons/react/24/outline";
+import { MapPinIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/24/solid";
 
 export default function RouteCard({ route, section }: { route: IRoute, section: string }) {
@@ -20,7 +20,13 @@ export default function RouteCard({ route, section }: { route: IRoute, section: 
         >
             {/* Carrusel de imágenes */}
             <div className="w-1/3">
-                <RouteImagesCarousel images={route.images} />
+                {route.images && route.images.length > 0 ? (
+                    <RouteImagesCarousel images={route.images} />
+                ) : (
+                    <div className="w-full h-full bg-stone-200 flex items-center justify-center">
+                        <PhotoIcon className="w-8 h-8 text-stone-400" />
+                    </div>
+                )}
             </div>
                             
             {/* Botón de favorito */}

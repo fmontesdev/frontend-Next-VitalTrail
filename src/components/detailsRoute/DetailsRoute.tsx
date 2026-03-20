@@ -16,7 +16,7 @@ import { CapitalizeFirstLetter } from '@/shared/utils/capitalizeFirstLetter';
 import { ToSingular } from '@/shared/utils/toSingular';
 import { ToHoursAndMinutes } from '@/shared/utils/toHoursAndMinutes';
 import { IRoute } from '@/shared/interfaces/entities/route.interface';
-import { ExclamationTriangleIcon, ArrowLongRightIcon, ArrowPathIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { ExclamationTriangleIcon, ArrowLongRightIcon, ArrowPathIcon, MapPinIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { StarIcon } from '@heroicons/react/24/solid';
 import Link from 'next/link';
 
@@ -143,9 +143,16 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
 
             <section className="w-full md:w-[54.7%] h-[404px] md:order-1 order-2 md:space-y-6 animate-fade-in">
                 {/* Imágenes de la ruta */}
-                <DetailsRouteImagesPreview
-                    images={route.images}
-                />
+                {route.images && route.images.length > 0 ? (
+                    <DetailsRouteImagesPreview
+                        images={route.images}
+                    />
+                ) : (
+                    <div className="flex flex-col items-center justify-center h-full rounded-b-2xl md:rounded-br-none md:rounded-l-2xl bg-stone-100 text-stone-400 gap-3">
+                        <PhotoIcon className="w-16 h-16" />
+                        <span className="text-sm font-medium">Sin imágenes disponibles</span>
+                    </div>
+                )}
             </section>
 
             <section className="w-full md:w-[44.7%] h-[404px] md:order-2 order-1 md:space-y-6 animate-fade-in">

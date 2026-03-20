@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from "react";
-import Image from "next/image";
-import DetailsRouteImagesGallery from "../carousels/detailsRouteImagesGallery/DetailsRouteImagesGallery";
-import { IImageRoute } from "@/shared/interfaces/entities/imageRoute.interface";
+import { useState } from 'react';
+import Image from 'next/image';
+import DetailsRouteImagesGallery from '../carousels/detailsRouteImagesGallery/DetailsRouteImagesGallery';
+import { IImageRoute } from '@/shared/interfaces/entities/imageRoute.interface';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 
 export default function DetailsRouteImages({ images }: { images: IImageRoute[] }) {
@@ -15,57 +15,63 @@ export default function DetailsRouteImages({ images }: { images: IImageRoute[] }
         setIsGalleryOpen(true);
     };
 
+    // El padre garantiza images.length > 0
+    const [mainImage, ...secondaryImages] = images;
+
     return (
         <>
             {isGalleryOpen && (
-                <DetailsRouteImagesGallery images={images} initialIndex={galleryIndex} onClose={() => setIsGalleryOpen(false)} />
+                <DetailsRouteImagesGallery
+                    images={images}
+                    initialIndex={galleryIndex}
+                    onClose={() => setIsGalleryOpen(false)}
+                />
             )}
             <div className="relative grid grid-cols-2 gap-1 rounded-b-2xl md:rounded-br-none md:rounded-l-2xl overflow-hidden">
-                <div className="col-span-2 h-64 relative cursor-pointer" onClick={() => openGallery(0)}>
+
+                {/* Imagen principal — ocupa toda la altura si no hay secundarias */}
+                <div
+                    className={`col-span-2 relative cursor-pointer ${secondaryImages.length > 0 ? 'h-64' : 'h-full'}`}
+                    onClick={() => openGallery(0)}
+                >
                     <Image
-                        src={`/route_images/${images[0].imgRoute}`}
+                        src={`/route_images/${mainImage.imgRoute}`}
                         alt="Preview image"
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
-                        style={{ objectFit: "cover" }}
+                        style={{ objectFit: 'cover' }}
                     />
-                    <div className="absolute inset-0 bg-black/0 hover:bg-black/15 transition duration-300"></div>
+                    <div className="absolute inset-0 bg-black/0 hover:bg-black/15 transition duration-300" />
                 </div>
-                <div className="h-36 relative cursor-pointer" onClick={() => openGallery(1)}>
-                    <Image
-                        src={`/route_images/${images[1].imgRoute}`}
-                        alt="Preview image"
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
-                        style={{ objectFit: "cover" }}
-                    />
-                    <div className="absolute inset-0 bg-black/0 hover:bg-black/15 transition duration-300"></div>
-                </div>
-                <div className="h-36 relative cursor-pointer" onClick={() => openGallery(2)}>
-                    <Image
-                        src={`/route_images/${images[2].imgRoute}`}
-                        alt="Preview image"
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
-                        style={{ objectFit: "cover" }}
-                    />
-                    <div className="absolute inset-0 bg-black/0 hover:bg-black/15 transition duration-300"></div>
-                </div>
+
+                {/* Imágenes secundarias — una celda por imagen, overflow recortado por el padre */}
+                {secondaryImages.map((image, idx) => (
+                    <div
+                        key={image.idImg}
+                        className="h-36 relative cursor-pointer"
+                        onClick={() => openGallery(idx + 1)}
+                    >
+                        <Image
+                            src={`/route_images/${image.imgRoute}`}
+                            alt="Preview image"
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+                            style={{ objectFit: 'cover' }}
+                        />
+                        <div className="absolute inset-0 bg-black/0 hover:bg-black/15 transition duration-300" />
+                    </div>
+                ))}
+
+                {/* Botón que abre la galería completa */}
                 <button
-                    onClick={() => {
-                        images.length <= 3
-                        ? openGallery(images.length-1)
-                        : openGallery(3)
-                    }}
+                    onClick={() => openGallery(0)}
                     className="
                         absolute top-4 left-5 flex items-center gap-2 shrink-0 border-2
                         rounded-full px-4 py-1 font-bold text-white hover:border-lime-400
                         hover:bg-black/40 hover:text-lime-400"
                 >
                     <PhotoIcon strokeWidth={2} className="w-6 h-6" />
-                    <span className="text-sm">
-                        Ver mas fotos
-                    </span>
+                    <span className="text-sm">Ver mas fotos</span>
                 </button>
             </div>
         </>

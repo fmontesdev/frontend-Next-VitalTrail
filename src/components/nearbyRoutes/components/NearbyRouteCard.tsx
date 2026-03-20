@@ -14,7 +14,7 @@ const formatearDistancia = (km: number): string =>
     km < 1 ? '< 1 km de ti' : `${km} km de ti`;
 
 const NearbyRouteCard: React.FC<INearbyRouteCardProps> = ({ route, distanceKm }) => {
-    const imgRoute = route.images[0]?.imgRoute;
+    const imgRoute = route.images?.[0]?.imgRoute;
     const imageUrl = imgRoute ? `/route_images/${imgRoute}` : null;
 
     return (
