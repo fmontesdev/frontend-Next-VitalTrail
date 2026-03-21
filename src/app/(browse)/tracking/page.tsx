@@ -44,13 +44,6 @@ function TrackingPageContent() {
     const { mutate: startSession, isPending: isStarting } = useStartSession();
     const { mutate: endSession, isPending: isEnding, error: endError } = useEndSession();
 
-    // Mide la altura del footer para que el mapa no lo tape
-    const [footerHeight, setFooterHeight] = useState(0);
-    useEffect(() => {
-        const footer = document.querySelector('footer');
-        if (footer) setFooterHeight(footer.offsetHeight);
-    }, []);
-
     // --- Guards de navegación ---
     const hadSessionRef = useRef(false);
     const isLeavingRef = useRef(false);
@@ -154,7 +147,7 @@ function TrackingPageContent() {
     // --- Skeleton: solo mientras carga la ruta ---
     if (isLoadingRoute || !route) {
         return (
-            <div className="relative" style={{ height: `calc(100dvh - 64px - ${footerHeight}px)` }}>
+            <div className="relative" style={{ height: `calc(100dvh - 62px)` }}>
                 <div className="absolute inset-0 bg-stone-100 animate-pulse" />
                 <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-white/90 backdrop-blur-md border-b border-stone-200/40 animate-pulse">
                     <div className="w-8 h-8 bg-stone-200 rounded-full" />
@@ -172,7 +165,7 @@ function TrackingPageContent() {
     const headerIsRed = !session;
 
     return (
-        <div className="relative" style={{ height: `calc(100dvh - 64px - ${footerHeight}px)` }}>
+        <div className="relative" style={{ height: `calc(100dvh - 62px` }}>
 
             {/* Mapa GPS — ocupa todo el área disponible */}
             <div className="absolute inset-0">

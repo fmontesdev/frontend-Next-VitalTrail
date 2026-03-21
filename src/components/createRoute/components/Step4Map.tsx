@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
-import { createPortal } from 'react-dom';
-import { MapContainer, TileLayer, Polyline, Marker, Popup, useMapEvents, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Polyline, Marker, Popup, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { FormikErrors, FormikTouched } from 'formik';
@@ -16,6 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { ICreateRoute } from '@/shared/interfaces/entities/route.interface';
 import { calculateRouteDistance, formatDistance } from '@/shared/utils/distance';
+import ExpandableMap, { MapStateTracker, MapResizer } from '@/components/map/ExpandableMap';
 
 // Fix de iconos Leaflet — mismo patrón que OneRouteMap.tsx
 delete (L.Icon.Default.prototype as unknown as Record<string, unknown>)._getIconUrl;
@@ -59,41 +59,6 @@ function MapClickHandler({ onAdd }: { onAdd: (coord: [number, number]) => void }
     return null;
 }
 
-/**
- * Persiste el center y zoom actuales del mapa para transferirlos entre
- * la instancia colapsada y la expandida (portal).
- */
-function MapStateTracker({
-    onCenter,
-    onZoom,
-}: {
-    onCenter: (c: [number, number]) => void;
-    onZoom: (z: number) => void;
-}) {
-    useMapEvents({
-        moveend(e) {
-            const c = e.target.getCenter();
-            onCenter([c.lat, c.lng]);
-        },
-        zoomend(e) {
-            onZoom(e.target.getZoom());
-        },
-    });
-    return null;
-}
-
-/** Notifica a Leaflet que el contenedor cambió de tamaño tras montar el portal */
-function MapResizer() {
-    const map = useMap();
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            map.invalidateSize();
-        }, 50);
-        return () => clearTimeout(timer);
-    }, [map]);
-    return null;
-}
-
 export default function Step4MapAndReview({
     values,
     errors,
@@ -101,20 +66,6 @@ export default function Step4MapAndReview({
 }: IStep4Props) {
     const [mapCenter, setMapCenter] = useState<[number, number]>([40.4168, -3.7038]);
     const [mapZoom, setMapZoom] = useState(6);
-    const [isExpanded, setIsExpanded] = useState(false);
-    const [footerHeight, setFooterHeight] = useState(0);
-
-    // Necesario para que createPortal no se ejecute en SSR
-    const [mounted, setMounted] = useState(false);
-    useEffect(() => { setMounted(true); }, []);
-
-    // Mide la altura del footer global para que el overlay no lo tape
-    useEffect(() => {
-        const footer = document.querySelector('footer');
-        if (footer) {
-            setFooterHeight(footer.offsetHeight);
-        }
-    }, []);
 
     // Geolocalización silenciosa — fallback a España
     useEffect(() => {
@@ -128,12 +79,6 @@ export default function Step4MapAndReview({
             );
         }
     }, []);
-
-    // Bloquea el scroll del body mientras el mapa está en overlay
-    useEffect(() => {
-        document.body.style.overflow = isExpanded ? 'hidden' : '';
-        return () => { document.body.style.overflow = ''; };
-    }, [isExpanded]);
 
     // Clave estable para la instancia colapsada (evita re-mount innecesarios)
     const collapsedKey = useMemo(() => `map-collapsed-${Date.now()}`, []);
@@ -171,7 +116,7 @@ export default function Step4MapAndReview({
 
     const coordError = typeof errors.coordinates === 'string' ? errors.coordinates : null;
 
-    /** Contenido compartido dentro del MapContainer (controles + capas) */
+    /** Contenido compartido dentro del MapContainer (capas) */
     const mapContents = (isPortal: boolean) => (
         <>
             <TileLayer
@@ -212,88 +157,45 @@ export default function Step4MapAndReview({
         </>
     );
 
-    /** Controles flotantes sobre el mapa (expandir, deshacer, limpiar, stats) */
-    const mapControls = (
+    /** Píldoras de estado (distancia + puntos) — compartidas en expand y shrink triggers */
+    const statusBadges = (
         <>
-            {/* ── Overlay superior-derecho: píldoras de estado + botón expandir ── */}
-            <div className="absolute top-3 right-3 z-[9999] flex items-center gap-2 pointer-events-none">
-                {distanceAutoCalculated && values.distance > 0 && (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-lime-700 bg-white border border-lime-200 rounded-full px-3 py-1.5 shadow-sm pointer-events-auto">
-                        <ArrowsRightLeftIcon className="w-3.5 h-3.5" />
-                        {formatDistance(values.distance)}
-                    </span>
-                )}
-                <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm pointer-events-auto">
-                    <MapPinIcon className="w-3.5 h-3.5 text-teal-500" />
-                    {coords.length} {coords.length === 1 ? 'punto' : 'puntos'}
+            {distanceAutoCalculated && values.distance > 0 && (
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-lime-700 bg-white border border-lime-200 rounded-full px-3 py-1.5 shadow-sm pointer-events-auto">
+                    <ArrowsRightLeftIcon className="w-3.5 h-3.5" />
+                    {formatDistance(values.distance)}
                 </span>
-                {/* Botón expandir / contraer */}
-                <button
-                    type="button"
-                    onClick={() => setIsExpanded(!isExpanded)}
-                    title={isExpanded ? 'Contraer mapa' : 'Ampliar mapa'}
-                    className="inline-flex items-center justify-center w-8 h-8 bg-white border border-gray-200 rounded-full shadow-sm text-gray-600 hover:bg-gray-50 transition-colors pointer-events-auto"
-                >
-                    {isExpanded
-                        ? <ArrowsPointingInIcon className="w-4 h-4" />
-                        : <ArrowsPointingOutIcon className="w-4 h-4" />
-                    }
-                </button>
-            </div>
-
-            {/* ── Overlay inferior-izquierdo: botones deshacer + limpiar ── */}
-            <div className="absolute bottom-3 left-3 z-[9999] flex items-center gap-2 pointer-events-none">
-                <button
-                    type="button"
-                    onClick={handleUndo}
-                    disabled={!hasCoords}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-700 bg-white border border-teal-200 rounded-full px-3 py-1.5 shadow-sm transition-all
-                        disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:bg-teal-50 pointer-events-auto"
-                >
-                    <ArrowUturnLeftIcon className="w-3.5 h-3.5" />
-                    Deshacer
-                </button>
-                <button
-                    type="button"
-                    onClick={handleClear}
-                    disabled={!hasCoords}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-white border border-red-200 rounded-full px-3 py-1.5 shadow-sm transition-all
-                        disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:bg-red-50 pointer-events-auto"
-                >
-                    <TrashIcon className="w-3.5 h-3.5" />
-                    Limpiar
-                </button>
-            </div>
+            )}
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-sm pointer-events-auto">
+                <MapPinIcon className="w-3.5 h-3.5 text-teal-500" />
+                {coords.length} {coords.length === 1 ? 'punto' : 'puntos'}
+            </span>
         </>
     );
 
-    // Overlay expandido — renderizado via portal en document.body para escapar
-    // la jerarquía de `transform` del motion.div de Framer Motion (que actuaría
-    // como containing block para `position: fixed` y rompería el posicionamiento).
-    const expandedOverlay = (
-        <div
-            style={{
-                position: 'fixed',
-                top: 52,
-                left: 0,
-                right: 0,
-                bottom: footerHeight,
-                zIndex: 9998,
-                backgroundColor: 'white',
-            }}
-        >
-            {mapControls}
-            <MapContainer
-                key="map-expanded"
-                center={mapCenter}
-                zoom={mapZoom}
-                style={{ height: '100%', width: '100%' }}
-                className="z-0"
-                scrollWheelZoom={true}
-                dragging={true}
+    /** Controles flotantes inferiores (deshacer + limpiar) — se colocan sobre el wrapper relativo */
+    const bottomControls = (
+        <div className="absolute bottom-3 left-3 z-[9999] flex items-center gap-2 pointer-events-none">
+            <button
+                type="button"
+                onClick={handleUndo}
+                disabled={!hasCoords}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-700 bg-white border border-teal-200 rounded-full px-3 py-1.5 shadow-sm transition-all
+                    disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:bg-teal-50 pointer-events-auto"
             >
-                {mapContents(true)}
-            </MapContainer>
+                <ArrowUturnLeftIcon className="w-3.5 h-3.5" />
+                Deshacer
+            </button>
+            <button
+                type="button"
+                onClick={handleClear}
+                disabled={!hasCoords}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-red-600 bg-white border border-red-200 rounded-full px-3 py-1.5 shadow-sm transition-all
+                    disabled:opacity-40 disabled:cursor-not-allowed enabled:hover:bg-red-50 pointer-events-auto"
+            >
+                <TrashIcon className="w-3.5 h-3.5" />
+                Limpiar
+            </button>
         </div>
     );
 
@@ -307,29 +209,69 @@ export default function Step4MapAndReview({
                 </p>
             </div>
 
-            {/* Placeholder que mantiene el espacio en el wizard cuando el mapa está en overlay */}
-            {isExpanded && <div className="h-[400px] rounded-xl bg-gray-50 border border-gray-200" />}
-
-            {/* Mapa colapsado — siempre en el DOM para preservar el estado de Leaflet */}
-            {!isExpanded && (
-                <div className="relative rounded-xl overflow-hidden border border-gray-200 shadow-sm">
-                    {mapControls}
-                    <MapContainer
-                        key={collapsedKey}
-                        center={mapCenter}
-                        zoom={mapZoom}
-                        style={{ height: '400px', width: '100%' }}
-                        className="z-0"
-                        scrollWheelZoom={true}
-                        dragging={true}
-                    >
-                        {mapContents(false)}
-                    </MapContainer>
-                </div>
-            )}
-
-            {/* Portal del overlay expandido — renderizado directamente en document.body */}
-            {isExpanded && mounted && createPortal(expandedOverlay, document.body)}
+            {/* ExpandableMap — el collapsed siempre en DOM, sin placeholder div */}
+            <ExpandableMap
+                headerOffset={62}
+                className="relative w-full h-[400px] rounded-xl overflow-hidden border border-gray-200 shadow-sm"
+                expandTrigger={(onExpand) => (
+                    <div className="absolute top-3 right-3 z-[9999] flex items-center gap-2 pointer-events-none">
+                        {statusBadges}
+                        <button
+                            type="button"
+                            onClick={onExpand}
+                            title="Ampliar mapa"
+                            className="inline-flex items-center justify-center w-8 h-8 bg-white border border-gray-200 rounded-full shadow-sm text-gray-600 hover:bg-gray-50 transition-colors pointer-events-auto"
+                        >
+                            <ArrowsPointingOutIcon className="w-4 h-4" />
+                        </button>
+                    </div>
+                )}
+                shrinkTrigger={(onShrink) => (
+                    <div className="absolute top-3 right-3 z-[9999] flex items-center gap-2 pointer-events-none">
+                        {statusBadges}
+                        <button
+                            type="button"
+                            onClick={onShrink}
+                            title="Contraer mapa"
+                            className="inline-flex items-center justify-center w-8 h-8 bg-white border border-gray-200 rounded-full shadow-sm text-gray-600 hover:bg-gray-50 transition-colors pointer-events-auto"
+                        >
+                            <ArrowsPointingInIcon className="w-4 h-4" />
+                        </button>
+                    </div>
+                )}
+                collapsed={
+                    <>
+                        {bottomControls}
+                        <MapContainer
+                            key={collapsedKey}
+                            center={mapCenter}
+                            zoom={mapZoom}
+                            style={{ height: '100%', width: '100%' }}
+                            className="z-0"
+                            scrollWheelZoom={true}
+                            dragging={true}
+                        >
+                            {mapContents(false)}
+                        </MapContainer>
+                    </>
+                }
+                expanded={
+                    <>
+                        {bottomControls}
+                        <MapContainer
+                            key="map-expanded"
+                            center={mapCenter}
+                            zoom={mapZoom}
+                            style={{ height: '100%', width: '100%' }}
+                            className="z-0"
+                            scrollWheelZoom={true}
+                            dragging={true}
+                        >
+                            {mapContents(true)}
+                        </MapContainer>
+                    </>
+                }
+            />
 
             {/* Errores de validación */}
             {coordError && (

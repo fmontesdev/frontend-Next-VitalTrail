@@ -3,7 +3,8 @@
 import dynamic from 'next/dynamic';
 import { IRoutes } from '@/shared/interfaces/entities/route.interface';
 
-// Importar Map dinámicamente sin SSR
+// ssr: false — Leaflet accede a window/document al importarse el módulo, lo que rompe en Node.js.
+// dynamic evita que el import se evalúe en el servidor; solo se carga en el browser.
 const LazyMap = dynamic(() => import('./RouteMap'), { 
         loading: () => (
             <div className="w-full h-full flex items-center justify-center text-xl font-semibold text-gray-500">
