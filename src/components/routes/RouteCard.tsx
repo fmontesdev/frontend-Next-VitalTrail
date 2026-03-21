@@ -8,6 +8,7 @@ import { ToSingular } from "@/shared/utils/toSingular";
 import { IRoute } from "@/shared/interfaces/entities/route.interface";
 import { MapPinIcon, PhotoIcon } from "@heroicons/react/24/outline";
 import { StarIcon } from "@heroicons/react/24/solid";
+import { formatDistance } from "@/shared/utils/distance";
 
 export default function RouteCard({ route, section }: { route: IRoute, section: string }) {
     const bgColour = section === 'routes' ? 'stone-100' : 'white';
@@ -54,7 +55,7 @@ export default function RouteCard({ route, section }: { route: IRoute, section: 
                         <StarIcon className="w-4 h-4 text-amber-500" /> {route.averageRatings}&nbsp;&nbsp;•
                     </div>
                     <span>{CapitalizeFirstLetter(route.difficulty)}&nbsp;&nbsp;•</span>
-                    <span>{route.distance} km&nbsp;&nbsp;•</span>
+                    <span>{formatDistance(route.distance)}&nbsp;&nbsp;•</span>
                     <span>{CapitalizeFirstLetter(route.typeRoute)}&nbsp;&nbsp;•</span>
                     <span>Est. {route.duration} h</span>
                 </div>

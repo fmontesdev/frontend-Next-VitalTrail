@@ -9,9 +9,13 @@ export const RouteService = {
     },
 
     getFiltered(filters: IFilter): Promise<IRoutes> {
-        const queryParams = new URLSearchParams(
-            Object.entries(filters).filter(([, v]) => v !== undefined) as [string, string][]
-        ).toString();
+        const params: Record<string, string> = {};
+        Object.entries(filters).forEach(([key, value]) => {
+            if (value === undefined || value === '') return;
+            // El filtro de distancia se almacena en km (URL/slider) pero la API espera metros
+            params[key] = key === 'distance' ? String(Number(value) * 1000) : value;
+        });
+        const queryParams = new URLSearchParams(params).toString();
         return apiService.get<IRoutes>(`/routes?${queryParams}`);
     },
 

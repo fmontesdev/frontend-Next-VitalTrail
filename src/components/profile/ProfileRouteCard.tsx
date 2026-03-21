@@ -8,6 +8,7 @@ import { ToSingular } from '@/shared/utils/toSingular';
 import { IRoute } from '@/shared/interfaces/entities/route.interface';
 import { ClockIcon, FlagIcon, PhotoIcon } from '@heroicons/react/24/outline';
 import { FireIcon, StarIcon } from '@heroicons/react/24/solid';
+import { formatDistance } from '@/shared/utils/distance';
 
 export default function ProfileRouteCard({ route }: { route: IRoute }) {
     const router = useRouter();
@@ -74,7 +75,7 @@ export default function ProfileRouteCard({ route }: { route: IRoute }) {
 
                     {/* Distancia */}
                     <span className="bg-stone-100 text-stone-600 text-xs font-medium px-2 py-0.5 rounded-full">
-                        {route.distance} km
+                        {formatDistance(route.distance)}
                     </span>
 
                     {/* Tipo */}
