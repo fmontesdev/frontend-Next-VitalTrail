@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { Suspense, useState, useEffect, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { StopIcon } from '@heroicons/react/24/solid';
@@ -14,7 +14,8 @@ import { CapitalizeFirstLetter } from '@/shared/utils/capitalizeFirstLetter';
 import { haversineDistanceMeters, formatDistance } from '@/shared/utils/distance';
 import { GPS_ACCURACY_THRESHOLD_METERS } from '@/services/routeSessionService';
 
-// SessionTrackerMap usa Leaflet, que necesita window/document — solo se carga en el navegador
+// ssr: false — Leaflet accede a window/document al importarse el módulo, lo que rompe en Node.js.
+// dynamic evita que el import se evalúe en el servidor; solo se carga en el browser.
 const SessionTrackerMap = dynamic(
     () => import('@/components/sessionTracker/SessionTrackerMap'),
     {
@@ -30,7 +31,7 @@ const SessionTrackerMap = dynamic(
 /** Distancia máxima al inicio de la ruta para llamar a startSession (metros) */
 const START_PROXIMITY_METERS = 50;
 
-export default function TrackingPage() {
+function TrackingPageContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -42,6 +43,13 @@ export default function TrackingPage() {
     const { data: route, isLoading: isLoadingRoute } = useRoute(routeSlug);
     const { mutate: startSession, isPending: isStarting } = useStartSession();
     const { mutate: endSession, isPending: isEnding, error: endError } = useEndSession();
+
+    // Mide la altura del footer para que el mapa no lo tape
+    const [footerHeight, setFooterHeight] = useState(0);
+    useEffect(() => {
+        const footer = document.querySelector('footer');
+        if (footer) setFooterHeight(footer.offsetHeight);
+    }, []);
 
     // --- Guards de navegación ---
     const hadSessionRef = useRef(false);
@@ -146,7 +154,7 @@ export default function TrackingPage() {
     // --- Skeleton: solo mientras carga la ruta ---
     if (isLoadingRoute || !route) {
         return (
-            <div className="relative" style={{ height: 'calc(100dvh - 60px)' }}>
+            <div className="relative" style={{ height: `calc(100dvh - 64px - ${footerHeight}px)` }}>
                 <div className="absolute inset-0 bg-stone-100 animate-pulse" />
                 <div className="absolute top-0 left-0 right-0 z-10 flex items-center justify-between px-4 py-3 bg-white/90 backdrop-blur-md border-b border-stone-200/40 animate-pulse">
                     <div className="w-8 h-8 bg-stone-200 rounded-full" />
@@ -164,7 +172,7 @@ export default function TrackingPage() {
     const headerIsRed = !session;
 
     return (
-        <div className="relative" style={{ height: 'calc(100dvh - 60px)' }}>
+        <div className="relative" style={{ height: `calc(100dvh - 64px - ${footerHeight}px)` }}>
 
             {/* Mapa GPS — ocupa todo el área disponible */}
             <div className="absolute inset-0">
@@ -287,5 +295,14 @@ export default function TrackingPage() {
                 )}
             </div>
         </div>
+    );
+}
+
+// useSearchParams() requiere Suspense boundary en Next.js 15 para el prerender estático
+export default function TrackingPage() {
+    return (
+        <Suspense>
+            <TrackingPageContent />
+        </Suspense>
     );
 }
