@@ -21,11 +21,21 @@ export default function RouteMap({ routes }: { routes: IRoutes | [] }) {
         });
     }, []);
 
-    // Calcula el centro del mapa tomando la primera coordenada de la primera ruta
-    const center: [number, number] =
-        Array.isArray(routes) || routes.routes.length === 0
-            ? [40.4168, -3.7038] // Centro en Madrid
-            : [routes.routes[0].coordinates[0].lat, routes.routes[0].coordinates[0].lng];
+    // Calcula el centro usando la primera ruta que tenga coordenadas válidas
+    const MADRID: [number, number] = [40.4168, -3.7038];
+    const center: [number, number] = (() => {
+        // Si routes es un array vacio, centra en Madrid
+        if (Array.isArray(routes)) return MADRID;
+
+        // Si no hay ninguna ruta con coordenadas, centra en Madrid
+        const firstWithCoords = routes.routes.find(
+            r => r.coordinates && r.coordinates.length > 0
+        );
+        if (!firstWithCoords) return MADRID;
+        
+        // Si routes contiene rutas (es un objeto IRoutes), centra en la primera coordenada de la primera ruta con coordenadas
+        return [firstWithCoords.coordinates[0].lat, firstWithCoords.coordinates[0].lng];
+    })();
 
     // Genera un id único solo una vez para el contenedor del mapa
     const mapKey = useMemo(() => `map-${Date.now()}`, []);

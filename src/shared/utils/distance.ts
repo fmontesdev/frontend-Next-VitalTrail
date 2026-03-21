@@ -1,3 +1,5 @@
+import { ICoordinates } from '@/shared/interfaces/entities/route.interface';
+
 const EARTH_RADIUS_METERS = 6_371_000;
 
 /**
@@ -35,4 +37,31 @@ export function formatDistance(meters: number): string {
         return `${Math.round(meters)} m`;
     }
     return `${(meters / 1000).toFixed(2)} km`;
+}
+
+/**
+ * Calcula la distancia total en metros de un trazado GPS compuesto por
+ * una lista de coordenadas en formato tupla Leaflet `[lat, lng][]`.
+ * Suma los segmentos consecutivos usando Haversine.
+ * @returns Distancia total en metros, redondeada al metro más cercano.
+ *          Devuelve 0 si hay menos de 2 puntos.
+ */
+export function calculateRouteDistance(coords: [number, number][]): number {
+    if (coords.length < 2) return 0;
+    let total = 0;
+    for (let i = 0; i < coords.length - 1; i++) {
+        const [lat1, lng1] = coords[i];
+        const [lat2, lng2] = coords[i + 1];
+        total += haversineDistanceMeters(lat1, lng1, lat2, lng2);
+    }
+    return Math.round(total);
+}
+
+/**
+ * Calcula la distancia en kilómetros entre dos coordenadas GPS en formato `{lat, lng}`.
+ * @returns Distancia en kilómetros, redondeada a 1 decimal.
+ */
+export function haversineDistanceKm(coordA: ICoordinates, coordB: ICoordinates): number {
+    const meters = haversineDistanceMeters(coordA.lat, coordA.lng, coordB.lat, coordB.lng);
+    return Math.round((meters / 1000) * 10) / 10;
 }

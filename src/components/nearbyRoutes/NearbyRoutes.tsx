@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 import useEmblaCarousel from 'embla-carousel-react';
 import { ChevronLeftIcon, ChevronRightIcon, ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useFilteredRoutes } from '@/queries/routeQuery';
-import { calcularDistanciaKm } from '@/shared/utils/haversine';
+import { haversineDistanceKm } from '@/shared/utils/distance';
 import { ICoordinates, IRoute } from '@/shared/interfaces/entities/route.interface';
 import NearbyRouteCard from '@/components/nearbyRoutes/components/NearbyRouteCard';
 
@@ -96,7 +96,7 @@ const NearbyRoutes: React.FC = () => {
                 const coord = r.coordinates[0] as ICoordinates;
                 return {
                     route: r,
-                    distanceKm: calcularDistanciaKm(userCoords, coord),
+                    distanceKm: haversineDistanceKm(userCoords, coord),
                 };
             })
             .filter(({ distanceKm }) => distanceKm <= MAX_DISTANCIA_CERCANA_KM)

@@ -28,10 +28,14 @@ export default function OneRouteMap({ route }: { route: IRoute }) {
         // };
     }, []);
 
-    // Calcula el centro del mapa tomando la primera coordenada de la ruta
+    // Calcula el centro del mapa tomando un punto intermedio de la ruta
+    // Math.min garantiza que el índice nunca supere el último elemento
     const center: [number, number] =
         route.coordinates && route.coordinates.length > 0
-            ? [route.coordinates[Math.ceil(route.coordinates.length/1.6)].lat, route.coordinates[Math.ceil(route.coordinates.length/1.6)].lng]
+            ? [
+                route.coordinates[Math.min(Math.ceil(route.coordinates.length / 1.6), route.coordinates.length - 1)].lat,
+                route.coordinates[Math.min(Math.ceil(route.coordinates.length / 1.6), route.coordinates.length - 1)].lng,
+            ]
             : [40.4168, -3.7038]; // Centro en Madrid
 
     // Genera un id único solo una vez para el contenedor del mapa
@@ -54,32 +58,34 @@ export default function OneRouteMap({ route }: { route: IRoute }) {
             />
 
             <React.Fragment key={route.idRoute}>
-                {/* Usa la primera coordenada de la ruta para el marker */}
-                <Marker
-                    position={[route.coordinates[0].lat, route.coordinates[0].lng]}
-                    eventHandlers={{
-                        mouseover: (e) => {
-                            e.target.openPopup();
-                        },
-                        mouseout: (e) => {
-                            e.target.closePopup();
-                        }
-                    }}
-                >
-                    <Popup>
-                        <div className="cursor-pointer text-center">
-                            {/* Localización */}
-                            <div className="flex flex-row justify-center items-center text-xs font-medium text-gray-600">
-                                <span  className="text-sm font-semibold text-teal-700">
-                                    {route.location}
-                                </span>
+                {/* Marker solo si hay coordenadas */}
+                {route.coordinates && route.coordinates.length > 0 && (
+                    <Marker
+                        position={[route.coordinates[0].lat, route.coordinates[0].lng]}
+                        eventHandlers={{
+                            mouseover: (e) => {
+                                e.target.openPopup();
+                            },
+                            mouseout: (e) => {
+                                e.target.closePopup();
+                            }
+                        }}
+                    >
+                        <Popup>
+                            <div className="cursor-pointer text-center">
+                                {/* Localización */}
+                                <div className="flex flex-row justify-center items-center text-xs font-medium text-gray-600">
+                                    <span  className="text-sm font-semibold text-teal-700">
+                                        {route.location}
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </Popup>
-                </Marker>
+                        </Popup>
+                    </Marker>
+                )}
 
                 {/* Si la ruta tiene más de un punto, se dibuja la línea que conecta las coordenadas */}
-                {route.coordinates.length > 1 && (
+                {route.coordinates && route.coordinates.length > 1 && (
                     <Polyline
                         positions={route.coordinates.map(coord => [coord.lat, coord.lng])}
                         pathOptions={{ 
