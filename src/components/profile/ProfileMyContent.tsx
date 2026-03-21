@@ -29,7 +29,7 @@ export default function ProfileMyContent({ username }: { username: string }) {
     return (
         <div className="w-3/4 bg-stone-100 border border-stone-200 rounded-2xl px-7 py-4">
             {/* Barra de pestañas */}
-            <div className="flex gap-3 border-b text-gray-400 font-bold">
+            <div className="flex items-center gap-3 border-b text-gray-400 font-bold">
                 {canManageAdmin && (
                     <>
                         <button

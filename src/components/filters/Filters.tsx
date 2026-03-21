@@ -1,9 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useCategoryRoutes } from '@/queries/categoryRouteQuery';
 import { useDistanceDelay } from '@/hooks/useDistanceDelay';
-import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
+import { useAuth } from '@/hooks/useAuth';
+import { useIsPremium } from '@/auth/authorizations';
+import { AdjustmentsHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { CapitalizeFirstLetter } from '@/shared/utils/capitalizeFirstLetter';
 import { IFiltersProps } from '@/shared/interfaces/props/props.interface';
 
@@ -15,6 +18,8 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
     const [location, setLocation] = useState<string>(initialParams.location || '');
 
     const { data: categoriesData } = useCategoryRoutes();
+    const { currentUser } = useAuth();
+    const isPremium = useIsPremium();
 
     // Aplicamos delay al valor de "distance"
     const distanceDelay = useDistanceDelay(distance, 300);
@@ -190,6 +195,17 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
             >
                 Borrar filtros
             </button>
+
+            {/* Botón crear ruta — parte del bloque centrado, solo para usuarios premium autenticados */}
+            {currentUser.isAuthenticated && isPremium && (
+                <Link
+                    href="/routes/new"
+                    className="flex items-center gap-1.5 bg-lime-600 hover:bg-lime-700 text-white text-sm font-semibold px-4 py-2 rounded-full transition-colors"
+                >
+                    <PlusIcon className="w-4 h-4" strokeWidth={2.5} />
+                    Crear ruta
+                </Link>
+            )}
         </div>
     );
 }

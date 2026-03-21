@@ -1,17 +1,20 @@
 'use client';
 
 import { useProfile } from '@/queries/profileQuery';
-import { useCanFollow, useCanEdit, useIsPremium } from '@/auth/authorizations';
+import { useCanFollow, useCanEdit, useIsPremium, useIsAuthor } from '@/auth/authorizations';
 import FollowButton from '../buttons/followButton/FollowButton';
 import Image from 'next/image';
-import { MapIcon, BellAlertIcon, CurrencyEuroIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
+import { MapIcon, BellAlertIcon, CurrencyEuroIcon, PencilSquareIcon, PlusIcon } from '@heroicons/react/24/outline';
 import { ProfileSidebarProps } from '@/shared/interfaces/props/props.interface';
+import { getImageUrl } from '@/shared/utils/imageUrl';
 
 export default function ProfileSidebar({ username, activeTab, setActiveTab }: ProfileSidebarProps) {
     const { data: profile, isLoading, isError } = useProfile(username);
     const { canFollow } = useCanFollow(username);
     const { canEdit } = useCanEdit(username);
     const isPremium = useIsPremium();
+    const isAuthor = useIsAuthor(username);
     // console.log(profile);
 
     // Funciones para cambiar la pestaña
@@ -56,22 +59,34 @@ export default function ProfileSidebar({ username, activeTab, setActiveTab }: Pr
             w-1/4 bg-stone-100 border border-stone-200
             rounded-2xl px-7 py-5 overflow-hidden animate-fade-in
         ">
-            <div className="flex justify-between">
+            <div className="flex justify-between items-start">
                 {/* Avatar */}
                 <div className="rounded-full">
                     <Image
-                        src={`/avatar/${profile.imgUser}`}
+                        src={getImageUrl('avatar', profile.imgUser)}
                         alt={profile.username}
                         width={80}
                         height={80}
+                        sizes="96px"
                     />
                 </div>
 
-                {canFollow && (
-                    <div className="w-16 flex justify-center items-center mt-1">
-                        <FollowButton initialFollowing={profile.following} username={profile.username} />
-                    </div>
-                )}
+                <div className="flex items-center gap-2 mt-1">
+                    {canFollow && (
+                        <div className="w-16 flex justify-center items-center">
+                            <FollowButton initialFollowing={profile.following} username={profile.username} />
+                        </div>
+                    )}
+                    {canEdit && isPremium && isAuthor && (
+                        <Link
+                            href="/routes/new"
+                            className="flex items-center gap-1.5 bg-lime-600 hover:bg-lime-700 text-white text-sm font-semibold px-4 py-2 rounded-full transition-colors"
+                        >
+                            <PlusIcon className="w-4 h-4" strokeWidth={2.5} />
+                            Crear ruta
+                        </Link>
+                    )}
+                </div>
             </div>
 
             {/* Nombre y datos */}
