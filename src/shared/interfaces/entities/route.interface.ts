@@ -20,7 +20,7 @@ export interface IRoute {
     favorited: boolean;
     favoritesCount: number;
     user?: IUser | string;
-    images: Array<IImageRoute>;
+    images: Array<IImageRoute> | null;
     comments?: Array<IComment>;
     averageRatings: number;
 }
@@ -38,4 +38,17 @@ export interface IFavoriteRoutes {
 export interface ICoordinates {
     lat: number;
     lng: number;
+}
+
+export interface ICreateRoute {
+    title: string;
+    description: string;
+    location: string;
+    distance: number;       // metros
+    duration: number;       // minutos — integer
+    difficulty: 'fácil' | 'moderada' | 'difícil' | 'experto';
+    typeRoute: 'solo ida' | 'circular';
+    coordinates: [number, number][];
+    categoryTitle: string;
+    images: File[];
 }
