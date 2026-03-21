@@ -18,6 +18,8 @@ export default function DetailsRouteImages({ images }: { images: IImageRoute[] }
 
     // El padre garantiza images.length > 0
     const [mainImage, ...secondaryImages] = images;
+    const visibleSecondary = secondaryImages.slice(0, 2);
+    const isSingleSecondary = visibleSecondary.length === 1;
 
     return (
         <>
@@ -28,11 +30,11 @@ export default function DetailsRouteImages({ images }: { images: IImageRoute[] }
                     onClose={() => setIsGalleryOpen(false)}
                 />
             )}
-            <div className="relative grid grid-cols-2 gap-1 rounded-b-2xl md:rounded-br-none md:rounded-l-2xl overflow-hidden">
+            <div className="relative grid grid-cols-2 grid-rows-[5fr_3fr] gap-1 h-full rounded-b-2xl md:rounded-br-none md:rounded-l-2xl overflow-hidden">
 
-                {/* Imagen principal — ocupa toda la altura si no hay secundarias */}
+                {/* Imagen principal — row-span-2 si es la única imagen */}
                 <div
-                    className={`col-span-2 relative cursor-pointer ${secondaryImages.length > 0 ? 'h-64' : 'h-full'}`}
+                    className={`col-span-2 relative cursor-pointer ${secondaryImages.length === 0 ? 'row-span-2' : ''}`}
                     onClick={() => openGallery(0)}
                 >
                     <Image
@@ -49,10 +51,10 @@ export default function DetailsRouteImages({ images }: { images: IImageRoute[] }
                 </div>
 
                 {/* Imágenes secundarias — una celda por imagen, overflow recortado por el padre */}
-                {secondaryImages.map((image, idx) => (
+                {visibleSecondary.map((image, idx) => (
                     <div
                         key={image.idImg}
-                        className="h-36 relative cursor-pointer"
+                        className={`relative cursor-pointer ${isSingleSecondary ? 'col-span-2' : ''}`}
                         onClick={() => openGallery(idx + 1)}
                     >
                         <Image
@@ -69,16 +71,18 @@ export default function DetailsRouteImages({ images }: { images: IImageRoute[] }
                 ))}
 
                 {/* Botón que abre la galería completa */}
-                <button
-                    onClick={() => openGallery(0)}
-                    className="
-                        absolute top-4 left-5 flex items-center gap-2 shrink-0 border-2
-                        rounded-full px-4 py-1 font-bold text-white hover:border-lime-400
-                        hover:bg-black/40 hover:text-lime-400"
-                >
-                    <PhotoIcon strokeWidth={2} className="w-6 h-6" />
-                    <span className="text-sm">Ver mas fotos</span>
-                </button>
+                {images.length > 3 && (
+                    <button
+                        onClick={() => openGallery(0)}
+                        className="
+                            absolute top-4 left-5 flex items-center gap-2 shrink-0 border-2
+                            rounded-full px-4 py-1 font-bold text-white hover:border-lime-400
+                            hover:bg-black/40 hover:text-lime-400"
+                    >
+                        <PhotoIcon strokeWidth={2} className="w-6 h-6" />
+                        <span className="text-sm">Ver mas fotos</span>
+                    </button>
+                )}
             </div>
         </>
     );
