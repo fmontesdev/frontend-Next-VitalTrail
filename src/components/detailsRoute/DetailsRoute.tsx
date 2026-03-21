@@ -54,12 +54,12 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
             <div className="w-80 h-6 bg-stone-200 rounded-lg mb-3"></div>
 
             <div className="flex gap-1 mb-4">
-                <div className="grid grid-cols-2 w-full md:w-[54.7%] h-[404px] gap-1">
-                    <div className="h-64 col-span-2 bg-stone-200 rounded-tl-2xl"></div>
-                    <div className="h-36 bg-stone-200 rounded-bl-2xl"></div>
-                    <div className="h-36 bg-stone-200"></div>
+                <div className="grid grid-cols-2 grid-rows-[5fr_3fr] w-full md:w-[54.7%] h-[454px] gap-1">
+                    <div className="col-span-2 bg-stone-200 rounded-tl-2xl"></div>
+                    <div className="bg-stone-200 rounded-bl-2xl"></div>
+                    <div className="bg-stone-200"></div>
                 </div>
-                <div className="w-full md:w-[44.7%] h-[404px] bg-stone-200 rounded-r-2xl"></div>
+                <div className="w-full md:w-[44.7%] h-[454px] bg-stone-200 rounded-r-2xl"></div>
             </div>
 
             <div className="h-52 flex gap-1">
@@ -141,7 +141,7 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
                 </div>
             </section>
 
-            <section className="w-full md:w-[54.7%] h-[404px] md:order-1 order-2 md:space-y-6 animate-fade-in">
+            <section className="w-full md:w-[54.7%] h-[454px] md:order-1 order-2 md:space-y-6 animate-fade-in">
                 {/* Imágenes de la ruta */}
                 {route.images && route.images.length > 0 ? (
                     <DetailsRouteImagesPreview
@@ -155,20 +155,22 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
                 )}
             </section>
 
-            <section className="w-full md:w-[44.7%] h-[404px] md:order-2 order-1 md:space-y-6 animate-fade-in">
+            <section className="w-full md:w-[44.7%] h-[454px] md:order-2 order-1 md:space-y-6 animate-fade-in">
                 {/* Mapa */}
                 <DetailsRouteMap route={route} />
             </section>
 
-            <section className="flex flex-wrap md:flex-nowrap order-3 pt-6 pb-7 px-4">
+            <section className="w-full flex flex-wrap md:flex-nowrap order-3 pt-6 pb-7 px-4">
+                {/* Descripción */}
                 <div className="
-                    w-full md:w-[55%] tracking-wide text-gray-700 font-medium
+                    w-full md:w-[55%] min-h-[80px] tracking-wide text-gray-700 font-medium
                     text-justify md:border-r md:border-stone-200 md:pr-9 order-5 md:order-4"
                 >
                     {route.description}
                 </div>
 
-                <div className="w-full md:w-[45%] grid grid-cols-3 gap-y-2 order-4 md:order-5 pb-6 md:pb-0 md:px-4">
+                {/* Info de la ruta */}
+                <div className="w-full md:w-[45%] grid grid-cols-[1fr_auto_1fr] gap-y-2 order-4 md:order-5 pb-6 md:pb-0 md:px-4">
                     <div className="flex flex-col items-center">
                         <span className="text-4xl lg:text-5xl font-black text-teal-700">
                             {route.distance}

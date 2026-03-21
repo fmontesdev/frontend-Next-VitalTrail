@@ -143,8 +143,10 @@ export default function SessionCard({ session }: ISessionCardProps) {
 
                 {/* Título, fecha y chips */}
                 <div className="flex-1 min-w-0">
+                    <p className="text-xs text-stone-500 tracking-wide">{formatDate(session.startAt)}</p>
+
                     {/* div con truncate; Link inline → solo el texto es clicable */}
-                    <div className="truncate">
+                    <div className="truncate mt-0.5">
                         <Link
                             href={`/route/${session.slug}`}
                             className="font-bold text-base text-teal-700 hover:underline decoration-teal-700 transition-all duration-150"
@@ -152,7 +154,6 @@ export default function SessionCard({ session }: ISessionCardProps) {
                             {session.title}
                         </Link>
                     </div>
-                    <p className="text-xs text-stone-400 mt-0.5 tracking-wide">{formatDate(session.startAt)}</p>
 
                     {(duration || distanceLabel) && (
                         <div className="flex flex-wrap gap-1.5 mt-2">
