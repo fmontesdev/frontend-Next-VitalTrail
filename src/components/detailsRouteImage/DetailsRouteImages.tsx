@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import DetailsRouteImagesGallery from '../carousels/detailsRouteImagesGallery/DetailsRouteImagesGallery';
+import { getImageUrl, BLUR_DATA_URL } from '@/shared/utils/imageUrl';
 import { IImageRoute } from '@/shared/interfaces/entities/imageRoute.interface';
 import { PhotoIcon } from '@heroicons/react/24/outline';
 
@@ -35,11 +36,14 @@ export default function DetailsRouteImages({ images }: { images: IImageRoute[] }
                     onClick={() => openGallery(0)}
                 >
                     <Image
-                        src={`/route_images/${mainImage.imgRoute}`}
+                        src={getImageUrl('route', mainImage.imgRoute)}
                         alt="Preview image"
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+                        priority
+                        sizes="100vw"
                         style={{ objectFit: 'cover' }}
+                        placeholder="blur"
+                        blurDataURL={BLUR_DATA_URL}
                     />
                     <div className="absolute inset-0 bg-black/0 hover:bg-black/15 transition duration-300" />
                 </div>
@@ -52,11 +56,13 @@ export default function DetailsRouteImages({ images }: { images: IImageRoute[] }
                         onClick={() => openGallery(idx + 1)}
                     >
                         <Image
-                            src={`/route_images/${image.imgRoute}`}
+                            src={getImageUrl('route', image.imgRoute)}
                             alt="Preview image"
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
                             style={{ objectFit: 'cover' }}
+                            placeholder="blur"
+                            blurDataURL={BLUR_DATA_URL}
                         />
                         <div className="absolute inset-0 bg-black/0 hover:bg-black/15 transition duration-300" />
                     </div>

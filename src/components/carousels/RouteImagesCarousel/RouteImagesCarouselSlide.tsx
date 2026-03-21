@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { getImageUrl } from '@/shared/utils/imageUrl';
 import { IImageRoute } from "@/shared/interfaces/entities/imageRoute.interface";
 
 const RouteImagesCarouselSlide: React.FC<{ image: IImageRoute }> = ({ image }) => {
@@ -20,7 +21,7 @@ const RouteImagesCarouselSlide: React.FC<{ image: IImageRoute }> = ({ image }) =
     return (
         <motion.img
             key={image.idImg}
-            src={`/route_images/${image.imgRoute}`}
+            src={getImageUrl('route', image.imgRoute)}
             alt={`Imagen ${image.idImg} - ruta ${image.route}`}
             className="absolute top-0 left-0 w-full h-full object-cover"
             variants={slideVariants}

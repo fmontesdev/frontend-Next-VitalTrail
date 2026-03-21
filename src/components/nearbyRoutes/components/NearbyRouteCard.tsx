@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { getImageUrl, BLUR_DATA_URL } from '@/shared/utils/imageUrl';
 import { IRoute } from '@/shared/interfaces/entities/route.interface';
 
 interface INearbyRouteCardProps {
@@ -15,7 +16,7 @@ const formatearDistancia = (km: number): string =>
 
 const NearbyRouteCard: React.FC<INearbyRouteCardProps> = ({ route, distanceKm }) => {
     const imgRoute = route.images?.[0]?.imgRoute;
-    const imageUrl = imgRoute ? `/route_images/${imgRoute}` : null;
+    const imageUrl = imgRoute ? getImageUrl('route', imgRoute) : null;
 
     return (
         <Link href={'/route/' + route.slug} className="group block w-full">
@@ -29,7 +30,9 @@ const NearbyRouteCard: React.FC<INearbyRouteCardProps> = ({ route, distanceKm })
                             src={imageUrl}
                             alt={route.title}
                             className="object-cover transition-transform duration-500 group-hover:scale-110"
-                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            placeholder="blur"
+                            blurDataURL={BLUR_DATA_URL}
                         />
                     ) : (
                         <div className="w-full h-full bg-gradient-to-br from-teal-400 to-lime-500" />

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { MapContainer, TileLayer, Marker, Popup, Polyline } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { getImageUrl } from '@/shared/utils/imageUrl';
 import { IRoutes } from '@/shared/interfaces/entities/route.interface';
 import { StarIcon } from "@heroicons/react/24/solid";
 
@@ -91,7 +92,7 @@ export default function RouteMap({ routes }: { routes: IRoutes | [] }) {
                                     {/* Imagen de la ruta */}
                                     {route.images && route.images.length > 0 && (
                                         <img
-                                            src={`/route_images/${route.images[0].imgRoute}`}
+                                            src={getImageUrl('route', route.images[0].imgRoute)}
                                             alt={`Ruta ${route.title}`}
                                             className="w-full max-w-[200px] h-auto mb-1"
                                         />

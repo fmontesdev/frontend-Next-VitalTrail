@@ -5,6 +5,7 @@ import CategoryGrid from '@/components/categoryGrid/CategoryGrid';
 import TrendingRoutes from '@/components/trendingRoutes/TrendingRoutes';
 import NearbyRoutes from '@/components/nearbyRoutes/NearbyRoutes';
 import { ICategoryRoute } from '@/shared/interfaces/entities/categoryRoute.interface';
+import { getServerImageUrl } from '@/shared/utils/imageUrl';
 
 // Función cacheada para obtener categorías
 const getCategories = cache(async () => {
@@ -22,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
         ],
         openGraph: {
             images: categories.map(category => ({
-                url: `/categories_carousel/${category.imgCategory}`,
+                url: getServerImageUrl('category', category.imgCategory),
                 alt: category.title
             }))
         }

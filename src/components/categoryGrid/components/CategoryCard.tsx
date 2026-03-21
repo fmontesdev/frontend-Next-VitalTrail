@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 import { ICategoryRoute } from '@/shared/interfaces/entities/categoryRoute.interface';
+import { getImageUrl, BLUR_DATA_URL } from '@/shared/utils/imageUrl';
 
 interface ICategoryCardProps {
     category: ICategoryRoute;
@@ -76,14 +77,16 @@ const CategoryCard: React.FC<ICategoryCardProps> = ({
             >
                 {/* Imagen: zoom suave en hover */}
                 <Image
-                    src={`/categories_carousel/${category.imgCategory}`}
+                    src={getImageUrl('category', category.imgCategory)}
                     alt={category.title}
                     fill
-                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className={`object-cover transition-transform duration-700 ease-out ${
                         isHovered ? 'scale-105' : 'scale-100'
                     }`}
                     priority={priority}
+                    placeholder="blur"
+                    blurDataURL={BLUR_DATA_URL}
                 />
             </motion.div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import Image from "next/image";
+import { getImageUrl, BLUR_DATA_URL } from '@/shared/utils/imageUrl';
 import { IDetailsRouteImagesPreviewProps } from "@/shared/interfaces/props/props.interface";
 
 export default function DetailsRouteImagesPreview({ images, currentIndex, onThumbnailClick }: IDetailsRouteImagesPreviewProps) {
@@ -15,12 +16,14 @@ export default function DetailsRouteImagesPreview({ images, currentIndex, onThum
                     onClick={() => onThumbnailClick(index)}
                 >
                     <Image
-                        src={`/route_images/${image.imgRoute}`}
+                        src={getImageUrl('route', image.imgRoute)}
                         alt={`Thumbnail ${index}`}
                         fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 100vw, 100vw"
+                        sizes="96px"
                         style={{ objectFit: "cover" }}
                         className="rounded-lg"
+                        placeholder="blur"
+                        blurDataURL={BLUR_DATA_URL}
                     />
                 </div>
             ))}

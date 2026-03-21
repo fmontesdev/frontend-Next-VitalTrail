@@ -3,6 +3,7 @@ import { cache } from 'react'
 import { RouteService } from '@/services/routeService';
 import DetailsRoute from "@/components/detailsRoute/DetailsRoute";
 import { IRoute } from "@/shared/interfaces/entities/route.interface";
+import { getServerImageUrl } from '@/shared/utils/imageUrl';
 
 
 // Función cacheada para obtener rutas
@@ -10,7 +11,7 @@ const getOneRoute = cache(async(slug: string) => {
     return RouteService.getBySlug(slug);
 });
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
     // Obtiene el slug de los parámetros
     const { slug } = await params;
 
@@ -28,14 +29,14 @@ export async function generateMetadata({ params }: { params: { slug: string } })
             description: route.title,
             url: `https://vitaltrail.com/routes/${slug}`,
             images: route.images?.map(image => ({
-                url: `/route_images/${image.imgRoute}`,
+                url: getServerImageUrl('route', image.imgRoute),
                 alt: route.title
             }))
         }
     };
 }
 
-export default async function DetailsRoutePage({ params }: { params: { slug: string } }) {
+export default async function DetailsRoutePage({ params }: { params: Promise<{ slug: string }> }) {
     // Obtiene el slug de los parámetros
     const { slug } = await params;
     const route: IRoute = await getOneRoute(slug);

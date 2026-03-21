@@ -13,6 +13,7 @@ import MobileMenuHome from './MobileMenuHome';
 import StatsStrip from '../statsStrip/StatsStrip';
 import { Bars4Icon } from "@heroicons/react/24/outline";
 import { merienda } from '@/app/fonts';
+import { getImageUrl } from '@/shared/utils/imageUrl';
 
 export default function HeaderHome() {
     const router = useRouter();
@@ -44,11 +45,12 @@ export default function HeaderHome() {
                 {/* Imagen de fondo */}
                 <div className="absolute inset-0">
                     <Image
-                        src="/header/header-background.png"
+                        src={getImageUrl('background', 'header_home.png')}
                         alt="Header de VitalTrail"
                         fill
                         className="object-cover"
                         priority
+                        sizes="100vw"
                     />
                     {/* Capa de oscurecimiento */}
                     <div className="absolute inset-0 bg-black/30"></div>
@@ -92,10 +94,11 @@ export default function HeaderHome() {
                                                 className="flex items-center gap-2 border-2 rounded-full pr-4 text-white bg-black/30 hover:text-lime-400 hover:border-lime-400"
                                             >
                                                 <Image
-                                                    src={`/avatar/${currentUser.user!.imgUser}`}
+                                                    src={getImageUrl('avatar', currentUser.user!.imgUser)}
                                                     alt={currentUser.user!.username}
                                                     width={32}
                                                     height={32}
+                                                    sizes="40px"
                                                 />
                                                 {currentUser.user?.name}
                                             </Link>

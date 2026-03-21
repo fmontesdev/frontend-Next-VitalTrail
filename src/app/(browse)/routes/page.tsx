@@ -4,12 +4,13 @@ import { RouteService } from '@/services/routeService';
 import { IRoutes } from "@/shared/interfaces/entities/route.interface";
 import { IParams } from '@/shared/interfaces/params/params.interface';
 import RoutesPageClient from '@/components/routes/RoutesPageClient';
+import { getServerImageUrl } from '@/shared/utils/imageUrl';
 
 // Para paginación
 const limit = 5;
 
 // Función cacheada para obtener rutas
-const getRoutes = cache(async(searchParams: IParams): Promise<IRoutes> => {
+const getRoutes = cache(async(searchParams: Promise<IParams>): Promise<IRoutes> => {
     // Capturar parámetros de búsqueda desde la URL
     const {
         page='1',
@@ -36,7 +37,7 @@ const getRoutes = cache(async(searchParams: IParams): Promise<IRoutes> => {
     });
 });
 
-export async function generateMetadata({ searchParams }: { searchParams: IParams }): Promise<Metadata> {
+export async function generateMetadata({ searchParams }: { searchParams: Promise<IParams> }): Promise<Metadata> {
     const routes: IRoutes = await getRoutes(searchParams);
     const routeKeywords = routes.routes.map(route => route.title.toLowerCase());
 
@@ -53,14 +54,14 @@ export async function generateMetadata({ searchParams }: { searchParams: IParams
             images: routes.routes
                 .filter(route => route.images && route.images.length > 0)
                 .map(route => ({
-                    url: `/route_images/${route.images![0].imgRoute}`,
+                    url: getServerImageUrl('route', route.images![0].imgRoute),
                     alt: route.title
                 }))
         }
     };
 }
 
-export default async function AllRoutesPage({ searchParams }: { searchParams: IParams }) {
+export default async function AllRoutesPage({ searchParams }: { searchParams: Promise<IParams> }) {
     const routes: IRoutes = await getRoutes(searchParams);
     const params = await searchParams;
 

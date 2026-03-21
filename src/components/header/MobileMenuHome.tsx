@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { IMobileMenuProps } from '@/shared/interfaces/props/props.interface';
+import { getImageUrl } from '@/shared/utils/imageUrl';
 
 export default function MobileMenuHome({isOpen, onClose, currentUser, isPremium, onLogout }: IMobileMenuProps) {
     return (
@@ -41,10 +42,11 @@ export default function MobileMenuHome({isOpen, onClose, currentUser, isPremium,
                                 className="flex items-center gap-2 text-gray-500 hover:text-lime-600
                             ">
                                 <Image
-                                    src={`/avatar/${currentUser.user!.imgUser}`}
+                                    src={getImageUrl('avatar', currentUser.user!.imgUser)}
                                     alt={currentUser.user!.username}
                                     width={32}
                                     height={32}
+                                    sizes="40px"
                                 />
                                 {currentUser.user?.name}
                             </Link>
@@ -60,9 +62,6 @@ export default function MobileMenuHome({isOpen, onClose, currentUser, isPremium,
                             Inicia sesión
                         </Link>
                     )}
-                    {/* <Link href="/subir" className="text-gray-500 hover:text-lime-600" onClick={onClose}>
-                        Sube tus rutas
-                    </Link> */}
                     {!isPremium && (
                         <Link href="/premium" className="text-gray-500 hover:text-lime-600" onClick={onClose}>
                             Pásate a Premium

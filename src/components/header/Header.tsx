@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { GetTokenCookie } from '@/auth/clientCookies';
 import Search from '../search/Search';
 import { merienda } from '@/app/fonts';
+import { getImageUrl } from '@/shared/utils/imageUrl';
 
 export default function Header() {
     const router = useRouter();
@@ -72,9 +73,6 @@ export default function Header() {
 
                                 {currentUser.isAuthenticated ? (
                                     <>
-                                        {/* <Link href="/subir" className="text-white hover:text-lime-400">
-                                            Sube tus rutas
-                                        </Link> */}
                                         <button
                                             onClick={handleLogout}
                                             className="text-lime-500 hover:text-lime-600 transition duration-200 ease-in-out"
@@ -87,10 +85,11 @@ export default function Header() {
                                                 text-lime-500 hover:text-white hover:bg-stone-300 transition duration-200 ease-in-out"
                                         >
                                             <Image
-                                                src={`/avatar/${currentUser.user!.imgUser}`}
+                                                src={getImageUrl('avatar', currentUser.user!.imgUser)}
                                                 alt={currentUser.user!.username}
                                                 width={32}
                                                 height={32}
+                                                sizes="40px"
                                             />
                                             {currentUser.user?.name}
                                         </Link>

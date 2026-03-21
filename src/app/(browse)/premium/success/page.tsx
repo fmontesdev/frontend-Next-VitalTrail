@@ -4,6 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useStripeSession } from '@/queries/stripeQuery';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { FcOk, FcHighPriority } from 'react-icons/fc';
+import { getImageUrl } from '@/shared/utils/imageUrl';
 
 export default function SuccessPage() {
     const searchParams = useSearchParams();
@@ -37,7 +38,7 @@ export default function SuccessPage() {
     return (
         <main className="min-h-[calc(100vh-64px-64px)] w-full flex items-center justify-center"
             style={{ 
-                backgroundImage: 'url("/backgrounds/subscriptions.jpg")',
+                backgroundImage: `url(${getImageUrl('background', 'subscription_success.webp')})`,
                 backgroundSize: '100% auto', // Estira al ancho completo sin recortar altura
                 backgroundPosition: 'center top', // Posiciona desde arriba
                 backgroundRepeat: 'no-repeat', // Evita que se repita

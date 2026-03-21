@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { ILogin } from "@/shared/interfaces/entities/user.interface";
+import { getImageUrl } from '@/shared/utils/imageUrl';
 
 export default function LoginPage() {
     const { login } = useAuth();
@@ -24,7 +25,7 @@ export default function LoginPage() {
     return (
         <main className="min-h-[calc(100vh-64px-64px)] w-full flex items-center justify-center py-14"
             style={{ 
-                backgroundImage: 'url("/backgrounds/login.jpg")',
+                backgroundImage: `url(${getImageUrl('background', 'login.jpg')})`,
                 backgroundSize: '100% auto', // Estira al ancho completo sin recortar altura
                 backgroundPosition: 'center center', // Posiciona desde arriba
                 backgroundRepeat: 'no-repeat', // Evita que se repita

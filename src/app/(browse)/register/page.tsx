@@ -6,6 +6,7 @@ import { merienda } from '@/app/fonts';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { IRegister } from "@/shared/interfaces/entities/user.interface";
+import { getImageUrl } from '@/shared/utils/imageUrl';
 
 export default function RegisterPage() {
     const { register } = useAuth();
@@ -39,7 +40,7 @@ export default function RegisterPage() {
     return (
         <main className="min-h-[calc(100vh-64px-64px)] w-full flex items-center justify-center py-14"
             style={{ 
-                backgroundImage: 'url("/backgrounds/register.jpg")',
+                backgroundImage: `url(${getImageUrl('background', 'register.jpg')})`,
                 backgroundSize: '100% auto', // Estira al ancho completo sin recortar altura
                 backgroundPosition: 'center center', // Posiciona desde arriba
                 backgroundRepeat: 'no-repeat', // Evita que se repita

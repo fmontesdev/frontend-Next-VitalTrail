@@ -5,6 +5,7 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 import { useCreateCheckoutSession } from '@/mutations/stripeMutation';
 import { FcPicture, FcLandscape } from 'react-icons/fc';
 import { GrFormCheckmark } from 'react-icons/gr';
+import { getImageUrl } from '@/shared/utils/imageUrl';
 
 // Acceder a las variables de entorno
 const MONTHLY_PRICE_ID = process.env.NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID || '';
@@ -31,7 +32,7 @@ const SubscriptionPage = () => {
     return (
         <main className="min-h-[calc(100vh-64px-64px)] w-full flex items-center justify-center"
             style={{ 
-                backgroundImage: 'url("/backgrounds/subscriptions.jpg")',
+                backgroundImage: `url(${getImageUrl('background', 'subscriptions.jpg')})`,
                 backgroundSize: '100% auto', // Estira al ancho completo sin recortar altura
                 backgroundPosition: 'center top', // Posiciona desde arriba
                 backgroundRepeat: 'no-repeat', // Evita que se repita

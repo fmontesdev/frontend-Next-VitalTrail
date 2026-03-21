@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getImageUrl, BLUR_DATA_URL } from '@/shared/utils/imageUrl';
 import { IRoute } from '@/shared/interfaces/entities/route.interface';
 
 interface ITrendingRouteCardProps {
@@ -11,7 +12,7 @@ interface ITrendingRouteCardProps {
 
 const TrendingRouteCard: React.FC<ITrendingRouteCardProps> = ({ route }) => {
     const imgRoute = route.images?.[0]?.imgRoute;
-    const imageUrl = imgRoute ? `/route_images/${imgRoute}` : null;
+    const imageUrl = imgRoute ? getImageUrl('route', imgRoute) : null;
 
     return (
         // group en el Link: el CSS group-hover:scale-110 en la imagen se activa sin Framer Motion
@@ -23,8 +24,10 @@ const TrendingRouteCard: React.FC<ITrendingRouteCardProps> = ({ route }) => {
                         src={imageUrl}
                         alt={route.title}
                         fill
-                        sizes="(max-width: 640px) 80vw, (max-width: 1024px) 50vw, 25vw"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
+                        placeholder="blur"
+                        blurDataURL={BLUR_DATA_URL}
                     />
                 ) : (
                     <div className="absolute inset-0 bg-gradient-to-br from-zinc-700 to-zinc-900" />

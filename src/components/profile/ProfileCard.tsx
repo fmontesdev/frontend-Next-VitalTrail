@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import FollowButton from '../buttons/followButton/FollowButton';
 import { IProfile } from '@/shared/interfaces/entities/user.interface';
+import { getImageUrl } from '@/shared/utils/imageUrl';
 
 export default function ProfileCard({ list, profile }: { list: string, profile: IProfile }) {
     return (
@@ -18,10 +19,11 @@ export default function ProfileCard({ list, profile }: { list: string, profile: 
                 {/* Avatar */}
                 <div className="w-[72px] h-[72px] rounded-full flex-shrink-0">
                     <Image
-                        src={`/avatar/${profile.imgUser}`}
+                        src={getImageUrl('avatar', profile.imgUser)}
                         alt={profile.username}
                         width={72}
                         height={72}
+                        sizes="128px"
                     />
                 </div>
 
