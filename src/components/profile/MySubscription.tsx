@@ -2,154 +2,256 @@
 
 import { useState } from 'react';
 import { useSubscription } from '@/queries/stripeQuery';
-import { useCancelSubscription } from '@/mutations/stripeMutation';
+import { useCancelAtPeriodEnd, useReactivateSubscription } from '@/mutations/stripeMutation';
 import Link from 'next/link';
-import { FcCheckmark, FcInfo, FcCancel } from 'react-icons/fc';
-
 import { useAuth } from '@/hooks/useAuth';
+import {
+    CalendarDaysIcon,
+    CreditCardIcon,
+    SparklesIcon,
+    ArrowPathIcon,
+    ExclamationTriangleIcon,
+} from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
-export default function MySubscription({ username }: { username: string }) {
+const CARD_BRAND_LABELS: Record<string, string> = {
+    visa: 'VISA',
+    mastercard: 'MC',
+    amex: 'AMEX',
+    discover: 'DISC',
+    unionpay: 'UP',
+};
+
+export default function MySubscription() {
     const { currentUser } = useAuth();
     const customerId = currentUser?.user?.client?.customerId || null;
 
-    // Query para obtener la información de la suscripción
     const { data: subscription, isLoading, isError } = useSubscription(customerId);
+    const cancelAtPeriodEndMutation = useCancelAtPeriodEnd();
+    const reactivateMutation = useReactivateSubscription();
 
-    // Mutation para cancelar suscripción
-    const cancelSubscriptionMutation = useCancelSubscription();
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
-    // Estado para confirmación
-    const [showConfirmation, setShowConfirmation] = useState(false);
-
-    // Funciones de formateo y manejo
     const formatDate = (timestamp: number) => {
         if (!timestamp) return 'N/A';
         return new Date(timestamp * 1000).toLocaleDateString('es-ES', {
             year: 'numeric',
             month: 'long',
-            day: 'numeric'
+            day: 'numeric',
         });
     };
 
-    const handleCancelConfirm = () => {
-        setShowConfirmation(true);
-    };
-
-    const handleCancelSubscription = () => {
+    const handleCancelAtPeriodEnd = () => {
         if (!customerId) return;
-
-        cancelSubscriptionMutation.mutateAsync(customerId, {
-            onSuccess: () => {
-                setShowConfirmation(false);
-            }
+        cancelAtPeriodEndMutation.mutate(customerId, {
+            onSuccess: () => setShowCancelConfirm(false),
         });
     };
 
-    if (isLoading) return <p>Cargando información de suscripción...</p>;
+    const handleReactivate = () => {
+        if (!customerId) return;
+        reactivateMutation.mutate(customerId);
+    };
 
-    if (isError) return <p>Error al cargar la información de suscripción.</p>;
+    const cardBrandLabel = (brand: string) =>
+        CARD_BRAND_LABELS[brand?.toLowerCase()] ?? brand?.toUpperCase() ?? '—';
 
-    return (
-        <div className="w-full py-2">
-            {!subscription || subscription.status !== 'active' ? (
-                <div className="bg-white px-7 py-6 rounded-2xl border border-stone-200 text-stone-700">
-                    <p className="mb-3">No tienes una suscripción activa.</p>
+    /* ── Loading ── */
+    if (isLoading) {
+        return (
+            <div className="w-full py-2 animate-pulse">
+                <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
+                    <div className="h-1 bg-stone-200" />
+                    <div className="px-8 py-6 space-y-4">
+                        <div className="flex justify-between items-start">
+                            <div className="space-y-2">
+                                <div className="h-3 w-20 bg-stone-100 rounded" />
+                                <div className="h-5 w-44 bg-stone-200 rounded" />
+                                <div className="h-4 w-24 bg-stone-100 rounded" />
+                            </div>
+                            <div className="h-6 w-20 bg-stone-100 rounded-full" />
+                        </div>
+                        <div className="h-px bg-stone-100" />
+                        <div className="h-4 w-72 bg-stone-100 rounded" />
+                        <div className="h-4 w-56 bg-stone-100 rounded" />
+                        <div className="h-px bg-stone-100" />
+                        <div className="h-4 w-36 bg-stone-100 rounded" />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    /* ── Error ── */
+    if (isError) {
+        return (
+            <div className="w-full py-2">
+                <div className="bg-white rounded-2xl border border-red-100 px-8 py-6 text-sm text-red-400">
+                    No se pudo cargar la información de suscripción.
+                </div>
+            </div>
+        );
+    }
+
+    /* ── Sin suscripción activa ── */
+    if (!subscription || subscription.status !== 'active') {
+        return (
+            <div className="w-full py-2">
+                <div className="bg-white rounded-2xl border border-stone-200 px-8 py-10 flex flex-col items-center text-center gap-3">
+                    <div className="w-11 h-11 rounded-full bg-stone-100 flex items-center justify-center">
+                        <SparklesIcon className="w-5 h-5 text-stone-400" />
+                    </div>
+                    <div>
+                        <p className="text-stone-600 font-medium text-sm">Sin suscripción activa</p>
+                        <p className="text-stone-400 text-xs mt-0.5">Descubre los planes Premium disponibles.</p>
+                    </div>
                     <Link
                         href="/premium"
-                        className="px-4 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition"
+                        className="inline-block px-5 py-2 bg-lime-600 text-white text-sm font-semibold rounded-full hover:bg-lime-700 transition mt-1"
                     >
                         Ver planes disponibles
                     </Link>
                 </div>
-            ) : (
-                <div className="bg-white px-8 pt-6 pb-7 rounded-2xl border border-stone-200 text-stone-600">
-                    <div className="grid grid-cols-1 md:grid-cols-[3fr_2fr] gap-4 mb-4 text-left">
-                        <div>
-                            <p className="text-sm text-stone-500">ID de la suscripción</p>
-                            <p className="font-semibold">{subscription.subscriptionId}</p>
-                        </div>
+            </div>
+        );
+    }
 
-                        <div>
-                            <p className="text-sm text-stone-500">Estado</p>
-                            {subscription.status === 'active' ? (
-                                <p className="font-semibold text-lime-600">Activo</p>
-                            ) : (
-                                <p className="font-semibold text-red-600">Desactivo</p>
-                            )}
-                        </div>
+    const isCancelling = subscription.cancelAtPeriodEnd;
+    const priceAmount = subscription.billingInterval === 'month' ? 199 : 1199;
+    const formattedPrice = new Intl.NumberFormat('es-ES', {
+        style: 'currency',
+        currency: 'EUR',
+    }).format(priceAmount / 100);
+    const intervalLabel = subscription.billingInterval === 'month' ? 'mes' : 'año';
 
-                        <div>
-                            <p className="text-sm text-stone-500">Plan</p>
-                            <p className="font-semibold">{subscription.productName}</p>
-                        </div>
+    return (
+        <div className="w-full py-2">
+            <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden">
 
-                        <div>
-                            <p className="text-sm text-stone-500">Precio</p>
-                            <p className="font-semibold">
-                                {new Intl.NumberFormat('es-ES', {
-                                    style: 'currency',
-                                    currency: 'EUR'
-                                }).format((subscription.subscriptionType == "monthly" ? 199 : 1199) / 100)}
+                {/* Barra de acento superior — cambia color según estado */}
+                <div className={`h-1 ${isCancelling ? 'bg-amber-400' : 'bg-lime-500'}`} />
 
-                                <span className="text-sm ml-1">
-                                    /{subscription.billingInterval === 'month' ? 'mes' : 'año'}
-                                </span>
+                <div className="px-8 pt-6 pb-7">
+
+                    {/* Cabecera: nombre del plan + badge de estado */}
+                    <div className="flex items-start justify-between mb-5">
+                        <div>
+                            <p className="text-[10px] text-stone-500 uppercase tracking-widest font-semibold mb-1">
+                                Plan activo
+                            </p>
+                            <h3 className="text-xl font-bold text-teal-700 leading-tight">
+                                {subscription.productName}
+                            </h3>
+                            <p className="text-sm text-stone-500 font-medium mt-0.5">
+                                {formattedPrice}
+                                <span className="text-stone-500 font-medium">/{intervalLabel}</span>
                             </p>
                         </div>
 
-                        <div>
-                            <p className="text-sm text-stone-500">Fecha de inicio</p>
-                            <p className="font-semibold">{formatDate(subscription.currentPeriodStart)}</p>
-                        </div>
-                        
-                        <div>
-                            <p className="text-sm text-stone-500">Próximo pago</p>
-                            <p className="font-semibold">{formatDate(subscription.currentPeriodEnd)}</p>
-                        </div>
+                        {isCancelling ? (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200 mt-0.5">
+                                <ExclamationTriangleIcon className="w-3.5 h-3.5" />
+                                Cancela al final del período
+                            </span>
+                        ) : (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-lime-50 text-lime-700 border border-lime-200 mt-0.5">
+                                <CheckCircleIcon className="w-3.5 h-3.5" />
+                                Activo
+                            </span>
+                        )}
                     </div>
 
-                    {subscription.cancelAtPeriodEnd && (
-                        <div className="bg-yellow-50 p-3 rounded-md mb-4 text-sm text-yellow-800">
-                            Tu suscripción finalizará el {formatDate(subscription.currentPeriodEnd)}.
-                            Hasta entonces seguirás teniendo acceso a todas las funciones Premium.
-                        </div>
-                    )}
+                    <div className="border-t border-stone-100 mb-5" />
 
-                    {!subscription.cancelAtPeriodEnd ? (
-                        showConfirmation ? (
-                            <div className="flex flex-col">
-                                <p className="text-sm text-stone-500 mb-2">¿Estás seguro de que deseas cancelar tu suscripción?</p>
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setShowConfirmation(false)}
-                                        className="px-3 py-1 rounded-full border-2 border-lime-600 text-sm font-bold
-                                        text-lime-600 hover:bg-lime-600/80 hover:text-white transition duration-150 ease-in-out"
-                                        disabled={cancelSubscriptionMutation.isPending}
-                                    >
-                                        No, mantener
-                                    </button>
-                                    <button
-                                        onClick={handleCancelSubscription}
-                                        className="px-3 py-1 rounded-full border-2 border-red-600/80 text-sm font-bold
-                                        text-red-600/80 hover:bg-red-600/80 hover:text-white transition duration-150 ease-in-out"
-                                        disabled={cancelSubscriptionMutation.isPending}
-                                    >
-                                        {cancelSubscriptionMutation.isPending ? 'Procesando...' : 'Sí, cancelar'}
-                                    </button>
-                                </div>
+                    {/* Filas de datos con ícono + etiqueta + valor */}
+                    <div className="space-y-3.5 mb-5">
+                        <div className="flex items-center gap-3 text-sm">
+                            <CalendarDaysIcon className="w-5 h-5 text-stone-400 flex-shrink-0" />
+                            <span className="text-stone-500 w-36 flex-shrink-0">
+                                {isCancelling ? 'Acceso hasta' : 'Próxima renovación'}
+                            </span>
+                            <span className="text-stone-700 font-semibold">
+                                {formatDate(subscription.currentPeriodEnd)}
+                            </span>
+                        </div>
+
+                        {subscription.cardLast4 && (
+                            <div className="flex items-center gap-3 text-sm">
+                                <CreditCardIcon className="w-5 h-5 text-stone-400 flex-shrink-0" />
+                                <span className="text-stone-500 w-36 flex-shrink-0">Método de pago</span>
+                                <span className="flex items-center gap-2 text-stone-700 font-semibold">
+                                    <span className="inline-block bg-stone-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wide">
+                                        {cardBrandLabel(subscription.cardBrand)}
+                                    </span>
+                                    •••• {subscription.cardLast4}
+                                    <span className="text-stone-500 font-normal">
+                                        exp. {subscription.cardExpMonth}/{subscription.cardExpYear}
+                                    </span>
+                                </span>
                             </div>
-                        ) : (
+                        )}
+                    </div>
+
+                    <div className="border-t border-stone-100 mb-5" />
+
+                    {/* Zona de acción: cancelar / reactivar */}
+                    {isCancelling ? (
+                        <div className="flex items-center justify-between">
+                            <p className="text-sm text-stone-500 leading-relaxed max-w-xs">
+                                Acceso garantizado hasta el{' '}
+                                <span className="text-stone-700 font-semibold">
+                                    {formatDate(subscription.currentPeriodEnd)}
+                                </span>.
+                            </p>
                             <button
-                                onClick={handleCancelConfirm}
-                                className="px-3 py-1 mt-1.5 rounded-full border-2 border-red-600/80 text-sm font-bold
-                                text-red-600/80 hover:bg-red-600/80 hover:text-white transition duration-150 ease-in-out"
+                                onClick={handleReactivate}
+                                disabled={reactivateMutation.isPending}
+                                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full
+                                    text-sm font-semibold bg-lime-600 hover:bg-lime-700 text-white
+                                    transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Cancelar suscripción
+                                <ArrowPathIcon className="w-3.5 h-3.5" />
+                                {reactivateMutation.isPending ? 'Procesando...' : 'Reactivar suscripción'}
                             </button>
-                        )
-                    ) : null}
+                        </div>
+                    ) : showCancelConfirm ? (
+                        <div className="bg-stone-50 border border-stone-200 rounded-xl px-4 py-3.5">
+                            <p className="text-sm text-stone-500 mb-3 leading-relaxed">
+                                Seguirás teniendo acceso completo hasta el{' '}
+                                <span className="text-stone-700 font-medium">
+                                    {formatDate(subscription.currentPeriodEnd)}
+                                </span>. ¿Confirmas la cancelación?
+                            </p>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setShowCancelConfirm(false)}
+                                    disabled={cancelAtPeriodEndMutation.isPending}
+                                    className="px-4 py-2 rounded-full text-sm font-semibold
+                                        bg-lime-600 hover:bg-lime-700 text-white transition-colors disabled:opacity-50"
+                                >
+                                    No, mantener
+                                </button>
+                                <button
+                                    onClick={handleCancelAtPeriodEnd}
+                                    disabled={cancelAtPeriodEndMutation.isPending}
+                                    className="px-4 py-2 rounded-full text-sm font-semibold
+                                        bg-red-600 hover:bg-red-700 text-white transition-colors disabled:opacity-50"
+                                >
+                                    {cancelAtPeriodEndMutation.isPending ? 'Procesando...' : 'Sí, cancelar renovación'}
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={() => setShowCancelConfirm(true)}
+                            className="text-sm font-medium text-stone-500 hover:text-red-500 transition-colors
+                                underline underline-offset-2 decoration-stone-300 hover:decoration-red-300"
+                        >
+                            Cancelar renovación automática
+                        </button>
+                    )}
                 </div>
-            )}
+            </div>
         </div>
     );
 }
