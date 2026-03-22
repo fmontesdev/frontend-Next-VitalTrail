@@ -29,8 +29,6 @@ export const useCreateCheckoutSession = () => {
 };
 
 // Helper compartido por las tres mutations de gestión de suscripción.
-// El backend devuelve cancelAtPeriodEnd sin refrescar tras el cambio,
-// por eso se fuerza el valor esperado directamente en la caché.
 const useSubscriptionMutation = (
     mutationFn: (customerId: string) => Promise<SubscriptionData>,
     expectedCancelAtPeriodEnd: boolean

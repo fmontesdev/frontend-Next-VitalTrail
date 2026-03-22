@@ -41,15 +41,14 @@ export default function RegisterPage() {
         <main className="min-h-[calc(100vh-64px-64px)] w-full flex items-center justify-center py-14"
             style={{ 
                 backgroundImage: `url(${getImageUrl('background', 'register.jpg')})`,
-                backgroundSize: '100% auto', // Estira al ancho completo sin recortar altura
-                backgroundPosition: 'center center', // Posiciona desde arriba
-                backgroundRepeat: 'no-repeat', // Evita que se repita
+                backgroundSize: 'cover',
+                backgroundPosition: 'center center',
+                backgroundRepeat: 'no-repeat',
                 backgroundBlendMode: 'overlay',
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                // backgroundAttachment: 'fixed', // Mantiene la imagen fija al hacer scroll
             }}
         >
-            <div className="bg-white p-8 rounded-3xl shadow-xl w-[26rem] text-center">
+            <div className="animate-fade-up bg-white p-8 rounded-3xl shadow-xl w-[26rem] text-center">
                 <p className={`${merienda.className} antialiased text-3xl font-black text-white pb-2`}>
                     <span className="text-lime-500">Vital</span>
                     <span className="text-teal-500">Trail</span>
