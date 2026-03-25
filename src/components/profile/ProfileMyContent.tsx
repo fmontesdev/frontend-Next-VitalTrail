@@ -12,16 +12,15 @@ import MySessionsList from './MySessionsList';
 export default function ProfileMyContent({ username }: { username: string }) {
     // State para controlar qué vista se muestra
     const [activeTab, setActiveTab] =
-        useState<'rutas' | 'favoritos' | 'comentarios' | 'sesiones' | 'siguiendo' | 'seguidos'>('rutas');
-    // Contadores
-    const [commentsCount, setCommentsCount] = useState<number>();
+        useState<'sesiones' | 'favoritos' | 'rutas' | 'comentarios' | 'siguiendo' | 'seguidos'>('sesiones');
+    const [commentsCount, setCommentsCount] = useState<number>(); // Contador de comentarios para mostrar en la pestaña (desactivado)
     const { canEdit } = useCanEdit(username);
     const { canManageAdmin } = useCanManageAdmin(username);
 
     // Funciones para cambiar la pestaña
-    const showRoutes = () => setActiveTab('rutas');
-    const showFavorites = () => setActiveTab('favoritos');
     const showSessions = () => setActiveTab('sesiones');
+    const showFavorites = () => setActiveTab('favoritos');
+    const showRoutes = () => setActiveTab('rutas');
     const showComments = () => setActiveTab('comentarios');
     const showFollowing = () => setActiveTab('siguiendo');
     const showFollowers = () => setActiveTab('seguidos');
@@ -30,32 +29,6 @@ export default function ProfileMyContent({ username }: { username: string }) {
         <div className="w-3/4 bg-stone-100 border border-stone-200 rounded-2xl px-7 py-4">
             {/* Barra de pestañas */}
             <div className="flex items-center gap-3 border-b text-gray-400 font-bold">
-                {canManageAdmin && (
-                    <>
-                        <button
-                            onClick={showRoutes}
-                            className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
-                                ${activeTab === 'rutas'
-                                ? 'text-teal-700 border-b-2 border-teal-700 hover:text-teal-700'
-                                : ''}
-                            `}
-                        >
-                            Mis Rutas
-                        </button>
-                    
-                        <button
-                            onClick={showFavorites}
-                            className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
-                                ${activeTab === 'favoritos'
-                                ? 'text-teal-700 border-b-2 border-teal-700 hover:text-teal-700'
-                                : ''}
-                            `}
-                        >
-                            Mis Favoritos
-                        </button>
-                    </>
-                )}
-
                 {canEdit && (
                     <button
                         onClick={showSessions}
@@ -67,6 +40,32 @@ export default function ProfileMyContent({ username }: { username: string }) {
                     >
                         Mis Sesiones
                     </button>
+                )}
+
+                {canManageAdmin && (
+                    <>
+                        <button
+                            onClick={showFavorites}
+                            className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
+                                ${activeTab === 'favoritos'
+                                ? 'text-teal-700 border-b-2 border-teal-700 hover:text-teal-700'
+                                : ''}
+                            `}
+                        >
+                            Mis Favoritos
+                        </button>
+
+                        <button
+                            onClick={showRoutes}
+                            className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
+                                ${activeTab === 'rutas'
+                                ? 'text-teal-700 border-b-2 border-teal-700 hover:text-teal-700'
+                                : ''}
+                            `}
+                        >
+                            Mis Rutas
+                        </button>
+                    </>
                 )}
 
                 {canEdit && (
@@ -107,10 +106,10 @@ export default function ProfileMyContent({ username }: { username: string }) {
 
             {/* Contenido dinámico */}
             <div className="mt-4">
-                {activeTab === 'rutas' && <MyRoutesList username={username} />}
-                {activeTab === 'favoritos' && <ProfileFavoritesList username={username} />}
-                {activeTab === 'comentarios' && <ProfileCommentsList username={username} onCommentsCount={(count) => setCommentsCount(count)}/>}
                 {activeTab === 'sesiones' && <MySessionsList />}
+                {activeTab === 'favoritos' && <ProfileFavoritesList username={username} />}
+                {activeTab === 'rutas' && <MyRoutesList username={username} />}
+                {activeTab === 'comentarios' && <ProfileCommentsList username={username} onCommentsCount={(count) => setCommentsCount(count)}/>}
                 {activeTab === 'siguiendo' && <FollowingList username={username} />}
                 {activeTab === 'seguidos'  && <FollowersList username={username} />}
             </div>

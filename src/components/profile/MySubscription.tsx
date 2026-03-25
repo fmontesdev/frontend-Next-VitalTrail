@@ -56,7 +56,7 @@ export default function MySubscription() {
     const cardBrandLabel = (brand: string) =>
         CARD_BRAND_LABELS[brand?.toLowerCase()] ?? brand?.toUpperCase() ?? '—';
 
-    /* ── Loading ── */
+    /* Loading */
     if (isLoading) {
         return (
             <div className="w-full py-2 animate-pulse">
@@ -82,7 +82,7 @@ export default function MySubscription() {
         );
     }
 
-    /* ── Error ── */
+    /* Error */
     if (isError) {
         return (
             <div className="w-full py-2">
@@ -93,7 +93,7 @@ export default function MySubscription() {
         );
     }
 
-    /* ── Sin suscripción activa ── */
+    /* Sin suscripción activa */
     if (!subscription || subscription.status !== 'active') {
         return (
             <div className="w-full py-2">
@@ -155,7 +155,7 @@ export default function MySubscription() {
                             </span>
                         ) : (
                             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-lime-50 text-lime-700 border border-lime-200 mt-0.5">
-                                <CheckCircleIcon className="w-3.5 h-3.5" />
+                                <CheckCircleIcon className="w-4 h-4" />
                                 Activo
                             </span>
                         )}
@@ -180,7 +180,7 @@ export default function MySubscription() {
                                 <CreditCardIcon className="w-5 h-5 text-stone-400 flex-shrink-0" />
                                 <span className="text-stone-500 w-36 flex-shrink-0">Método de pago</span>
                                 <span className="flex items-center gap-2 text-stone-700 font-semibold">
-                                    <span className="inline-block bg-stone-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wide">
+                                    <span className="inline-block bg-sky-700 text-white text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wide">
                                         {cardBrandLabel(subscription.cardBrand)}
                                     </span>
                                     •••• {subscription.cardLast4}
@@ -222,7 +222,7 @@ export default function MySubscription() {
                                     {formatDate(subscription.currentPeriodEnd)}
                                 </span>. ¿Confirmas la cancelación?
                             </p>
-                            <div className="flex gap-2">
+                            <div className="flex gap-3">
                                 <button
                                     onClick={() => setShowCancelConfirm(false)}
                                     disabled={cancelAtPeriodEndMutation.isPending}
