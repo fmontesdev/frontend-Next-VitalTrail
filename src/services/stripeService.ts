@@ -1,5 +1,6 @@
 import apiService from './apiService';
 import { SessionData, CustomerData, CheckoutSessionResponse, SubscriptionData } from '@/shared/interfaces/components/stripe.interface';
+import { IInvoice } from '@/shared/interfaces/entities/invoice.interface';
 
 export const StripeService = {
     createCheckoutSession(priceId: string, customerData?: CustomerData): Promise<CheckoutSessionResponse> {
@@ -31,5 +32,9 @@ export const StripeService = {
 
     reactivateSubscription(customerId: string): Promise<SubscriptionData> {
         return apiService.post<SubscriptionData>('/payments/stripe/reactivate-subscription', { customerId }, true);
+    },
+
+    getInvoices(customerId: string): Promise<IInvoice[]> {
+        return apiService.get<IInvoice[]>(`/payments/stripe/invoices/${customerId}`, true);
     },
 };

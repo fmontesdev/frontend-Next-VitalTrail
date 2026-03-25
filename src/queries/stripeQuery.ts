@@ -1,6 +1,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { StripeService } from '@/services/stripeService';
 import { SubscriptionData } from '@/shared/interfaces/components/stripe.interface';
+import { IInvoice } from '@/shared/interfaces/entities/invoice.interface';
 
 export const useStripeSession = (sessionId: string | null) => {
     const queryClient = useQueryClient();
@@ -34,6 +35,15 @@ export const useSubscription = (customerId: string | null) => {
                 : Promise.resolve(null as unknown as SubscriptionData);
         },
         enabled: !!customerId, // Solo ejecuta si hay customerId
+        staleTime: 1000 * 60 * 5, // 5 minutos
+    });
+};
+
+export const useInvoicesQuery = (customerId: string | null) => {
+    return useQuery<IInvoice[]>({
+        queryKey: ['invoices', customerId],
+        queryFn: () => StripeService.getInvoices(customerId!),
+        enabled: !!customerId,
         staleTime: 1000 * 60 * 5, // 5 minutos
     });
 };
