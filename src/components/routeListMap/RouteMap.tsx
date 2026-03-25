@@ -6,7 +6,10 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { StarIcon } from '@heroicons/react/24/solid';
+import { PhotoIcon, MapPinIcon, ClockIcon } from '@heroicons/react/24/outline';
 import { getImageUrl } from '@/shared/utils/imageUrl';
+import { formatDistance } from '@/shared/utils/distance';
+import { CapitalizeFirstLetter } from '@/shared/utils/capitalizeFirstLetter';
 import { IRoutes } from '@/shared/interfaces/entities/route.interface';
 import ExpandableMap, { MapStateTracker, MapResizer } from '@/components/map/ExpandableMap';
 
@@ -31,9 +34,6 @@ export default function RouteMap({ routes }: { routes: IRoutes | [] }) {
 
     // Clave estable para la instancia colapsada (evita re-mount innecesarios)
     const collapsedKey = useMemo(() => 'route-list-map-collapsed', []);
-
-    const capitalizeFirstLetter = (text: string) =>
-        text.charAt(0).toUpperCase() + text.slice(1);
 
     /** Markers y polylines de cada ruta */
     const routeMarkers = (
@@ -64,28 +64,70 @@ export default function RouteMap({ routes }: { routes: IRoutes | [] }) {
                                 },
                             }}
                         >
-                            <Popup>
-                                <div className="cursor-pointer text-center">
-                                    {route.images && route.images.length > 0 && (
-                                        <img
-                                            src={getImageUrl('route', route.images[0].imgRoute)}
-                                            alt={`Ruta ${route.title}`}
-                                            className="w-full max-w-[200px] h-auto mb-1"
-                                        />
-                                    )}
-                                    <h2 className="max-w-[150px] text-sm font-bold text-teal-700 line-clamp-2">
-                                        {capitalizeFirstLetter(route.title)}
-                                    </h2>
-                                    <div className="flex flex-wrap justify-center text-sm font-medium text-gray-600">
-                                        <div className="flex items-center gap-1 shrink-0">
-                                            <StarIcon className="w-4 h-4" /> {route.averageRatings}&nbsp;&nbsp;•&nbsp;&nbsp;
-                                            {capitalizeFirstLetter(route.difficulty)}
+                            <Popup
+                                className="vt-route-popup"
+                                closeButton={false}
+                                minWidth={190}
+                                maxWidth={190}
+                            >
+                                <div
+                                    className="cursor-pointer w-[190px]"
+                                    onClick={() => router.push(`/route/${route.slug}`)}
+                                >
+                                    {/* Imagen de cabecera */}
+                                    {route.images && route.images.length > 0 ? (
+                                        <div className="relative h-22 overflow-hidden">
+                                            <img
+                                                src={getImageUrl('route', route.images[0].imgRoute)}
+                                                alt={route.title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                            {/* Gradiente sobre la imagen */}
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent" />
+                                            {/* Badge dificultad — inferior izquierda */}
+                                            <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold uppercase bg-lime-600 text-white px-1.5 py-0.5 rounded-full tracking-wide">
+                                                {CapitalizeFirstLetter(route.difficulty)}
+                                            </span>
+                                            {/* Badge tipo de ruta — inferior derecha */}
+                                            <span className="absolute bottom-1.5 right-1.5 text-[9px] font-bold uppercase bg-teal-700/80 text-white px-1.5 py-0.5 rounded-full tracking-wide">
+                                                {CapitalizeFirstLetter(route.typeRoute)}
+                                            </span>
+                                            {/* Rating flotante — superior derecha */}
+                                            <div className="absolute top-1.5 right-1.5 flex items-center gap-0.5 bg-white/90 backdrop-blur-sm rounded-full px-1.5 py-0.5 shadow-sm">
+                                                <StarIcon className="w-2.5 h-2.5 text-amber-500" />
+                                                <span className="text-[10px] font-bold text-gray-800 leading-none">{route.averageRatings}</span>
+                                            </div>
                                         </div>
-                                        <span>
-                                            {route.distance} km&nbsp;&nbsp;•&nbsp;&nbsp;
-                                            {capitalizeFirstLetter(route.typeRoute)}
-                                        </span>
-                                        <span>Estimac. {route.duration} h</span>
+                                    ) : (
+                                        <div className="h-20 bg-teal-50 flex flex-col items-center justify-center gap-1 border-b border-stone-100">
+                                            <PhotoIcon className="w-6 h-6 text-teal-300" />
+                                        </div>
+                                    )}
+
+                                    {/* Cuerpo del popup */}
+                                    <div className="p-2.5">
+                                        {/* Título */}
+                                        <h2 className="text-[14px] font-black text-teal-700 line-clamp-2 leading-tight mb-1.5">
+                                            {CapitalizeFirstLetter(route.title)}
+                                        </h2>
+
+                                        {/* Estadísticas: distancia y duración */}
+                                        <div className="grid grid-cols-2 gap-1">
+                                            <div className="flex flex-col items-center bg-stone-50 rounded-md px-1.5 py-1 border border-stone-100">
+                                                <div className="flex items-center gap-0.5">
+                                                    <MapPinIcon className="w-3 h-3 text-teal-500" />
+                                                    <span className="text-[12px] font-semibold text-teal-700">{formatDistance(route.distance)}</span>
+                                                </div>
+                                                <span className="text-[9px] text-gray-400 uppercase tracking-wide mt-0.5">Distancia</span>
+                                            </div>
+                                            <div className="flex flex-col items-center bg-stone-50 rounded-md px-1.5 py-1 border border-stone-100">
+                                                <div className="flex items-center gap-0.5">
+                                                    <ClockIcon className="w-3 h-3 text-teal-500" />
+                                                    <span className="text-[12px] font-semibold text-teal-700">{route.duration} h</span>
+                                                </div>
+                                                <span className="text-[9px] text-gray-400 uppercase tracking-wide mt-0.5">Estimado</span>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </Popup>

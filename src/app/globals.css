@@ -25,3 +25,29 @@
     display: none;
     /* Chrome, Safari y Opera */
 }
+
+/* Popup de mapa - Lista de rutas */
+
+.vt-route-popup .leaflet-popup-content-wrapper {
+    padding: 0;
+    border-radius: 14px;
+    border: 1px solid #d6d3d1;               /* stone-300 */
+    box-shadow:
+        0 10px 32px rgba(0, 0, 0, 0.13),
+        0 2px 8px  rgba(0, 0, 0, 0.07);
+    overflow: hidden;
+}
+
+.vt-route-popup .leaflet-popup-content {
+    margin: 0;
+    width: 190px !important;
+}
+
+.vt-route-popup .leaflet-popup-tip {
+    background: #ffffff;
+    box-shadow: none;
+}
+
+.vt-route-popup .leaflet-popup-close-button {
+    display: none;
+}

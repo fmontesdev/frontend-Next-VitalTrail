@@ -132,7 +132,7 @@ export default function MyInvoices() {
                     return (
                         <div
                             key={invoice.id}
-                            className={`${GRID} py-4 ${index < invoices.length - 1 ? 'border-b border-stone-100' : ''}`}
+                            className={`${GRID} py-3 ${index < invoices.length - 1 ? 'border-b border-stone-100' : ''}`}
                         >
                             {/* Nº factura */}
                             {invoice.invoiceUrl ? (
