@@ -6,9 +6,16 @@ import { useCategoryRoutes } from '@/queries/categoryRouteQuery';
 import { useDistanceDelay } from '@/hooks/useDistanceDelay';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsPremium } from '@/auth/authorizations';
-import { AdjustmentsHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
+import { AdjustmentsHorizontalIcon, ChevronDownIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { CapitalizeFirstLetter } from '@/shared/utils/capitalizeFirstLetter';
 import { IFiltersProps } from '@/shared/interfaces/props/props.interface';
+
+const selectBase = `
+    appearance-none px-4 py-2 pr-8 text-sm bg-white border border-stone-200 rounded-full
+    cursor-pointer focus:outline-none focus:ring-2 focus:ring-lime-600 focus:border-lime-600
+    hover:bg-stone-50 text-stone-600 transition-colors
+`;
+const selectActive = '!bg-lime-600/60 !text-white';
 
 export default function Filters({ initialParams, onFilterChange }: IFiltersProps) {
     const [category, setCategory] = useState<string>(initialParams.category || '');
@@ -49,20 +56,15 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
     return (
         <div className="flex flex-wrap items-center justify-center gap-4">
             <AdjustmentsHorizontalIcon strokeWidth={1} className="w-8 h-8" />
+
             {/* Filtro categoría */}
             <div className="relative">
-                <label htmlFor="category" className="sr-only">
-                    Intención
-                </label>
+                <label htmlFor="category" className="sr-only">Intención</label>
                 <select
                     id="category"
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    className={`
-                        px-4 py-2 text-sm text-gray-600 bg-white border border-stone-300 rounded-xl cursor-pointer focus:outline-none
-                        focus:ring-lime-600/80 focus:border-lime-600/80 hover:bg-stone-100 hover:text-gray-600 shadow
-                        ${category !== "" ? "!bg-lime-600/60 text-white " : ""}
-                    `}
+                    className={`${selectBase} ${category !== '' ? selectActive : ''}`}
                 >
                     <option value="">Intención</option>
                     {categoriesData?.map((cat) => (
@@ -71,35 +73,27 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
                         </option>
                     ))}
                 </select>
-
-                {/* Botón para borrar filtro sólo si hay valor */}
-                {category !== "" && (
+                {category !== '' ? (
                     <button
                         type="button"
                         onClick={() => setCategory('')}
-                        className="
-                            absolute top-1/2 right-1 -translate-y-1/2 w-6 h-6 bg-stone-100 rounded-full text-gray-600
-                            text-2xl font-medium flex items-center justify-center hover:bg-red-300 hover:text-white"
+                        className="absolute top-1/2 right-2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/30 text-white text-lg font-medium flex items-center justify-center hover:bg-white/50"
                     >
                         &times;
                     </button>
+                ) : (
+                    <ChevronDownIcon className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
                 )}
             </div>
 
             {/* Filtro dificultad */}
             <div className="relative">
-                <label htmlFor="difficulty" className="sr-only">
-                    Dificultad
-                </label>
+                <label htmlFor="difficulty" className="sr-only">Dificultad</label>
                 <select
                     id="difficulty"
                     value={difficulty}
                     onChange={(e) => setDifficulty(e.target.value)}
-                    className={`
-                        px-4 py-2 text-sm text-gray-600 bg-white border border-stone-300 rounded-xl cursor-pointer focus:outline-none
-                        focus:ring-lime-600/80 focus:border-lime-600/80 hover:bg-stone-100 hover:text-gray-600 shadow
-                        ${difficulty !== "" ? "!bg-lime-600/60 text-white " : ""}
-                    `}
+                    className={`${selectBase} ${difficulty !== '' ? selectActive : ''}`}
                 >
                     <option value="">Dificultad</option>
                     <option value="fácil">Fácil</option>
@@ -107,28 +101,24 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
                     <option value="difícil">Difícil</option>
                     <option value="experto">Experto</option>
                 </select>
-
-                {/* Botón para borrar filtro sólo si hay valor */}
-                {difficulty !== "" && (
+                {difficulty !== '' ? (
                     <button
                         type="button"
                         onClick={() => setDifficulty('')}
-                        className="
-                            absolute top-1/2 right-1 -translate-y-1/2 w-6 h-6 bg-stone-100 rounded-full text-gray-600
-                            text-2xl font-medium flex items-center justify-center hover:bg-red-300 hover:text-white"
+                        className="absolute top-1/2 right-2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/30 text-white text-lg font-medium flex items-center justify-center hover:bg-white/50"
                     >
                         &times;
                     </button>
+                ) : (
+                    <ChevronDownIcon className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
                 )}
             </div>
 
             {/* Filtro distancia */}
             <div className="relative">
-                <label htmlFor="distance" className="sr-only">
-                    Distancia
-                </label>
+                <label htmlFor="distance" className="sr-only">Distancia</label>
                 <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-600">Distancia</span>
+                    <span className="text-sm text-stone-500">Distancia</span>
                     <input
                         type="range"
                         id="distance"
@@ -138,41 +128,33 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
                         onChange={(e) => setDistance(e.target.value)}
                         className="w-28 accent-lime-500 cursor-pointer"
                     />
-                    <span className="text-xs text-gray-500">{distance} km</span>
+                    <span className="text-xs text-stone-400">{distance} km</span>
                 </div>
             </div>
 
             {/* Filtro tipo de ruta */}
             <div className="relative">
-                <label htmlFor="typeRoute" className="sr-only">
-                    Tipo de ruta
-                </label>
+                <label htmlFor="typeRoute" className="sr-only">Tipo de ruta</label>
                 <select
                     id="typeRoute"
                     value={typeRoute}
                     onChange={(e) => setTypeRoute(e.target.value)}
-                    className={`
-                        px-4 py-2 text-sm text-gray-600 bg-white border border-stone-300 rounded-xl cursor-pointer focus:outline-none
-                        focus:ring-lime-600/80 focus:border-lime-600/80 hover:bg-stone-100 hover:text-gray-600 shadow
-                        ${typeRoute !== "" ? "!bg-lime-600/60 text-white " : ""}
-                    `}
+                    className={`${selectBase} ${typeRoute !== '' ? selectActive : ''}`}
                 >
                     <option value="">Tipo de ruta</option>
                     <option value="solo ida">Solo ida</option>
                     <option value="circular">Circular</option>
                 </select>
-
-                {/* Botón para borrar filtro sólo si hay valor */}
-                {typeRoute !== "" && (
+                {typeRoute !== '' ? (
                     <button
                         type="button"
                         onClick={() => setTypeRoute('')}
-                        className="
-                            absolute top-1/2 right-1 -translate-y-1/2 w-6 h-6 bg-stone-100 rounded-full text-gray-600
-                            text-2xl font-medium flex items-center justify-center hover:bg-red-300 hover:text-white"
+                        className="absolute top-1/2 right-2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/30 text-white text-lg font-medium flex items-center justify-center hover:bg-white/50"
                     >
                         &times;
                     </button>
+                ) : (
+                    <ChevronDownIcon className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
                 )}
             </div>
 
@@ -180,11 +162,12 @@ export default function Filters({ initialParams, onFilterChange }: IFiltersProps
             <button
                 type="button"
                 className={`
-                    px-4 py-2 text-sm text-gray-600 bg-white border border-stone-300 rounded-xl cursor-pointer
-                    focus:outline-none focus:ring-lime-600/80 focus:border-lime-600/80 hover:bg-stone-100 shadow
-                    ${category !== "" || difficulty !== "" || distance !== "0" || typeRoute !== ""
-                        ? "!border !border-red-300 !bg-red-300 !text-white hover:!bg-red-400"
-                        : ""}
+                    appearance-none px-4 py-2 text-sm border rounded-full cursor-pointer
+                    focus:outline-none transition-colors
+                    ${category !== '' || difficulty !== '' || distance !== '0' || typeRoute !== ''
+                        ? 'border-red-300 bg-red-300 text-white hover:bg-red-400'
+                        : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-50'
+                    }
                 `}
                 onClick={() => {
                     setCategory('');

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 
 interface IAdminUsersFiltersProps {
     onSearch: (v: string) => void;
@@ -9,8 +10,11 @@ interface IAdminUsersFiltersProps {
     onActiveChange: (v: boolean | undefined) => void;
 }
 
-const selectBase = 'border border-stone-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-lime-600 focus:border-lime-600 outline-none shadow cursor-pointer transition-colors';
-const selectInactive = 'bg-white text-gray-600 hover:bg-stone-100';
+const selectBase = `
+    appearance-none px-4 py-2 pr-8 text-sm bg-white border border-stone-200 rounded-full
+    cursor-pointer focus:outline-none focus:ring-2 focus:ring-lime-600 focus:border-lime-600
+    hover:bg-stone-50 text-stone-600 transition-colors
+`;
 const selectActive = '!bg-lime-600/60 !text-white';
 
 export default function AdminUsersFilters({ onSearch, onRoleChange, onPremiumChange, onActiveChange }: IAdminUsersFiltersProps) {
@@ -54,42 +58,93 @@ export default function AdminUsersFilters({ onSearch, onRoleChange, onPremiumCha
         onActiveChange(val === '' ? undefined : val === 'true');
     };
 
+    const isRoleActive = role !== '' && role !== 'Todos';
+    const isPremiumActive = premium !== '' && premium !== 'Todos';
+    const isActiveStatusActive = activeStatus !== '';
+
     return (
-        <div className="flex gap-3 mb-6 flex-wrap">
+        <div className="flex gap-3 mb-6 flex-wrap items-center">
             <input
                 type="text"
                 placeholder="Buscar por nombre, email o usuario..."
                 value={searchInput}
                 onChange={e => setSearchInput(e.target.value)}
-                className="border border-stone-300 rounded-xl px-3 py-2 text-sm focus:ring-2 focus:ring-lime-600 focus:border-lime-600 outline-none min-w-64 shadow hover:bg-stone-100"
+                className="appearance-none px-4 py-2 text-sm bg-white border border-stone-200 rounded-full
+                    focus:outline-none focus:ring-2 focus:ring-lime-600 focus:border-lime-600
+                    hover:bg-stone-50 text-stone-600 transition-colors min-w-64 outline-none"
             />
-            <select
-                value={role}
-                onChange={handleRoleChange}
-                className={`${selectBase} ${role !== '' && role !== 'Todos' ? selectActive : selectInactive}`}
-            >
-                <option value="Todos">Todos los roles</option>
-                <option value="ROLE_CLIENT">Cliente</option>
-                <option value="ROLE_ADMIN">Administrador</option>
-            </select>
-            <select
-                value={premium}
-                onChange={handlePremiumChange}
-                className={`${selectBase} ${premium !== '' && premium !== 'Todos' ? selectActive : selectInactive}`}
-            >
-                <option value="Todos">Todos</option>
-                <option value="Premium">Premium</option>
-                <option value="No premium">No premium</option>
-            </select>
-            <select
-                value={activeStatus}
-                onChange={handleActiveChange}
-                className={`${selectBase} ${activeStatus !== '' ? selectActive : selectInactive}`}
-            >
-                <option value="">Todos los estados</option>
-                <option value="true">Activos</option>
-                <option value="false">Inactivos</option>
-            </select>
+
+            {/* Rol */}
+            <div className="relative">
+                <select
+                    value={role}
+                    onChange={handleRoleChange}
+                    className={`${selectBase} ${isRoleActive ? selectActive : ''}`}
+                >
+                    <option value="Todos">Todos los roles</option>
+                    <option value="ROLE_CLIENT">Cliente</option>
+                    <option value="ROLE_ADMIN">Administrador</option>
+                </select>
+                {isRoleActive ? (
+                    <button
+                        type="button"
+                        onClick={() => { setRole(''); onRoleChange(''); }}
+                        className="absolute top-1/2 right-2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/30 text-white text-lg font-medium flex items-center justify-center hover:bg-white/50"
+                    >
+                        &times;
+                    </button>
+                ) : (
+                    <ChevronDownIcon className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
+                )}
+            </div>
+
+            {/* Premium */}
+            <div className="relative">
+                <select
+                    value={premium}
+                    onChange={handlePremiumChange}
+                    className={`${selectBase} ${isPremiumActive ? selectActive : ''}`}
+                >
+                    <option value="Todos">Todos</option>
+                    <option value="Premium">Premium</option>
+                    <option value="No premium">No premium</option>
+                </select>
+                {isPremiumActive ? (
+                    <button
+                        type="button"
+                        onClick={() => { setPremium(''); onPremiumChange(undefined); }}
+                        className="absolute top-1/2 right-2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/30 text-white text-lg font-medium flex items-center justify-center hover:bg-white/50"
+                    >
+                        &times;
+                    </button>
+                ) : (
+                    <ChevronDownIcon className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
+                )}
+            </div>
+
+            {/* Estado */}
+            <div className="relative">
+                <select
+                    value={activeStatus}
+                    onChange={handleActiveChange}
+                    className={`${selectBase} ${isActiveStatusActive ? selectActive : ''}`}
+                >
+                    <option value="">Todos los estados</option>
+                    <option value="true">Activos</option>
+                    <option value="false">Inactivos</option>
+                </select>
+                {isActiveStatusActive ? (
+                    <button
+                        type="button"
+                        onClick={() => { setActiveStatus(''); onActiveChange(undefined); }}
+                        className="absolute top-1/2 right-2 -translate-y-1/2 w-5 h-5 rounded-full bg-white/30 text-white text-lg font-medium flex items-center justify-center hover:bg-white/50"
+                    >
+                        &times;
+                    </button>
+                ) : (
+                    <ChevronDownIcon className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-stone-400 pointer-events-none" />
+                )}
+            </div>
         </div>
     );
 }
