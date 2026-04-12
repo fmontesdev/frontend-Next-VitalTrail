@@ -20,14 +20,16 @@ export default function RouteCard({ route, section }: { route: IRoute, section: 
                 relative max-h-48`}
         >
             {/* Carrusel de imágenes */}
-            <div className="w-1/3">
-                {route.images && route.images.length > 0 ? (
-                    <RouteImagesCarousel images={route.images} />
-                ) : (
-                    <div className="w-full h-full bg-stone-200 flex items-center justify-center">
-                        <PhotoIcon className="w-8 h-8 text-stone-400" />
-                    </div>
-                )}
+            <div className="w-1/3 p-1.5">
+                <div className="rounded-2xl overflow-hidden w-full h-full">
+                    {route.images && route.images.length > 0 ? (
+                        <RouteImagesCarousel images={route.images} />
+                    ) : (
+                        <div className="w-full h-full bg-stone-200 flex items-center justify-center">
+                            <PhotoIcon className="w-8 h-8 text-stone-400" />
+                        </div>
+                    )}
+                </div>
             </div>
                             
             {/* Botón de favorito */}

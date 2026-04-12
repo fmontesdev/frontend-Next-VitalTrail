@@ -105,7 +105,7 @@ export default function Search() {
                 placeholder="Busca por ciudad o nombre de la ruta…"
                 className="
                     border rounded-full pl-10 pr-4 py-1.5 w-full text-teal-700 font-semibold text-base md:text-lg
-                    focus:outline-none focus:ring-1 focus:ring-teal-600
+                    focus:outline-none focus:ring-1 focus:ring-lime-600
             "/>
 
             {/* Icono de "X" para borrar el input */}

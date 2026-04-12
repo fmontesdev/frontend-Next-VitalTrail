@@ -25,7 +25,7 @@ export default function FollowButton({ initialFollowing, username }: { initialFo
             onClick={toggleFollow}
             className={`
                 flex flex-col items-center space-y-1 transform transition-transform duration-300 hover:scale-110
-                ${isFollowing ? 'text-red-500' : 'text-blue-600'}
+                ${isFollowing ? 'text-red-500' : 'text-teal-600'}
             `}
         >
             {isFollowing
