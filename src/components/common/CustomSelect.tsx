@@ -75,7 +75,7 @@ export default function CustomSelect({ options, value, onChange }: ICustomSelect
             {/* Dropdown panel */}
             {open && (
                 <ul className="absolute top-full mt-1.5 left-0 min-w-full w-max bg-white border border-stone-200
-                    rounded-2xl shadow-lg z-50 py-1.5 overflow-hidden">
+                    rounded-2xl shadow-lg py-1.5 overflow-hidden" style={{ zIndex: 500 }}>
                     {options.map(option => (
                         <li key={option.value}>
                             <button

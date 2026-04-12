@@ -37,7 +37,7 @@ export default function Header() {
 
     return (
         <>
-            <header className="relative flex flex-col justify-center w-full h-[64px] md:h-[64px] text-base border border-stone-">
+            <header className="relative flex flex-col justify-center w-full h-[64px] md:h-[64px] text-base border border-stone-" style={{ zIndex: 500 }}>
                 {/* Primera fila: Logo + Links */}
                 <div className="container mx-auto flex justify-between items-center px-5">
                     {/* Logo */}

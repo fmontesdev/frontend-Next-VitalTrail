@@ -43,7 +43,7 @@ export default function HeaderHome() {
 
     return (
         <>
-            <header className="relative w-full h-[280px] md:h-[300px] text-base">
+            <header className="relative z-20 w-full h-[280px] md:h-[300px] text-base">
                 {/* Imagen de fondo */}
                 <div className="absolute inset-0">
                     <Image

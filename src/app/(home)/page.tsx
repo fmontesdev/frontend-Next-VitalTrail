@@ -36,7 +36,7 @@ export default async function HomePage() {
     return (
         <>
             <main className="container mx-auto md:px-8 lg:px-16 xl:px-32 flex-grow">
-                <section className="px-4 pt-8 pb-8">
+                <section className="relative z-0 px-4 pt-8 pb-8">
                     <CategoryGrid categories={categories} />
                 </section>
                 <section className="px-4 pb-8">
