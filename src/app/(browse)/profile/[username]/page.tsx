@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import ProfileSidebar from '@/components/profile/ProfileSidebar';
 import ProfileMyContent from "@/components/profile/ProfileMyContent";
 import ProfileMySubscription from "@/components/profile/ProfileMySubscription";
@@ -12,10 +12,15 @@ import LoadingSpinner from "@/components/common/LoadingSpinner";
 export default function ProfilePage() {
     const currentUser = useAuthGuard();
     const params = useParams();
+    const searchParams = useSearchParams();
     const { username } = params as { username: string };
 
+    const initialTab = searchParams.get('tab');
+
     // State para controlar qué vista se muestra
-    const [activeTab, setActiveTab] = useState<'miContenido' | 'misNotificaciones' | 'miSuscripción' | 'editarPerfil'>('miContenido');
+    const [activeTab, setActiveTab] = useState<'miContenido' | 'misNotificaciones' | 'miSuscripción' | 'editarPerfil'>(
+        initialTab === 'suscripcion' ? 'miSuscripción' : 'miContenido'
+    );
 
     if (currentUser.isLoading) {
         return <LoadingSpinner />;
