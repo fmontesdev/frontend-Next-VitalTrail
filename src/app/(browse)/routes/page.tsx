@@ -7,7 +7,7 @@ import RoutesPageClient from '@/components/routes/RoutesPageClient';
 import { getServerImageUrl } from '@/shared/utils/imageUrl';
 
 // Para paginación
-const limit = 5;
+const limit = 10;
 
 // Función cacheada para obtener rutas
 const getRoutes = cache(async(searchParams: Promise<IParams>): Promise<IRoutes> => {

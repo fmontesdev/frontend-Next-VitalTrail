@@ -1,27 +1,22 @@
-"use client";
+'use client';
 
-import Link from "next/link";
-import RouteImagesCarousel from "../carousels/RouteImagesCarousel/RouteImagesCarousel";
-import FavoriteButton from "@/components/buttons/FavoriteButton/FavoriteButton";
-import { CapitalizeFirstLetter } from "@/shared/utils/capitalizeFirstLetter";
-import { ToSingular } from "@/shared/utils/toSingular";
-import { IRoute } from "@/shared/interfaces/entities/route.interface";
-import { MapPinIcon, PhotoIcon } from "@heroicons/react/24/outline";
-import { StarIcon } from "@heroicons/react/24/solid";
-import { formatDistance } from "@/shared/utils/distance";
+import Link from 'next/link';
+import RouteImagesCarousel from '../carousels/RouteImagesCarousel/RouteImagesCarousel';
+import FavoriteButton from '@/components/buttons/FavoriteButton/FavoriteButton';
+import { CapitalizeFirstLetter } from '@/shared/utils/capitalizeFirstLetter';
+import { ToSingular } from '@/shared/utils/toSingular';
+import { IRoute } from '@/shared/interfaces/entities/route.interface';
+import { ClockIcon, FlagIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { FireIcon, StarIcon } from '@heroicons/react/24/solid';
+import { formatDistance } from '@/shared/utils/distance';
 
 export default function RouteCard({ route, section }: { route: IRoute, section: string }) {
-    const bgColour = section === 'routes' ? 'stone-100' : 'white';
-
     return (
-        <div className={`
-                flex w-full bg-${bgColour} border border-stone-200 rounded-2xl
-                overflow-hidden hover:shadow-md transition-shadow cursor-pointer
-                relative max-h-48`}
-        >
-            {/* Carrusel de imágenes */}
-            <div className="w-1/3 p-1.5">
-                <div className="rounded-2xl overflow-hidden w-full h-full">
+        <div className={`flex w-full min-h-44 ${section === 'routes' ? 'bg-stone-100' : 'bg-white'} border border-stone-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer relative`}>
+
+            {/* Imagen */}
+            <div className="w-1/3 shrink-0">
+                <div className="overflow-hidden w-full h-full">
                     {route.images && route.images.length > 0 ? (
                         <RouteImagesCarousel images={route.images} />
                     ) : (
@@ -31,40 +26,57 @@ export default function RouteCard({ route, section }: { route: IRoute, section: 
                     )}
                 </div>
             </div>
-                            
+
             {/* Botón de favorito */}
-            <div className="absolute top-2 right-5 mt-2">
+            <div className="absolute top-2 right-3 bg-white/70 rounded-full p-0.5">
                 <FavoriteButton
                     initialIsFavorite={route.favorited}
                     initialCount={route.favoritesCount}
                     slug={route.slug}
                     origin="routesList"
-                /> 
+                />
             </div>
 
             {/* Información de la ruta */}
             <Link
                 href={`/route/${route.slug}`}
-                className="w-2/3 p-4 flex flex-col"
+                className="w-2/3 p-4 flex flex-col gap-2"
             >
-                <p className="text-xs md:text-sm font-medium text-gray-600 flex items-center gap-1 pb-2">
-                    <MapPinIcon className="w-5 h-5" />
+                {/* Badge de categoría */}
+                <div className="flex items-center gap-1 bg-lime-600 text-white text-xs font-semibold px-3 py-1 rounded-full w-fit shadow-sm">
+                    <FlagIcon className="w-3.5 h-3.5 shrink-0" />
                     {CapitalizeFirstLetter(ToSingular(route.category))}
-                </p>
-                <h2 className="text-base md:text-lg font-bold text-teal-700 line-clamp-1 pb-1">{CapitalizeFirstLetter(route.title)}</h2>
-                <div className="text-xs lg:text-sm font-bold text-gray-600 flex flex-wrap gap-x-2 line-clamp-2 pt-1 pb-2 md:pb-1 xl:pb-2">
-                    <div className="flex items-center gap-1 shrink-0">
-                        <StarIcon className="w-4 h-4 text-amber-500" /> {route.averageRatings}&nbsp;&nbsp;•
-                    </div>
-                    <span>{CapitalizeFirstLetter(route.difficulty)}&nbsp;&nbsp;•</span>
-                    <span>{formatDistance(route.distance)}&nbsp;&nbsp;•</span>
-                    <span>{CapitalizeFirstLetter(route.typeRoute)}&nbsp;&nbsp;•</span>
-                    <span>Est. {route.duration} h</span>
                 </div>
-                <p className="
-                    text-sm xl:text-base font-medium text-gray-600 line-clamp-3 md:line-clamp-2
-                    xl:line-clamp-3 min-h-[4.5em] md:min-h-[3.0em] xl:min-h-[4.5em]"
-                >
+
+                {/* Título */}
+                <h2 className="text-base md:text-lg font-bold text-teal-700 line-clamp-1">
+                    {CapitalizeFirstLetter(route.title)}
+                </h2>
+
+                {/* Stats en píldoras */}
+                <div className="flex flex-wrap gap-1.5">
+                    <span className="flex items-center gap-1 bg-amber-50 text-amber-500 text-xs font-semibold px-2 py-0.5 rounded-full">
+                        <StarIcon className="w-3 h-3 shrink-0" />
+                        {route.averageRatings}
+                    </span>
+                    <span className="flex items-center gap-1 bg-rose-50 text-orange-600 text-xs font-medium px-2 py-0.5 rounded-full">
+                        <FireIcon className="w-3 h-3 shrink-0" />
+                        {CapitalizeFirstLetter(route.difficulty)}
+                    </span>
+                    <span className="bg-stone-100 text-stone-600 text-xs font-medium px-2 py-0.5 rounded-full">
+                        {formatDistance(route.distance)}
+                    </span>
+                    <span className="bg-stone-100 text-stone-600 text-xs font-medium px-2 py-0.5 rounded-full">
+                        {CapitalizeFirstLetter(route.typeRoute)}
+                    </span>
+                    <span className="flex items-center gap-1 bg-teal-50 text-teal-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+                        <ClockIcon className="w-3 h-3 shrink-0" />
+                        {route.duration} h
+                    </span>
+                </div>
+
+                {/* Descripción */}
+                <p className="text-sm font-medium text-stone-500 line-clamp-3 md:line-clamp-2 xl:line-clamp-3">
                     {route.description}
                 </p>
             </Link>
