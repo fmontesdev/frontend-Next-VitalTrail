@@ -3,12 +3,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useSearchRoutes } from '@/queries/routeQuery';
-import { MagnifyingGlassIcon, XMarkIcon, MapIcon, MapPinIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, XMarkIcon, MapIcon, MapPinIcon, BuildingOffice2Icon } from '@heroicons/react/24/outline';
 
 // Unión discriminada para resultados del buscador
 type TSearchResult =
     | { kind: 'route'; id: number; title: string; slug: string }
-    | { kind: 'location'; location: string };
+    | { kind: 'location'; location: string }
+    | { kind: 'province'; province: string };
 
 export default function Search() {
     // Estado para el texto de búsqueda — inicializado vacío para que SSR y cliente coincidan
@@ -31,20 +32,41 @@ export default function Search() {
     // Una sola búsqueda por título — las localizaciones se extraen de sus resultados
     const { data: routeData, isLoading, isError } = useSearchRoutes(query);
 
-    // Máximo 5 resultados de rutas por título
+    // Máximo 5 resultados de rutas — el backend busca por title y location en paralelo, ordenado por favoritos
     const routeItems: TSearchResult[] = (routeData?.routes ?? [])
         .slice(0, 5)
         .map(r => ({ kind: 'route' as const, id: r.idRoute, title: r.title, slug: r.slug }));
 
-    // Mostrar localización solo si más de una ruta comparte la misma localización
-    const locationCounts = (routeData?.routes ?? []).reduce<Record<string, number>>((acc, r) => {
-        acc[r.location] = (acc[r.location] ?? 0) + 1;
+    // Parsea "Ciudad, Provincia" → { city, province }
+    const parseLocation = (location: string) => {
+        const [city, province] = location.split(',').map(s => s.trim());
+        return { city: city ?? location, province: province ?? null };
+    };
+
+    // Localización (ciudad) — aparece solo si 2+ rutas comparten la misma ciudad
+    const cityCounts = (routeData?.routes ?? []).reduce<Record<string, number>>((acc, r) => {
+        const { city } = parseLocation(r.location);
+        acc[city] = (acc[city] ?? 0) + 1;
         return acc;
     }, {});
 
-    const locationItems: TSearchResult[] = Object.entries(locationCounts)
+    const locationItems: TSearchResult[] = Object.entries(cityCounts)
         .filter(([, count]) => count > 1)
-        .map(([location]) => ({ kind: 'location' as const, location }));
+        .slice(0, 5)
+        .map(([city]) => ({ kind: 'location' as const, location: city }));
+
+    // Provincia — aparece solo si 2+ rutas comparten la misma provincia
+    const provinceCounts = (routeData?.routes ?? []).reduce<Record<string, number>>((acc, r) => {
+        const { province } = parseLocation(r.location);
+        if (!province) return acc;
+        acc[province] = (acc[province] ?? 0) + 1;
+        return acc;
+    }, {});
+
+    const provinceItems: TSearchResult[] = Object.entries(provinceCounts)
+        .filter(([, count]) => count > 1)
+        .slice(0, 5)
+        .map(([province]) => ({ kind: 'province' as const, province }));
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -84,10 +106,14 @@ export default function Search() {
             setQuery(text);
             localStorage.setItem('searchQuery', text);
             routerApp.push(`/route/${result.slug}`);
-        } else {
+        } else if (result.kind === 'location') {
             setQuery(result.location);
             localStorage.setItem('searchQuery', result.location);
             routerApp.push(`/routes?location=${encodeURIComponent(result.location)}`);
+        } else {
+            setQuery(result.province);
+            localStorage.setItem('searchQuery', result.province);
+            routerApp.push(`/routes?location=${encodeURIComponent(result.province)}`);
         }
     }
 
@@ -102,9 +128,9 @@ export default function Search() {
                 value={query}
                 onChange={handleInputChange}
                 onFocus={handleFocus}
-                placeholder="Busca por ciudad o nombre de la ruta…"
+                placeholder="Busca por provincia, ciudad o nombre de la ruta…"
                 className="
-                    border rounded-full pl-10 pr-4 py-1.5 w-full text-teal-700 font-semibold text-base md:text-lg
+                    border rounded-full pl-10 pr-4 py-1.5 w-full text-teal-700 font-semibold text-sm md:text-base
                     focus:outline-none focus:ring-1 focus:ring-lime-600
             "/>
 
@@ -132,16 +158,37 @@ export default function Search() {
             {/* Dropdown */}
             {showDropdown && (
                 <div className="
-                    absolute left-0 right-0 mt-1 max-h-64 overflow-hidden z-50
+                    absolute left-0 right-0 mt-1 overflow-hidden z-50
                     bg-white border border-gray-200 rounded-2xl text-left
                 ">
-                    <div className="overflow-y-auto max-h-64">
+                    <div className="overflow-y-auto max-h-96">
                         {isLoading && <div className="p-2 text-gray-500">Cargando...</div>}
                         {isError && <div className="p-2 text-red-500">Error al cargar</div>}
 
                         {/* Sin resultados en ninguna categoría */}
-                        {!isLoading && !isError && routeItems.length === 0 && locationItems.length === 0 && (
+                        {!isLoading && !isError && routeItems.length === 0 && locationItems.length === 0 && provinceItems.length === 0 && (
                             <div className="p-2 text-gray-500">No hay resultados</div>
+                        )}
+
+                        {/* Sección de provincias */}
+                        {provinceItems.length > 0 && (
+                            <ul>
+                                <li className="px-4 pt-2 pb-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                                    Provincia
+                                </li>
+                                {provinceItems.map(item => (
+                                    item.kind === 'province' && (
+                                        <li
+                                            key={item.province}
+                                            className="flex items-center gap-2 py-2 px-4 text-gray-500 hover:bg-gray-100 cursor-pointer"
+                                            onClick={() => handleResultClick(item)}
+                                        >
+                                            <BuildingOffice2Icon className="h-5 w-5 shrink-0" />
+                                            {item.province}
+                                        </li>
+                                    )
+                                ))}
+                            </ul>
                         )}
 
                         {/* Sección de localización */}

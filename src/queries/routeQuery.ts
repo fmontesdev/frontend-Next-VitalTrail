@@ -5,19 +5,19 @@ import { IRoute, IRoutes } from '@/shared/interfaces/entities/route.interface';
 
 // const key = 'routes'
 
-export const useSearchRoutes = (title: string) => {
+export const useSearchRoutes = (query: string) => {
     return useQuery({
-        queryKey: ['searchRoute', title],
-        queryFn: () => RouteService.getFiltered({ title }),
+        queryKey: ['searchRoute', query],
+        queryFn: () => RouteService.getFiltered({ title: query, location: query, sortBy: 'favoritesCount', order: 'desc' }),
         staleTime: 1000 * 60 * 4, // 4 minutos
-        enabled: title.length > 0,
+        enabled: query.length > 0,
     });
 }
 
 export const useFilteredRoutes = (filters: IFilter, initialData?: IRoutes) => {
     return useQuery({
         queryKey: ['filteredRoutes', filters],
-        queryFn: () => RouteService.getFiltered(filters),
+        queryFn: () => RouteService.getFiltered({ sortBy: 'favoritesCount', order: 'desc', ...filters }),
         initialData: initialData,
         staleTime: 1000 * 60 * 4, // 4 minutos
         refetchOnMount: false, // evita refetch en hidratación
