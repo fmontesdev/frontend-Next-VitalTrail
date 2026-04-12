@@ -21,7 +21,7 @@ export default function AdminSidebar() {
 
     return (
         <aside className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-teal-800 to-teal-600 flex flex-col">
-            <div className="px-6 py-5 border-b border-white/20">
+            <div className="px-6 py-4 border-b border-white/20">
                 <span className="text-xl font-bold text-white">
                     VitalTrail Admin
                 </span>

@@ -3,6 +3,7 @@
 import { useAdminGuard } from '@/services/guards/useAdminGuard';
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import AdminSidebar from '@/components/admin/AdminSidebar';
+import AdminTopbar from '@/components/admin/AdminTopbar';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const currentUser = useAdminGuard();
@@ -13,9 +14,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
         <div className="flex min-h-screen bg-stone-50">
             <AdminSidebar />
-            <main className="flex-1 ml-64 p-8">
-                {children}
-            </main>
+            <div className="flex-1 ml-64 flex flex-col min-h-screen">
+                <AdminTopbar />
+                <main className="flex-1 p-8">
+                    {children}
+                </main>
+            </div>
         </div>
     );
 }
