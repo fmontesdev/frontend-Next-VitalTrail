@@ -4,14 +4,15 @@ import clsx from 'clsx';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsPremium, useIsAdmin } from '@/auth/authorizations';
 import React, { useState, useEffect } from 'react';
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { GetTokenCookie } from '@/auth/clientCookies';
 import Search from '../search/Search';
 import MobileMenuHome from './MobileMenuHome';
 import StatsStrip from '../statsStrip/StatsStrip';
-import { Bars4Icon } from "@heroicons/react/24/outline";
+import UserMenu from './UserMenu';
+import { Bars4Icon } from '@heroicons/react/24/outline';
 import { merienda } from '@/app/fonts';
 import { getImageUrl } from '@/shared/utils/imageUrl';
 
@@ -76,39 +77,14 @@ export default function HeaderHome() {
                         )}>
                             {isVisible && (
                                 <>
-                                    {!isPremium && (
-                                        <Link href="/premium" className="text-white hover:text-lime-400">
-                                            Pásate a Premium
-                                        </Link>
-                                    )}
-                                    {isAdmin && (
-                                        <Link href="/admin" className="text-white hover:text-lime-400">
-                                            Panel Admin
-                                        </Link>
-                                    )}
-
                                     {currentUser.isAuthenticated ? (
-                                        <>
-                                            <button
-                                                onClick={handleLogout}
-                                                className="text-white hover:text-lime-400"
-                                            >
-                                                Cierra sesión
-                                            </button>
-                                            <Link
-                                                href={`/profile/${currentUser.user?.username}`}
-                                                className="flex items-center gap-2 border-2 rounded-full pr-4 text-white bg-black/30 hover:text-lime-400 hover:border-lime-400"
-                                            >
-                                                <Image
-                                                    src={getImageUrl('avatar', currentUser.user!.imgUser)}
-                                                    alt={currentUser.user!.username}
-                                                    width={32}
-                                                    height={32}
-                                                    sizes="40px"
-                                                />
-                                                {currentUser.user?.name}
-                                            </Link>
-                                        </>
+                                        <UserMenu
+                                            user={currentUser.user!}
+                                            isAdmin={!!isAdmin}
+                                            isPremium={!!isPremium}
+                                            onLogout={handleLogout}
+                                            variant="hero"
+                                        />
                                     ) : (
                                         <Link href="/login" className="border-2 rounded-full px-4 py-1 text-white hover:text-lime-400 hover:border-lime-400 hover:bg-black/25">
                                             Inicia sesión

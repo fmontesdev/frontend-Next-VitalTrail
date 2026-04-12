@@ -4,13 +4,12 @@ import clsx from 'clsx';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsPremium, useIsAdmin } from '@/auth/authorizations';
 import React, { useState, useEffect } from 'react';
-import { useRouter } from "next/navigation";
-import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { GetTokenCookie } from '@/auth/clientCookies';
 import Search from '../search/Search';
+import UserMenu from './UserMenu';
 import { merienda } from '@/app/fonts';
-import { getImageUrl } from '@/shared/utils/imageUrl';
 
 export default function Header() {
     const router = useRouter();
@@ -25,14 +24,12 @@ export default function Header() {
     // Hacemos que la UI aparezca gradualmente
     useEffect(() => {
         if (!currentUser.isLoading) {
-            // Solo mostramos la UI cuando ha terminado de cargar
             setIsVisible(true);
         }
     }, [currentUser.isLoading]);
 
     const handleLogout = () => {
         if (refreshToken !== null) {
-            // console.log(refreshToken);
             logout.mutateAsync(refreshToken);
             router.push('/');
         }
@@ -60,52 +57,26 @@ export default function Header() {
 
                     {/* Links de navegación */}
                     <nav className={clsx(
-                        "hidden md:flex items-center space-x-8 font-bold",
-                        "transition-opacity duration-300 ease-in",
-                        isVisible ? "opacity-100" : "opacity-0"
+                        'hidden md:flex items-center space-x-8 font-bold',
+                        'transition-opacity duration-300 ease-in',
+                        isVisible ? 'opacity-100' : 'opacity-0'
                     )}>
                         {isVisible && (
                             <>
-                                {!isPremium  && (
-                                    <Link href="/premium" className="text-lime-500 hover:text-lime-600 transition duration-200 ease-in-out">
-                                        Pásate a Premium
-                                    </Link>
-                                )}
-                                {isAdmin && (
-                                    <Link href="/admin" className="text-lime-500 hover:text-lime-600 transition duration-200 ease-in-out">
-                                        Panel Admin
-                                    </Link>
-                                )}
-
                                 {currentUser.isAuthenticated ? (
-                                    <>
-                                        <button
-                                            onClick={handleLogout}
-                                            className="text-lime-500 hover:text-lime-600 transition duration-200 ease-in-out"
-                                        >
-                                            Cierra sesión
-                                        </button>
-                                        <Link
-                                            href={`/profile/${currentUser.user?.username}`}
-                                            className="flex items-center gap-2 bg-stone-100 border border-stone-200 rounded-full pr-4
-                                                text-lime-500 hover:text-white hover:bg-stone-300 transition duration-200 ease-in-out"
-                                        >
-                                            <Image
-                                                src={getImageUrl('avatar', currentUser.user!.imgUser)}
-                                                alt={currentUser.user!.username}
-                                                width={32}
-                                                height={32}
-                                                sizes="40px"
-                                            />
-                                            {currentUser.user?.name}
-                                        </Link>
-                                    </>
+                                    <UserMenu
+                                        user={currentUser.user!}
+                                        isAdmin={!!isAdmin}
+                                        isPremium={!!isPremium}
+                                        onLogout={handleLogout}
+                                        variant="default"
+                                    />
                                 ) : (
-                        <Link
-                                href="/login"
-                                className="bg-lime-600 border-2 border-lime-600 rounded-full px-4 py-1 text-white
-                                    hover:bg-lime-700 hover:border-lime-700 transition durantion-200 ease-in-out"
-                            >
+                                    <Link
+                                        href="/login"
+                                        className="bg-lime-600 border-2 border-lime-600 rounded-full px-4 py-1 text-white
+                                            hover:bg-lime-700 hover:border-lime-700 transition duration-200 ease-in-out"
+                                    >
                                         Inicia sesión
                                     </Link>
                                 )}
