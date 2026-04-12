@@ -33,7 +33,9 @@ const getRoutes = cache(async(searchParams: Promise<IParams>): Promise<IRoutes> 
         distance,
         difficulty,
         typeRoute,
-        author
+        author,
+        sortBy: 'favoritesCount',
+        order: 'desc',
     });
 });
 
