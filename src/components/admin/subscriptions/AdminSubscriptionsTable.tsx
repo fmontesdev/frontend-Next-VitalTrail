@@ -93,7 +93,7 @@ export default function AdminSubscriptionsTable({
                                         {item.status === 'active' && item.cancelAtPeriodEnd === false && onCancel && (
                                             <button
                                                 onClick={() => onCancel(item.customerId)}
-                                                className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-600 hover:bg-red-200 transition-colors"
+                                                className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 border border-red-600/20 text-red-600 hover:bg-red-200 transition-colors"
                                             >
                                                 Cancelar
                                             </button>

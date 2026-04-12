@@ -122,14 +122,14 @@ export default function AdminRoutesTable({
                                         <div className="flex items-center gap-2">
                                             <Link
                                                 href={`/route/${route.slug}`}
-                                                className="px-3 py-1 rounded-full text-xs font-medium border border-teal-300 text-teal-600 hover:bg-teal-50 transition-colors"
+                                                className="px-3 py-1 rounded-full text-xs font-medium bg-lime-600/10 border border-lime-600/20 text-lime-700 hover:bg-lime-600/20 transition-colors"
                                             >
                                                 Ver
                                             </Link>
                                             <button
                                                 onClick={() => onDelete(route.slug)}
                                                 disabled={isDeleting}
-                                                className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-600 hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                className="px-3 py-1 rounded-full text-xs font-medium bg-red-100 border border-red-600/20 text-red-600 hover:bg-red-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                             >
                                                 Desactivar
                                             </button>
