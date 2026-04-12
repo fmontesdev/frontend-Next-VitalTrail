@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
 datasource db {
@@ -236,6 +237,7 @@ model User {
   isActive          Boolean            @default(false) @map("is_active")
   isDeleted         Boolean            @default(false) @map("is_deleted")
   isPremium         Boolean            @default(false) @map("is_premium")
+  createdAt         DateTime           @default(now()) @map("created_at") @db.Timestamp(0)
   achievementUsers  AchievementUser[]
   admin             Admin?
   client            Client?
