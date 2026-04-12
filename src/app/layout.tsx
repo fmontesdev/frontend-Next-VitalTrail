@@ -3,7 +3,6 @@ import { quicksand } from "./fonts";
 import "./globals.css";
 
 import { QueryCliProvider } from "./(browse)/QueryClientProvider";
-import Footer from "@/components/footer/Footer";
 
 export const metadata: Metadata = {
     metadataBase: new URL('https://vitaltrail.com'),
@@ -30,7 +29,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <body className={`${quicksand.className} antialiased flex flex-col min-h-screen`}>
                 <QueryCliProvider>
                     {children}
-                    <Footer />
                 </QueryCliProvider>
             </body>
         </html>
