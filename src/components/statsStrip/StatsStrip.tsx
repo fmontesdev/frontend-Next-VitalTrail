@@ -26,7 +26,7 @@ function mapStatsToItems(data: IHomeStats): IStatItem[] {
         { value: floorToSignificant(data.totalRoutes),      label: 'Rutas disponibles',     suffix: '+' },
         { value: floorToSignificant(data.totalCategories),  label: 'Categorías',             suffix: '' },
         { value: floorToSignificant(data.totalActiveUsers), label: 'Exploradores activos',   suffix: '+' },
-        { value: floorToSignificant(data.totalKm),          label: 'Kilómetros registrados', suffix: '+' },
+        { value: floorToSignificant(data.totalKm/1000),     label: 'Kilómetros registrados', suffix: '+' },
     ];
 }
 
