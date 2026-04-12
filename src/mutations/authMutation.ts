@@ -48,8 +48,8 @@ export const useLoginMutation = () => {
             SetTokenCookie('token', loginUser.token, 1);
             SetTokenCookie('refreshToken', loginUser.refreshToken, 7);
 
-            // Redirigir hacia el listado de rutas. Replace evita volver atrás al login con el botón del navegador
-            router.replace("/routes");
+            // Redirigir según rol: admin → dashboard, resto → listado de rutas
+            router.replace(loginUser.rol === 'ROLE_ADMIN' ? '/admin' : '/routes');
             
             // logger.info("Login successful", data.user);
         },
