@@ -1,19 +1,24 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import RouteImagesCarousel from '../carousels/RouteImagesCarousel/RouteImagesCarousel';
 import FavoriteButton from '@/components/buttons/FavoriteButton/FavoriteButton';
 import { CapitalizeFirstLetter } from '@/shared/utils/capitalizeFirstLetter';
 import { ToSingular } from '@/shared/utils/toSingular';
 import { IRoute } from '@/shared/interfaces/entities/route.interface';
-import { ClockIcon, FlagIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { ClockIcon, FlagIcon, PhotoIcon, UserIcon } from '@heroicons/react/24/outline';
 import { FireIcon, StarIcon } from '@heroicons/react/24/solid';
 import { formatDistance } from '@/shared/utils/distance';
 
 export default function RouteCard({ route, section }: { route: IRoute, section: string }) {
-    return (
-        <div className={`flex w-full min-h-44 ${section === 'routes' ? 'bg-stone-100' : 'bg-white'} border border-stone-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer relative`}>
+    const router = useRouter();
 
+    return (
+        <div
+            className={`flex w-full min-h-44 ${section === 'routes' ? 'bg-stone-100' : 'bg-white'} border border-stone-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer relative`}
+            onClick={() => router.push(`/route/${route.slug}`)}
+        >
             {/* Imagen */}
             <div className="w-1/3 shrink-0">
                 <div className="overflow-hidden w-full h-full">
@@ -28,7 +33,10 @@ export default function RouteCard({ route, section }: { route: IRoute, section: 
             </div>
 
             {/* Botón de favorito */}
-            <div className="absolute top-2 right-3 bg-white/70 rounded-full p-0.5">
+            <div
+                className="absolute top-2 right-3 bg-white/70 rounded-full p-0.5 z-10"
+                onClick={e => e.stopPropagation()}
+            >
                 <FavoriteButton
                     initialIsFavorite={route.favorited}
                     initialCount={route.favoritesCount}
@@ -38,14 +46,24 @@ export default function RouteCard({ route, section }: { route: IRoute, section: 
             </div>
 
             {/* Información de la ruta */}
-            <Link
-                href={`/route/${route.slug}`}
-                className="w-2/3 p-4 flex flex-col gap-2"
-            >
-                {/* Badge de categoría */}
-                <div className="flex items-center gap-1 bg-lime-600 text-white text-xs font-semibold px-3 py-1 rounded-full w-fit shadow-sm">
-                    <FlagIcon className="w-3.5 h-3.5 shrink-0" />
-                    {CapitalizeFirstLetter(ToSingular(route.category))}
+            <div className="w-2/3 p-4 flex flex-col gap-2">
+
+                {/* Badge de categoría + autor */}
+                <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 bg-lime-600 text-white text-xs font-semibold px-3 py-1 rounded-full w-fit shadow-sm">
+                        <FlagIcon className="w-3.5 h-3.5 shrink-0" />
+                        {CapitalizeFirstLetter(ToSingular(route.category))}
+                    </div>
+                    {route.user && typeof route.user === 'object' && (
+                        <Link
+                            href={`/profile/${route.user.username}`}
+                            onClick={e => e.stopPropagation()}
+                            className="flex items-center gap-1 bg-stone-200 text-stone-500 text-xs font-medium px-3 py-1 rounded-full w-fit hover:bg-stone-300 transition-colors"
+                        >
+                            <UserIcon className="w-3 h-3 shrink-0" />
+                            @{route.user.username}
+                        </Link>
+                    )}
                 </div>
 
                 {/* Título */}
@@ -79,7 +97,7 @@ export default function RouteCard({ route, section }: { route: IRoute, section: 
                 <p className="text-sm font-medium text-stone-500 line-clamp-3 md:line-clamp-2 xl:line-clamp-3">
                     {route.description}
                 </p>
-            </Link>
+            </div>
         </div>
     );
 }
