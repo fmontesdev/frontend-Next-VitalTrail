@@ -2,7 +2,7 @@
 
 import clsx from 'clsx';
 import { useAuth } from '@/hooks/useAuth';
-import { useIsPremium } from '@/auth/authorizations';
+import { useIsPremium, useIsAdmin } from '@/auth/authorizations';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
@@ -17,6 +17,7 @@ export default function Header() {
     const refreshToken = GetTokenCookie('refreshToken');
     const { currentUser, logout } = useAuth();
     const isPremium = useIsPremium();
+    const isAdmin = useIsAdmin();
 
     // Renderización suspensiva para evitar parpadeos
     const [isVisible, setIsVisible] = useState(false);
@@ -68,6 +69,11 @@ export default function Header() {
                                 {!isPremium  && (
                                     <Link href="/premium" className="text-lime-500 hover:text-lime-600 transition duration-200 ease-in-out">
                                         Pásate a Premium
+                                    </Link>
+                                )}
+                                {isAdmin && (
+                                    <Link href="/admin" className="text-lime-500 hover:text-lime-600 transition duration-200 ease-in-out">
+                                        Panel Admin
                                     </Link>
                                 )}
 
