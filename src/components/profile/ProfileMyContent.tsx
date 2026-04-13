@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useCanEdit, useCanManageAdmin } from '@/auth/authorizations';
+import { useCanEdit } from '@/auth/authorizations';
+import { useAuth } from '@/hooks/useAuth';
 import MyRoutesList from './MyRoutesList';
 import ProfileCommentsList from './MyCommentsList';
 import FollowingList from './FollowingList';
@@ -14,8 +15,9 @@ export default function ProfileMyContent({ username }: { username: string }) {
         useState<'sesiones' | 'favoritos' | 'rutas' | 'comentarios' | 'siguiendo' | 'seguidos' | null>(null);
     const [, setCommentsCount] = useState<number>();
     const [hasScroll, setHasScroll] = useState(false);
-    const { canEdit, isLoading: isLoadingEdit } = useCanEdit(username);
-    const { canManageAdmin } = useCanManageAdmin(username);
+    const { isLoading: isLoadingEdit } = useCanEdit(username);
+    const { currentUser } = useAuth();
+    const isOwner = currentUser.user?.username === username;
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     // Establece el tab inicial una sola vez cuando canEdit termina de resolver.
@@ -23,8 +25,8 @@ export default function ProfileMyContent({ username }: { username: string }) {
     useEffect(() => {
         if (isLoadingEdit || initializedRef.current) return;
         initializedRef.current = true;
-        setActiveTab(canEdit ? 'sesiones' : 'favoritos');
-    }, [isLoadingEdit, canEdit]);
+        setActiveTab(isOwner ? 'sesiones' : 'favoritos');
+    }, [isLoadingEdit, isOwner]);
 
     // Detecta si el contenedor de scroll tiene overflow activo para añadir pr-4
     useEffect(() => {
@@ -51,7 +53,7 @@ export default function ProfileMyContent({ username }: { username: string }) {
         <div className="w-3/4 bg-stone-100 border border-stone-200 rounded-2xl px-7 py-4">
             {/* Barra de pestañas */}
             <div className="flex items-center gap-3 border-b text-gray-400 font-bold">
-                {canEdit && (
+                {isOwner && (
                     <button
                         onClick={showSessions}
                         className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
@@ -64,33 +66,29 @@ export default function ProfileMyContent({ username }: { username: string }) {
                     </button>
                 )}
 
-                {canManageAdmin && (
-                    <>
-                        <button
-                            onClick={showFavorites}
-                            className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
-                                ${activeTab === 'favoritos'
-                                ? 'text-teal-700 border-b-2 border-teal-700 hover:text-teal-700'
-                                : ''}
-                            `}
-                        >
-                            Mis Favoritos
-                        </button>
+                <button
+                    onClick={showFavorites}
+                    className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
+                        ${activeTab === 'favoritos'
+                        ? 'text-teal-700 border-b-2 border-teal-700 hover:text-teal-700'
+                        : ''}
+                    `}
+                >
+                    Mis Favoritos
+                </button>
 
-                        <button
-                            onClick={showRoutes}
-                            className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
-                                ${activeTab === 'rutas'
-                                ? 'text-teal-700 border-b-2 border-teal-700 hover:text-teal-700'
-                                : ''}
-                            `}
-                        >
-                            Mis Rutas
-                        </button>
-                    </>
-                )}
+                <button
+                    onClick={showRoutes}
+                    className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
+                        ${activeTab === 'rutas'
+                        ? 'text-teal-700 border-b-2 border-teal-700 hover:text-teal-700'
+                        : ''}
+                    `}
+                >
+                    Mis Rutas
+                </button>
 
-                {canEdit && (
+                {isOwner && (
                     <button
                         onClick={showComments}
                         className={`px-2 py-1 hover:text-gray-500 transition duration-250 ease-in-out
@@ -132,10 +130,10 @@ export default function ProfileMyContent({ username }: { username: string }) {
                 className={`mt-4 max-h-[calc(100vh-220px)] overflow-y-auto ${hasScroll ? 'pr-4' : ''}`}
             >
                 {activeTab === null && null}
-                {activeTab === 'sesiones' && canEdit && <MySessionsList />}
+                {activeTab === 'sesiones' && isOwner && <MySessionsList />}
                 {activeTab === 'favoritos' && <ProfileFavoritesList username={username} />}
                 {activeTab === 'rutas' && <MyRoutesList username={username} />}
-                {activeTab === 'comentarios' && <ProfileCommentsList username={username} onCommentsCount={(count) => setCommentsCount(count)}/>}
+                {activeTab === 'comentarios' && isOwner && <ProfileCommentsList username={username} onCommentsCount={(count) => setCommentsCount(count)}/>}
                 {activeTab === 'siguiendo' && <FollowingList username={username} />}
                 {activeTab === 'seguidos'  && <FollowersList username={username} />}
             </div>
