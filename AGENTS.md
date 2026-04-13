@@ -129,7 +129,28 @@ NEXT_PUBLIC_STRIPE_MONTHLY_PRICE_ID
 NEXT_PUBLIC_STRIPE_ANNUAL_PRICE_ID
 ```
 
-## 14) Commands to Validate Changes
+## 14) Docker & Dev Environment
+
+The frontend runs inside Docker Compose. The `docker-compose.yaml` lives one level up at
+`/home/paco/Proyectos/VitalTrail/docker-compose.yaml`.
+
+**Bind mount** — source code is mounted directly into the container:
+```
+./frontend-Next-VitalTrail:/usr/src/app
+```
+This means **any `.ts` / `.tsx` / `.css` change is picked up automatically** by Turbopack
+(hot reload) — no rebuild needed.
+
+**When to rebuild** — only when `package.json` or `package-lock.json` change (new/removed
+dependencies). Run from the VitalTrail root:
+```bash
+docker compose down -v && docker compose up --build next
+```
+
+**When NOT to rebuild** — all source-only changes (components, pages, services, styles, etc.)
+are reflected live via hot reload. Do not rebuild just for code changes.
+
+## 15) Commands to Validate Changes
 ```bash
 npm run lint    # ESLint flat config: next/core-web-vitals + next/typescript
 npm run build   # Production build + type-check (ESLint errors do NOT block build)
@@ -137,18 +158,52 @@ npm run dev     # Dev server with Turbopack (use npm run dev2 for without Turbop
 ```
 **No test runner is configured** (Jest, Vitest, and Playwright are not installed).
 
-## 15) Testing Policy
+> **Important — build inside Docker**: The docker-compose container runs with `NODE_ENV=development`.
+> Running `npm run build` inside it will fail with `<Html> should not be imported outside of pages/_document`
+> (a Next.js 15.2.x bug triggered by non-production NODE_ENV). Always pass `NODE_ENV=production` explicitly:
+> ```bash
+> # From /home/paco/Proyectos/VitalTrail:
+> docker compose exec -e NODE_ENV=production next npm run build
+> ```
+
+## 16) Testing Policy
 - No test runner configured; E2E is out of scope.
 - Add targeted unit tests only for critical pure logic (utils, complex hooks).
 - If adding tests, prefer Vitest — no config exists yet, document any setup here.
 
-## 16) Agent Working Agreement
+## 17) Color System
+
+VitalTrail uses two Tailwind color families with distinct, non-interchangeable roles:
+
+| Color | Role | Usage examples |
+|---|---|---|
+| **`teal`** | Identity / content | H1/H2 titles, route data (distance, duration), author names, profile tab indicators, footer background (`teal-800`), form focus rings (`focus:border-teal-600`), logo "Trail" |
+| **`lime`** | Action / energy | All primary CTA buttons (`bg-lime-600 hover:bg-lime-700`), navigation links, active filter chips, active pagination page, card action badges, active/selected states, logo "Vital" |
+
+**Rules:**
+- **Never use `teal` for CTA buttons or interactive action states.** Buttons that trigger a user action must use `lime`.
+- **Never use `lime` for text content or headings.** Lime has insufficient contrast on white for body text.
+- Secondary/ghost buttons (cancel, minimize, skip) use neutral colors (`border-stone-200`, `text-gray-600`) — not teal or lime.
+- The `ActiveSessionBanner` uses `bg-lime-600` — it is an active-state indicator, not structural chrome.
+- Gradients (`from-lime-600 to-teal-600`) are intentional — they bridge both roles.
+
+**Quick reference for new components:**
+```
+Primary button   → bg-lime-600 hover:bg-lime-700 text-white
+Active/selected  → border-lime-600 bg-lime-600  (or bg-lime-600/60 for filter chips)
+Focus ring       → focus:ring-lime-600 focus:border-lime-600
+Heading / title  → text-teal-700
+Label / data     → text-teal-700 (or text-teal-600 for secondary)
+Tab active       → text-teal-700 border-b-2 border-teal-700
+```
+
+## 18) Agent Working Agreement
 - Keep diffs minimal and task-scoped. No unrelated refactors.
 - Preserve public contracts unless explicitly asked to change them.
 - Run `npm run lint` and `npm run build` before finishing any non-trivial task.
 - Update this file when new conventions are established.
 
-## 17) Pre-PR Checklist
+## 18) Pre-PR Checklist
 - `npm run lint` passes.
 - `npm run build` passes for any change affecting production paths.
 - No type regressions (`strict: true` must stay satisfied).
