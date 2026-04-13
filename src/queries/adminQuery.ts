@@ -29,9 +29,10 @@ export const useAdminRoutesGrowth = () => useQuery({
     staleTime: 1000 * 60 * 5,
 });
 
-export const useAdminUsers = (page: number, limit: number, search?: string, role?: string, isPremium?: boolean, isActive?: boolean) =>
+export const useAdminUsers = (page: number, limit: number, search?: string, role?: string, isPremium?: boolean, isActive?: boolean, enabled: boolean = true) =>
     useQuery({
         queryKey: adminKeys.users(page, limit, search, role, isPremium, isActive),
         queryFn: () => AdminService.getUsers(page, limit, search, role, isPremium, isActive),
         staleTime: 1000 * 30,
+        enabled,
     });

@@ -9,6 +9,7 @@ import Link from 'next/link';
 import { GetTokenCookie } from '@/auth/clientCookies';
 import Search from '../search/Search';
 import UserMenu from './UserMenu';
+import NotificationBell from '../NotificationBell';
 import { merienda } from '@/app/fonts';
 
 export default function Header() {
@@ -64,13 +65,16 @@ export default function Header() {
                         {isVisible && (
                             <>
                                 {currentUser.isAuthenticated ? (
-                                    <UserMenu
-                                        user={currentUser.user!}
-                                        isAdmin={!!isAdmin}
-                                        isPremium={!!isPremium}
-                                        onLogout={handleLogout}
-                                        variant="default"
-                                    />
+                                    <div className="flex items-center gap-2">
+                                        <NotificationBell variant="default" />
+                                        <UserMenu
+                                            user={currentUser.user!}
+                                            isAdmin={!!isAdmin}
+                                            isPremium={!!isPremium}
+                                            onLogout={handleLogout}
+                                            variant="default"
+                                        />
+                                    </div>
                                 ) : (
                                     <Link
                                         href="/login"

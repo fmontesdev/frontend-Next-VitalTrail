@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ChartBarIcon, UsersIcon, CreditCardIcon, MapIcon, ArrowLeftIcon } from '@heroicons/react/24/outline';
+import { ChartBarIcon, UsersIcon, CreditCardIcon, MapIcon, ArrowLeftIcon, BellAlertIcon } from '@heroicons/react/24/outline';
 
 const navItems = [
     { href: '/admin', label: 'Dashboard', icon: ChartBarIcon, exact: true },
     { href: '/admin/users', label: 'Usuarios', icon: UsersIcon, exact: false },
     { href: '/admin/routes', label: 'Rutas', icon: MapIcon, exact: false },
     { href: '/admin/subscriptions', label: 'Suscripciones', icon: CreditCardIcon, exact: false },
+    { href: '/admin/notifications', label: 'Notificaciones', icon: BellAlertIcon, exact: false },
 ];
 
 export default function AdminSidebar() {

@@ -6,6 +6,7 @@ import ProfileSidebar from '@/components/profile/ProfileSidebar';
 import ProfileMyContent from "@/components/profile/ProfileMyContent";
 import ProfileMySubscription from "@/components/profile/ProfileMySubscription";
 import UpdateProfile from "@/components/profile/UpdateProfile";
+import MyNotificationsList from "@/components/profile/MyNotificationsList";
 import { useAuthGuard } from "@/services/guards/useAuthGuard";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
@@ -40,7 +41,7 @@ export default function ProfilePage() {
 
             {/* Columna derecha: contenido dinámico */}
             {activeTab === 'miContenido' && <ProfileMyContent username={username} />}
-            {activeTab === 'misNotificaciones'}
+            {activeTab === 'misNotificaciones' && <MyNotificationsList />}
             {activeTab === 'miSuscripción' && <ProfileMySubscription username={username} />}
             {activeTab === 'editarPerfil' && (
                 <div className="w-3/4 h-auto bg-stone-100 border border-stone-200 rounded-2xl px-7 py-4">

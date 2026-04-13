@@ -12,6 +12,7 @@ import Search from '../search/Search';
 import MobileMenuHome from './MobileMenuHome';
 import StatsStrip from '../statsStrip/StatsStrip';
 import UserMenu from './UserMenu';
+import NotificationBell from '../NotificationBell';
 import { Bars4Icon } from '@heroicons/react/24/outline';
 import { merienda } from '@/app/fonts';
 import { getImageUrl } from '@/shared/utils/imageUrl';
@@ -78,13 +79,16 @@ export default function HeaderHome() {
                             {isVisible && (
                                 <>
                                     {currentUser.isAuthenticated ? (
-                                        <UserMenu
-                                            user={currentUser.user!}
-                                            isAdmin={!!isAdmin}
-                                            isPremium={!!isPremium}
-                                            onLogout={handleLogout}
-                                            variant="hero"
-                                        />
+                                        <div className="flex items-center gap-2">
+                                            <NotificationBell variant="hero" />
+                                            <UserMenu
+                                                user={currentUser.user!}
+                                                isAdmin={!!isAdmin}
+                                                isPremium={!!isPremium}
+                                                onLogout={handleLogout}
+                                                variant="hero"
+                                            />
+                                        </div>
                                     ) : (
                                         <Link href="/login" className="border-2 rounded-full px-4 py-1 text-white hover:text-lime-400 hover:border-lime-400 hover:bg-black/25">
                                             Inicia sesión
