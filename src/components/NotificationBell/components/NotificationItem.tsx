@@ -18,10 +18,10 @@ const TYPE_CONFIG: Record<NotificationType, {
     iconColor: string;
     iconBg: string;
 }> = {
-    system:       { Icon: InformationCircleIcon, iconColor: 'text-teal-600',  iconBg: 'bg-teal-50' },
-    social:       { Icon: UserPlusIcon,          iconColor: 'text-blue-500',  iconBg: 'bg-blue-50' },
-    subscription: { Icon: SparklesIcon,          iconColor: 'text-lime-600',  iconBg: 'bg-lime-50' },
-    admin:        { Icon: MegaphoneIcon,          iconColor: 'text-amber-500', iconBg: 'bg-amber-50' },
+    system:       { Icon: InformationCircleIcon, iconColor: 'text-teal-700',   iconBg: 'bg-teal-100' },
+    social:       { Icon: UserPlusIcon,          iconColor: 'text-blue-600',   iconBg: 'bg-blue-100' },
+    subscription: { Icon: SparklesIcon,          iconColor: 'text-lime-700',   iconBg: 'bg-lime-100' },
+    admin:        { Icon: MegaphoneIcon,          iconColor: 'text-amber-600',  iconBg: 'bg-amber-100' },
 };
 
 function getRelativeTime(dateStr: string): string {
@@ -56,7 +56,7 @@ export default function NotificationItem({ notification }: INotificationItemProp
         >
             {/* Icono de tipo */}
             <div className={`shrink-0 w-9 h-9 rounded-full flex items-center justify-center mt-0.5 ${iconBg}`}>
-                <Icon className={`w-4 h-4 ${iconColor}`} />
+                <Icon className={`w-5 h-5 ${iconColor}`} />
             </div>
 
             {/* Contenido */}
@@ -71,11 +71,6 @@ export default function NotificationItem({ notification }: INotificationItemProp
                     {getRelativeTime(createdAt)}
                 </p>
             </div>
-
-            {/* Punto de no leído */}
-            {!isRead && (
-                <span className="shrink-0 mt-2 w-2 h-2 rounded-full bg-lime-600" />
-            )}
         </button>
     );
 }

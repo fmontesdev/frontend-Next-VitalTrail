@@ -69,7 +69,7 @@ export default function MyNotificationsList() {
                     >
                         No leídas
                         {unreadCount > 0 && (
-                            <span className="ml-1.5 text-[11px] font-bold bg-lime-100 text-lime-700 px-1.5 py-0.5 rounded-full">
+                            <span className="ml-1.5 inline-flex items-center justify-center min-w-[18px] h-[18px] text-[10px] font-bold bg-lime-600 text-white rounded-full px-1 leading-none">
                                 {unreadCount}
                             </span>
                         )}
@@ -82,11 +82,11 @@ export default function MyNotificationsList() {
                     disabled={unreadCount === 0 || markAll.isPending}
                     className={`text-xs font-medium transition-colors ${
                         unreadCount > 0
-                            ? 'text-lime-700 hover:text-lime-800'
+                            ? 'text-teal-700 hover:underline'
                             : 'text-stone-300 cursor-not-allowed'
                     } disabled:opacity-50`}
                 >
-                    Marcar todas como leídas
+                    Marcar todas
                 </button>
             </div>
 
@@ -120,7 +120,7 @@ export default function MyNotificationsList() {
                 {!isLoading && !isError && filter === 'all' && notifications.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
                         <BellSlashIcon className="w-10 h-10 text-stone-300 mb-3" />
-                        <p className="text-sm font-medium text-stone-500">No tenés notificaciones</p>
+                        <p className="text-sm font-medium text-stone-500">No tienes notificaciones</p>
                         <p className="text-xs text-stone-400 mt-1">Te avisaremos cuando haya novedades</p>
                     </div>
                 )}
@@ -129,7 +129,7 @@ export default function MyNotificationsList() {
                 {!isLoading && !isError && filter === 'unread' && unreadCount === 0 && (
                     <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
                         <BellSlashIcon className="w-10 h-10 text-stone-300 mb-3" />
-                        <p className="text-sm font-medium text-stone-500">No tenés notificaciones pendientes</p>
+                        <p className="text-sm font-medium text-stone-500">No tienes notificaciones pendientes</p>
                         <p className="text-xs text-stone-400 mt-1">¡Estás al día con todo!</p>
                     </div>
                 )}

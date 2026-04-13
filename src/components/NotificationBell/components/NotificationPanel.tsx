@@ -5,9 +5,7 @@ import { useNotifications } from '@/queries/notificationQuery';
 import { useMarkAllReadMutation } from '@/mutations/notificationMutation';
 import NotificationItem from './NotificationItem';
 
-interface INotificationPanelProps {
-    onClose: () => void;
-}
+interface INotificationPanelProps {}
 
 function NotificationSkeleton() {
     return (
@@ -22,7 +20,6 @@ function NotificationSkeleton() {
     );
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function NotificationPanel(_props: INotificationPanelProps) {
     const { data, isLoading } = useNotifications();
     const markAll = useMarkAllReadMutation();
@@ -40,7 +37,9 @@ export default function NotificationPanel(_props: INotificationPanelProps) {
 
     return (
         <div className="absolute top-full right-0 mt-2 w-80 bg-white border border-stone-200
-            rounded-2xl shadow-xl z-50 overflow-hidden flex flex-col"
+            rounded-2xl shadow-xl z-50 overflow-hidden flex flex-col
+            invisible opacity-0 group-hover:visible group-hover:opacity-100
+            transition-all duration-150"
             style={{ maxHeight: '420px' }}
         >
             {/* Header del panel */}
@@ -48,8 +47,8 @@ export default function NotificationPanel(_props: INotificationPanelProps) {
                 <div className="flex items-center gap-2">
                     <span className="text-sm font-semibold text-stone-800">Notificaciones</span>
                     {hasUnread && (
-                        <span className="text-[11px] font-bold bg-lime-100 text-lime-700 px-2 py-0.5 rounded-full">
-                            {unreadCount} nueva{unreadCount > 1 ? 's' : ''}
+                        <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] text-[10px] font-bold bg-lime-600 text-white rounded-full px-1 leading-none">
+                            {unreadCount}
                         </span>
                     )}
                 </div>
@@ -59,7 +58,7 @@ export default function NotificationPanel(_props: INotificationPanelProps) {
                         type="button"
                         onClick={handleMarkAll}
                         disabled={markAll.isPending}
-                        className="text-xs text-teal-600 hover:text-teal-700 font-medium transition-colors disabled:opacity-50"
+                        className="text-xs text-teal-700 hover:underline font-medium transition-colors disabled:opacity-50"
                     >
                         Marcar todas
                     </button>
@@ -77,10 +76,9 @@ export default function NotificationPanel(_props: INotificationPanelProps) {
                 )}
 
                 {!isLoading && unread.length === 0 && (
-                    <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                        <BellSlashIcon className="w-10 h-10 text-stone-300 mb-3" />
-                        <p className="text-sm font-medium text-stone-500">No tenés notificaciones pendientes</p>
-                        <p className="text-xs text-stone-400 mt-1">Te avisaremos cuando haya novedades</p>
+                    <div className="flex flex-col items-center justify-center gap-2 py-5 px-4 text-center">
+                        <BellSlashIcon className="w-8 h-8 text-stone-300" />
+                        <p className="text-sm text-stone-400">No tienes notificaciones</p>
                     </div>
                 )}
 
