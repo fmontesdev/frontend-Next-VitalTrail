@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useCanEdit, useCanManageAdmin } from '@/auth/authorizations';
 import MyRoutesList from './MyRoutesList';
 import ProfileCommentsList from './MyCommentsList';
@@ -10,12 +10,34 @@ import ProfileFavoritesList from './MyFavoritesRoutesList';
 import MySessionsList from './MySessionsList';
 
 export default function ProfileMyContent({ username }: { username: string }) {
-    // State para controlar qué vista se muestra
     const [activeTab, setActiveTab] =
-        useState<'sesiones' | 'favoritos' | 'rutas' | 'comentarios' | 'siguiendo' | 'seguidos'>('sesiones');
-    const [, setCommentsCount] = useState<number>(); // Contador de comentarios para mostrar en la pestaña (desactivado)
-    const { canEdit } = useCanEdit(username);
+        useState<'sesiones' | 'favoritos' | 'rutas' | 'comentarios' | 'siguiendo' | 'seguidos' | null>(null);
+    const [, setCommentsCount] = useState<number>();
+    const [hasScroll, setHasScroll] = useState(false);
+    const { canEdit, isLoading: isLoadingEdit } = useCanEdit(username);
     const { canManageAdmin } = useCanManageAdmin(username);
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    // Establece el tab inicial una sola vez cuando canEdit termina de resolver.
+    const initializedRef = useRef(false);
+    useEffect(() => {
+        if (isLoadingEdit || initializedRef.current) return;
+        initializedRef.current = true;
+        setActiveTab(canEdit ? 'sesiones' : 'favoritos');
+    }, [isLoadingEdit, canEdit]);
+
+    // Detecta si el contenedor de scroll tiene overflow activo para añadir pr-4
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const check = () => setHasScroll(container.scrollHeight > container.clientHeight);
+        check();
+
+        const observer = new ResizeObserver(check);
+        observer.observe(container);
+        return () => observer.disconnect();
+    }, [activeTab]);
 
     // Funciones para cambiar la pestaña
     const showSessions = () => setActiveTab('sesiones');
@@ -105,7 +127,11 @@ export default function ProfileMyContent({ username }: { username: string }) {
             </div>
 
             {/* Contenido dinámico */}
-            <div className="mt-4">
+            <div
+                ref={scrollContainerRef}
+                className={`mt-4 max-h-[calc(100vh-220px)] overflow-y-auto ${hasScroll ? 'pr-4' : ''}`}
+            >
+                {activeTab === null && null}
                 {activeTab === 'sesiones' && canEdit && <MySessionsList />}
                 {activeTab === 'favoritos' && <ProfileFavoritesList username={username} />}
                 {activeTab === 'rutas' && <MyRoutesList username={username} />}
