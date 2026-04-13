@@ -5,7 +5,7 @@ import { useParams, useSearchParams } from "next/navigation";
 import ProfileSidebar from '@/components/profile/ProfileSidebar';
 import ProfileMyContent from "@/components/profile/ProfileMyContent";
 import ProfileMySubscription from "@/components/profile/ProfileMySubscription";
-import ProfileUpdate from "@/components/profile/ProfileUpdate";
+import UpdateProfile from "@/components/profile/UpdateProfile";
 import { useAuthGuard } from "@/services/guards/useAuthGuard";
 import LoadingSpinner from "@/components/common/LoadingSpinner";
 
@@ -42,7 +42,16 @@ export default function ProfilePage() {
             {activeTab === 'miContenido' && <ProfileMyContent username={username} />}
             {activeTab === 'misNotificaciones'}
             {activeTab === 'miSuscripción' && <ProfileMySubscription username={username} />}
-            {activeTab === 'editarPerfil' && <ProfileUpdate username={username} />}
+            {activeTab === 'editarPerfil' && (
+                <div className="w-3/4 h-auto bg-stone-100 border border-stone-200 rounded-2xl px-7 py-4">
+                    <div className="flex gap-3 border-b text-gray-400 font-bold mb-4">
+                        <span className="px-2 py-1 text-teal-700 border-b-2 border-teal-700">
+                            Editar Perfil
+                        </span>
+                    </div>
+                    <UpdateProfile username={username} />
+                </div>
+            )}
         </main>
     );
 }

@@ -1,19 +1,35 @@
 'use client';
 
+import { useState, useRef } from 'react';
+import Image from 'next/image';
 import { useProfile } from '@/queries/profileQuery';
-import { useUpdateProfile } from '@/mutations/profileMutation';
-import { Formik, Field, Form, ErrorMessage } from 'formik';
+import { useUpdateProfile, useUploadAvatar } from '@/mutations/profileMutation';
+import { Formik, Field, Form, ErrorMessage, FieldProps } from 'formik';
 import * as Yup from 'yup';
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { FormatToDD_MM_YYYY, ParseDD_MM_YYYY } from '@/shared/utils/formatDate';
-import { CalendarDaysIcon } from '@heroicons/react/24/outline';
+import { getImageUrl } from '@/shared/utils/imageUrl';
+import { CalendarDaysIcon, CheckCircleIcon, CameraIcon } from '@heroicons/react/24/outline';
 import { IUpdProfile } from '@/shared/interfaces/entities/user.interface';
+
+interface IUpdateProfileFormValues {
+    name: string;
+    surname: string;
+    bio: string;
+    birthday: Date | null;
+    password: string;
+    confirmPassword: string;
+}
 
 export default function UpdateProfile({ username }: { username: string }) {
     const { data: profile } = useProfile(username);
     const { mutateAsync, isPending, isError } = useUpdateProfile();
-    // console.log(profile);
+    const { mutateAsync: uploadAvatar, isPending: isUploadingAvatar } = useUploadAvatar(username);
+    const [successMessage, setSuccessMessage] = useState(false);
+    const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+    const [avatarError, setAvatarError] = useState<string | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const validationSchema = Yup.object({
         name: Yup.string().min(3, 'El nombre debe tener al menos 3 caracteres'),
@@ -24,30 +40,53 @@ export default function UpdateProfile({ username }: { username: string }) {
             .nullable(),
     });
 
-    const handleSubmit = async (values: any) => {
+    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Preview local inmediato
+        const objectUrl = URL.createObjectURL(file);
+        setAvatarPreview(objectUrl);
+        setAvatarError(null);
+
+        try {
+            await uploadAvatar(file);
+        } catch {
+            setAvatarError('Error al subir el avatar. Volvé a intentarlo.');
+            setAvatarPreview(null);
+        }
+    };
+
+    const handleSubmit = async (values: IUpdateProfileFormValues) => {
         if (isPending) return;
-        const updateProfile: IUpdProfile = { 
+        const updateProfile: IUpdProfile = {
             user: {
-                password: values.password === '' ? null : values.password,
-                name: values.name === '' ? null : values.name,
-                surname: values.surname === '' ? null : values.surname,
-                birthday: values.birthday === '' ? null : FormatToDD_MM_YYYY(values.birthday),
-                bio: values.bio === '' ? null : values.bio,
-                imgUser: values.imgUser === '' ? null : values.imgUser,
+                password: values.password === '' ? undefined : values.password,
+                name: values.name === '' ? undefined : values.name,
+                surname: values.surname === '' ? undefined : values.surname,
+                birthday: values.birthday == null ? undefined : FormatToDD_MM_YYYY(values.birthday),
+                bio: values.bio === '' ? undefined : values.bio,
             }
         };
-        // console.log(updateProfile);
-        mutateAsync(updateProfile);
+        try {
+            await mutateAsync(updateProfile);
+            setSuccessMessage(true);
+            setTimeout(() => setSuccessMessage(false), 3000);
+        } catch {
+            // isError de useMutation ya captura el estado
+        }
     };
+
+    const currentAvatar = avatarPreview ?? (profile?.imgUser ? getImageUrl('avatar', profile.imgUser) : null);
 
     return (
         <Formik
+            enableReinitialize
             initialValues={{
                 name: profile?.name || '',
                 surname: profile?.surname || '',
                 bio: profile?.bio || '',
                 birthday: ParseDD_MM_YYYY(profile?.birthday || ''),
-                imgUser: profile?.imgUser || '',
                 password: '',
                 confirmPassword: '',
             }}
@@ -55,50 +94,106 @@ export default function UpdateProfile({ username }: { username: string }) {
             onSubmit={handleSubmit}
         >
             <Form className="text-gray-600 space-y-4 py-2">
+
+                {/* Avatar upload */}
+                <div className="flex items-center gap-4">
+                    <div className="relative group w-16 h-16 shrink-0">
+                        {currentAvatar ? (
+                            <Image
+                                src={currentAvatar}
+                                alt="Avatar"
+                                fill
+                                className="rounded-full object-cover border border-gray-300"
+                            />
+                        ) : (
+                            <div className="w-16 h-16 rounded-full bg-gray-200 border border-gray-300" />
+                        )}
+                        {/* Overlay al hover */}
+                        <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploadingAvatar}
+                            className="
+                                absolute inset-0 flex items-center justify-center
+                                rounded-full bg-black/40 opacity-0 group-hover:opacity-100
+                                transition-opacity duration-200 disabled:cursor-not-allowed"
+                            aria-label="Cambiar avatar"
+                        >
+                            <CameraIcon className="h-6 w-6 text-white" />
+                        </button>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleAvatarChange}
+                        />
+                    </div>
+                    <div>
+                        <p className="text-sm font-medium text-gray-700">Foto de perfil</p>
+                        {isUploadingAvatar ? (
+                            <p className="text-xs text-gray-400 mt-0.5">Subiendo...</p>
+                        ) : (
+                            <p className="text-xs text-gray-400 mt-0.5">Hacé clic en la imagen para cambiarla</p>
+                        )}
+                        {avatarError && (
+                            <p className="text-xs text-red-500 font-semibold mt-0.5">{avatarError}</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Fila: Nombre + Apellidos */}
                 <div className="grid grid-cols-2 gap-4">
-                    <div className="relative flex justify-center">
+                    <div className="flex flex-col gap-1">
                         <Field
                             type="text"
                             name="name"
                             placeholder="Nombre del usuario"
                             className="
-                                h-11 w-full text-gray-700 font-medium border border-gray-300 rounded-full 
-                                focus:outline-none focus:border-1 focus:border-teal-600 px-5 py-3"
+                                h-11 w-full text-gray-700 font-medium border border-gray-300 rounded-full
+                                focus:outline-none focus:border-teal-600 px-5 py-3"
                         />
                         <ErrorMessage
                             name="name"
                             component="p"
-                            className="absolute top-8 text-red-500 text-sm font-bold bg-white rounded-full px-1"
+                            className="text-red-500 text-xs font-semibold px-3"
                         />
                     </div>
-                    <div className="relative flex justify-center">
+                    <div className="flex flex-col gap-1">
                         <Field
                             type="text"
                             name="surname"
                             placeholder="Apellidos del usuario"
                             className="
-                                h-11 w-full text-gray-700 font-medium border border-gray-300 rounded-full 
-                                focus:outline-none focus:border-1 focus:border-teal-600 px-5 py-3"
+                                h-11 w-full text-gray-700 font-medium border border-gray-300 rounded-full
+                                focus:outline-none focus:border-teal-600 px-5 py-3"
                         />
                         <ErrorMessage
                             name="surname"
                             component="p"
-                            className="absolute top-8 text-red-500 text-sm font-bold bg-white rounded-full px-1"
+                            className="text-red-500 text-xs font-semibold px-3"
                         />
                     </div>
-                    <div className="relative flex justify-center">
-                        <Field
-                            type="text"
-                            name="bio"
-                            placeholder="Descripción del usuario"
-                            className="
-                                h-11 w-full text-gray-700 font-medium border border-gray-300 rounded-full 
-                                focus:outline-none focus:border-1 focus:border-teal-600 px-5 py-3"
-                        />
-                    </div>
-                    <div className="relative flex justify-center">
+                </div>
+
+                {/* Bio — textarea full width */}
+                <div className="flex flex-col gap-1">
+                    <Field
+                        as="textarea"
+                        name="bio"
+                        placeholder="Descripción del usuario"
+                        rows={3}
+                        className="
+                            w-full text-gray-700 font-medium border border-gray-300 rounded-2xl
+                            focus:outline-none focus:border-teal-600 px-5 py-3 resize-none"
+                    />
+                </div>
+
+                {/* Fecha de nacimiento */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1">
                         <Field name="birthday">
-                            {({ field, form }: any) => (
+                            {({ field, form }: FieldProps) => (
                                 <div className="relative w-full">
                                     <DatePicker
                                         selected={field.value}
@@ -118,66 +213,69 @@ export default function UpdateProfile({ username }: { username: string }) {
                             )}
                         </Field>
                     </div>
-                    <div className="relative flex justify-center">
+                </div>
+
+                {/* Fila: Contraseña + Confirmar */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1">
                         <Field
                             type="password"
                             name="password"
                             placeholder="Cambiar contraseña"
                             className="
-                                h-11 w-full text-gray-700 font-medium border border-gray-300 rounded-full 
-                                focus:outline-none focus:border-1 focus:border-teal-600 px-5 py-3"
+                                h-11 w-full text-gray-700 font-medium border border-gray-300 rounded-full
+                                focus:outline-none focus:border-teal-600 px-5 py-3"
                         />
                         <ErrorMessage
                             name="password"
                             component="p"
-                            className="absolute top-8 text-red-500 text-sm font-bold bg-white rounded-full px-1"
+                            className="text-red-500 text-xs font-semibold px-3"
                         />
                     </div>
-                    <div className="relative flex justify-center">
+                    <div className="flex flex-col gap-1">
                         <Field
                             type="password"
                             name="confirmPassword"
                             placeholder="Confirmar contraseña"
                             className="
-                                h-11 w-full text-gray-700 font-medium border border-gray-300 rounded-full 
-                                focus:outline-none focus:border-1 focus:border-teal-600 px-5 py-3"
+                                h-11 w-full text-gray-700 font-medium border border-gray-300 rounded-full
+                                focus:outline-none focus:border-teal-600 px-5 py-3"
                         />
                         <ErrorMessage
                             name="confirmPassword"
                             component="p"
-                            className="absolute top-8 text-red-500 text-sm font-bold bg-white rounded-full px-1"
-                        />
-                    </div>
-                    <div className="relative flex justify-center col-span-2">
-                        <Field
-                            type="text"
-                            name="imgUser"
-                            placeholder="Avatar"
-                            className="
-                                h-11 w-full text-gray-700 font-medium border border-gray-300 rounded-full 
-                                focus:outline-none focus:border-1 focus:border-teal-600 px-5 py-3"
+                            className="text-red-500 text-xs font-semibold px-3"
                         />
                     </div>
                 </div>
-                <div className="flex justify-end">
+
+                {/* Footer: mensajes + botón */}
+                <div className="flex items-center justify-between pt-1">
+                    <div>
+                        {isError && (
+                            <p className="text-red-500 text-sm font-semibold">
+                                Error al actualizar el perfil. Volvé a intentarlo.
+                            </p>
+                        )}
+                        {successMessage && (
+                            <p className="flex items-center gap-1 text-teal-700 text-sm font-semibold">
+                                <CheckCircleIcon className="h-4 w-4" />
+                                Perfil actualizado correctamente.
+                            </p>
+                        )}
+                    </div>
                     <button
                         type="submit"
+                        disabled={isPending}
                         className="
                             bg-lime-600 text-base text-white font-semibold rounded-full
-                            px-6 py-2 hover:bg-lime-700 transition transform duration-200"
+                            px-6 py-2 hover:bg-lime-700 transition transform duration-200
+                            disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        Actualizar
+                        {isPending ? 'Guardando...' : 'Actualizar'}
                     </button>
-                </div>
-                <div className="absolute top-4 left-4 bg-white">
-                    {isError && 
-                        <p className="text-red-500 text-base font-semibold">
-                            Error durante el inicio de sesión. Vuelve a intentarlo.
-                        </p>
-                    }
                 </div>
             </Form>
         </Formik>
-
     );
 }
