@@ -4,6 +4,7 @@ export interface IRouteSession {
     idRoute: number;
     slug: string;
     title: string;
+    category: string;
     distance: number | null;
     startAt: string;
     endAt: string | null;

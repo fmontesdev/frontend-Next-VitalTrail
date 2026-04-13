@@ -49,7 +49,7 @@ const { data: following, isLoading, isError } = useFollowingProfiles(username);
                 </div>
             ) : (
                 following?.profiles.map((profile) => (
-                    <ProfileCard key={profile.username} list="following" profile={profile} />
+                    <ProfileCard key={profile.username} profile={profile} />
                 ))
             )}
         </div>

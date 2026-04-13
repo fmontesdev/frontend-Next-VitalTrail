@@ -13,7 +13,7 @@ export default function ProfileMyContent({ username }: { username: string }) {
     // State para controlar qué vista se muestra
     const [activeTab, setActiveTab] =
         useState<'sesiones' | 'favoritos' | 'rutas' | 'comentarios' | 'siguiendo' | 'seguidos'>('sesiones');
-    const [commentsCount, setCommentsCount] = useState<number>(); // Contador de comentarios para mostrar en la pestaña (desactivado)
+    const [, setCommentsCount] = useState<number>(); // Contador de comentarios para mostrar en la pestaña (desactivado)
     const { canEdit } = useCanEdit(username);
     const { canManageAdmin } = useCanManageAdmin(username);
 
@@ -106,7 +106,7 @@ export default function ProfileMyContent({ username }: { username: string }) {
 
             {/* Contenido dinámico */}
             <div className="mt-4">
-                {activeTab === 'sesiones' && <MySessionsList />}
+                {activeTab === 'sesiones' && canEdit && <MySessionsList />}
                 {activeTab === 'favoritos' && <ProfileFavoritesList username={username} />}
                 {activeTab === 'rutas' && <MyRoutesList username={username} />}
                 {activeTab === 'comentarios' && <ProfileCommentsList username={username} onCommentsCount={(count) => setCommentsCount(count)}/>}

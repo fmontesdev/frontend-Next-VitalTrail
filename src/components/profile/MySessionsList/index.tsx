@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useInfiniteSessionsList } from '@/queries/routeSessionQuery';
 import SessionCard from './components/SessionCard';
 import { IRouteSessionSummary } from '@/shared/interfaces/entities/routeSession.interface';
@@ -16,14 +16,29 @@ export default function MySessionsList() {
         isFetchingNextPage,
     } = useInfiniteSessionsList();
 
-    // scrollContainerRef: contenedor con overflow-y-auto — actúa como root del IntersectionObserver
     const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-    // sentinelRef: div invisible al final de la lista que dispara la siguiente página al entrar en vista
     const sentinelRef = useRef<HTMLDivElement>(null);
+    const [hasScroll, setHasScroll] = useState(false);
 
     const sessions = data?.pages.flatMap((p) => p.sessions) ?? [];
 
+    // Detecta si el contenedor tiene scroll vertical activo
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const checkScroll = () => {
+            setHasScroll(container.scrollHeight > container.clientHeight);
+        };
+
+        checkScroll();
+
+        const observer = new ResizeObserver(checkScroll);
+        observer.observe(container);
+        return () => observer.disconnect();
+    }, [sessions.length]);
+
+    // IntersectionObserver para infinite scroll
     useEffect(() => {
         const sentinel = sentinelRef.current;
         const root = scrollContainerRef.current;
@@ -69,7 +84,7 @@ export default function MySessionsList() {
 
     return (
         <div ref={scrollContainerRef} className="w-full py-2 animate-fade-in max-h-[616px] overflow-y-auto">
-            <div className="flex flex-col gap-3">
+            <div className={`flex flex-col gap-3 ${hasScroll ? 'pr-4' : ''}`}>
                 {sessions.map((session: IRouteSessionSummary) => (
                     <SessionCard key={session.idSession} session={session} />
                 ))}

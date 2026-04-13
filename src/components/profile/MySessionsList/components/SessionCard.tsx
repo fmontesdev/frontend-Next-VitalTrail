@@ -1,68 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import type { FC, SVGProps } from 'react';
-import { MapIcon, CheckCircleIcon, ExclamationCircleIcon, MinusCircleIcon } from '@heroicons/react/24/solid';
-import { ClockIcon, MapPinIcon, BoltIcon, FaceSmileIcon, HeartIcon } from '@heroicons/react/24/outline';
-import { IRouteSessionSummary, IWellbeingCheckin } from '@/shared/interfaces/entities/routeSession.interface';
+import { ClockIcon, MapPinIcon, TagIcon, ChatBubbleBottomCenterTextIcon } from '@heroicons/react/24/outline';
+import { IRouteSessionSummary } from '@/shared/interfaces/entities/routeSession.interface';
 import { parseSessionDate, formatElapsed } from '@/shared/utils/sessionDate';
 import { formatDistance } from '@/shared/utils/distance';
 
 interface ISessionCardProps {
     session: IRouteSessionSummary;
-}
-
-type HeroIcon = FC<SVGProps<SVGSVGElement>>;
-
-// --- media normalizada (energy y mood: 5=bueno; stress: 1=bueno → 6-stress) ---
-
-function checkinAvg(checkin: IWellbeingCheckin): number {
-    return (checkin.energy + checkin.mood + (6 - checkin.stress)) / 3;
-}
-
-// --- icono y colores del estado general ---
-
-interface StateConfig {
-    Icon: HeroIcon;
-    iconColor: string;
-    iconBg: string;
-}
-
-function resolveStateConfig(checkin: IWellbeingCheckin | null): StateConfig {
-    if (!checkin) {
-        return { Icon: MapIcon, iconColor: 'text-stone-400', iconBg: 'bg-stone-100' };
-    }
-    const avg = checkinAvg(checkin);
-    if (avg <= 2) return { Icon: ExclamationCircleIcon, iconColor: 'text-red-500',   iconBg: 'bg-red-50' };
-    if (avg < 4)  return { Icon: MinusCircleIcon,       iconColor: 'text-amber-500', iconBg: 'bg-amber-50' };
-    return             { Icon: CheckCircleIcon,          iconColor: 'text-lime-600',  iconBg: 'bg-lime-50' };
-}
-
-// --- gradiente del acento izquierdo ---
-
-function accentGradient(checkin: IWellbeingCheckin | null): string {
-    if (!checkin) return 'from-stone-300 to-stone-400';
-    const avg = checkinAvg(checkin);
-    if (avg <= 2) return 'from-red-400 to-red-500';
-    if (avg < 4)  return 'from-amber-400 to-amber-500';
-    return 'from-lime-400 to-lime-600';
-}
-
-// --- colores por valor individual ---
-
-interface ValueColors { text: string; bg: string; border: string }
-
-function energyMoodColors(value: 1 | 2 | 3 | 4 | 5): ValueColors {
-    if (value <= 2) return { text: 'text-red-500',   bg: 'bg-red-50',   border: 'border-red-200' };
-    if (value === 3) return { text: 'text-amber-500', bg: 'bg-amber-50', border: 'border-amber-200' };
-    return                  { text: 'text-lime-600',  bg: 'bg-lime-50',  border: 'border-lime-200' };
-}
-
-// Stress: valor alto = malo (invertido)
-function stressColors(value: 1 | 2 | 3 | 4 | 5): ValueColors {
-    if (value >= 4) return { text: 'text-red-500',   bg: 'bg-red-50',   border: 'border-red-200' };
-    if (value === 3) return { text: 'text-amber-500', bg: 'bg-amber-50', border: 'border-amber-200' };
-    return                  { text: 'text-lime-600',  bg: 'bg-lime-50',  border: 'border-lime-200' };
 }
 
 // --- cálculo de duración ---
@@ -86,26 +31,127 @@ function formatDate(dateStr: string): string {
     });
 }
 
-// --- componente de burbuja para cada valor del checkin ---
+// --- colores semánticos para arco ---
 
-interface CheckinBubbleProps {
-    Icon: HeroIcon;
-    value: 1 | 2 | 3 | 4 | 5;
-    label: string;
-    colors: ValueColors;
+interface ArcColors { stroke: string; text: string }
+
+function energyArcColors(value: 1 | 2 | 3 | 4 | 5): ArcColors {
+    if (value <= 2) return { stroke: '#ef4444', text: 'text-red-500' };
+    if (value === 3) return { stroke: '#f59e0b', text: 'text-amber-500' };
+    return                  { stroke: '#65a30d', text: 'text-lime-600' };
 }
 
-function CheckinBubble({ Icon, value, label, colors }: CheckinBubbleProps) {
+function stressArcColors(value: 1 | 2 | 3 | 4 | 5): ArcColors {
+    if (value >= 4) return { stroke: '#ef4444', text: 'text-red-500' };
+    if (value === 3) return { stroke: '#f59e0b', text: 'text-amber-500' };
+    return                  { stroke: '#65a30d', text: 'text-lime-600' };
+}
+
+// --- semicírculo SVG con progreso ---
+
+interface ArcGaugeProps {
+    value: 1 | 2 | 3 | 4 | 5;
+    label: string;
+    colors: ArcColors;
+    inverted?: boolean;
+}
+
+function ArcGauge({ value, label, colors, inverted = false }: ArcGaugeProps) {
+    const SIZE = 64;
+    const STROKE = 5;
+    const R = (SIZE - STROKE) / 2;
+    const CX = SIZE / 2;
+    const CY = SIZE / 2 + 4;
+
+    const arcLength = Math.PI * R;
+    const progress = ((value - 1) / 4) * arcLength;
+    const displayProgress = inverted ? arcLength - progress + (arcLength / 4) : progress;
+    const displayRemaining = arcLength - displayProgress;
+
+    const arcPath = `M ${CX - R},${CY} A ${R},${R} 0 0,1 ${CX + R},${CY}`;
+
     return (
-        <div className={`w-16 h-16 rounded-full flex flex-col items-center justify-center gap-0.5 border ${colors.border} ${colors.bg} shadow-sm flex-shrink-0`}>
-            {/* Icono a la izquierda del número */}
-            <div className="flex items-center gap-1 pb-0.5">
-                <Icon className={`w-5 h-5 flex-shrink-0 ${colors.text}`} />
-                <span className={`text-2xl font-black leading-none ${colors.text}`}>{value}</span>
+        <div className="flex flex-col items-center gap-0.5" style={{ width: SIZE }}>
+            <div className="relative" style={{ width: SIZE, height: SIZE / 2 + 8 }}>
+                <svg
+                    width={SIZE}
+                    height={SIZE / 2 + 8}
+                    viewBox={`0 0 ${SIZE} ${SIZE / 2 + 10}`}
+                    overflow="visible"
+                >
+                    <path
+                        d={arcPath}
+                        fill="none"
+                        stroke="#e7e5e4"
+                        strokeWidth={STROKE}
+                        strokeLinecap="round"
+                    />
+                    <path
+                        d={arcPath}
+                        fill="none"
+                        stroke={colors.stroke}
+                        strokeWidth={STROKE}
+                        strokeLinecap="round"
+                        strokeDasharray={`${displayProgress} ${displayRemaining + 999}`}
+                    />
+                </svg>
+                <div className="absolute inset-0 flex items-end justify-center pb-0.5">
+                    <span className={`text-base font-black leading-none ${colors.text}`}>{value}</span>
+                </div>
             </div>
-            {/* Etiqueta inferior */}
-            <span className={`text-[9px] font-bold uppercase tracking-wider leading-none ${colors.text} opacity-60`}>
+            <span className="text-[9px] font-bold uppercase tracking-wider text-stone-400 leading-none">
                 {label}
+            </span>
+        </div>
+    );
+}
+
+// --- cara de ánimo ---
+
+type MoodLevel = 'good' | 'neutral' | 'bad';
+
+function moodLevel(value: 1 | 2 | 3 | 4 | 5): MoodLevel {
+    if (value >= 4) return 'good';
+    if (value === 3) return 'neutral';
+    return 'bad';
+}
+
+function MoodFace({ value }: { value: 1 | 2 | 3 | 4 | 5 }) {
+    const level = moodLevel(value);
+
+    const config: Record<MoodLevel, { bg: string; color: string; mouthD: string }> = {
+        good:    { bg: '#f0fdf4', color: '#16a34a', mouthD: 'M 9,14 Q 12,18 15,14' },
+        neutral: { bg: '#fffbeb', color: '#d97706', mouthD: 'M 9,15 Q 12,15 15,15' },
+        bad:     { bg: '#fef2f2', color: '#dc2626', mouthD: 'M 9,16 Q 12,12 15,16' },
+    };
+
+    const { bg, color, mouthD } = config[level];
+
+    return (
+        <div className="flex flex-col items-center gap-0.5" style={{ width: 64 }}>
+            <div style={{ width: 40, height: 40, marginBottom: 2 }}>
+                <svg viewBox="0 0 24 24" width={40} height={40}>
+                    <circle cx="12" cy="12" r="11" fill={bg} stroke={color} strokeWidth="1" />
+                    <circle cx="8.5" cy="10" r="1.3" fill={color} />
+                    <circle cx="15.5" cy="10" r="1.3" fill={color} />
+                    <path d={mouthD} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+                </svg>
+            </div>
+            <span className="text-[9px] font-bold uppercase tracking-wider text-stone-400 leading-none">
+                Ánimo
+            </span>
+        </div>
+    );
+}
+
+// --- bloque vacío cuando no hay checkin ---
+
+function NoCheckin() {
+    return (
+        <div className="flex items-center gap-3">
+            <ChatBubbleBottomCenterTextIcon className="w-14 h-14 flex-shrink-0 text-stone-300" />
+            <span className="text-base font-semibold text-stone-300 leading-tight">
+                Sin valoración
             </span>
         </div>
     );
@@ -122,81 +168,75 @@ export default function SessionCard({ session }: ISessionCardProps) {
         session.distance !== null ? formatDistance(session.distance) : null;
 
     const { checkin } = session;
-    const { Icon: StateIcon, iconColor, iconBg } = resolveStateConfig(checkin);
-    const accent = accentGradient(checkin);
 
     return (
-        // items-center centra verticalmente el contenido.
-        // El acento usa self-stretch para ocupar el alto completo independientemente.
-        <div className="flex items-center bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow duration-300">
+        <div className="flex items-center bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow duration-300 px-4 py-4 gap-5">
 
-            {/* Barra de acento — self-stretch para ocupar el alto completo */}
-            <div className={`self-stretch w-1.5 bg-gradient-to-b flex-shrink-0 ${accent}`} />
-
-            {/* Contenido principal: icono estado + info */}
-            <div className="flex items-center gap-4 flex-1 min-w-0 px-4 py-4">
-
-                {/* Icono representativo del estado general */}
-                <div className={`flex-shrink-0 w-14 h-14 rounded-full flex items-center justify-center ${iconBg}`}>
-                    <StateIcon className={`w-9 h-9 ${iconColor}`} />
-                </div>
-
-                {/* Título, fecha y chips */}
-                <div className="flex-1 min-w-0">
-                    <p className="text-xs text-stone-500 tracking-wide">{formatDate(session.startAt)}</p>
-
-                    {/* div con truncate; Link inline → solo el texto es clicable */}
-                    <div className="truncate mt-0.5">
-                        <Link
-                            href={`/route/${session.slug}`}
-                            className="font-bold text-base text-teal-700 hover:underline decoration-teal-700 transition-all duration-150"
-                        >
-                            {session.title}
-                        </Link>
-                    </div>
-
-                    {(duration || distanceLabel) && (
-                        <div className="flex flex-wrap gap-1.5 mt-2">
-                            {duration && (
-                                <span className="flex items-center gap-1 bg-teal-50 text-teal-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-teal-100">
-                                    <ClockIcon className="w-3 h-3 shrink-0" />
-                                    {duration}
-                                </span>
-                            )}
-                            {distanceLabel && (
-                                <span className="flex items-center gap-1 bg-sky-50 text-sky-700 text-xs font-medium px-2.5 py-1 rounded-full border border-sky-100">
-                                    <MapPinIcon className="w-3 h-3 shrink-0" />
-                                    {distanceLabel}
-                                </span>
-                            )}
+            {/* Bloque izquierdo: indicadores de estado */}
+            <div className="flex flex-col items-center justify-center flex-shrink-0">
+                {checkin ? (
+                    <>
+                        <div className="flex items-end gap-2">
+                            <ArcGauge
+                                value={checkin.energy}
+                                label="Energía"
+                                colors={energyArcColors(checkin.energy)}
+                            />
+                            <MoodFace value={checkin.mood} />
+                            <ArcGauge
+                                value={checkin.stress}
+                                label="Estrés"
+                                colors={stressArcColors(checkin.stress)}
+                                inverted
+                            />
                         </div>
-                    )}
-                </div>
+                        {checkin.notes && (
+                            <p className="text-[11px] italic text-stone-400 text-center mt-2 max-w-[200px] leading-tight line-clamp-2">
+                                &ldquo;{checkin.notes}&rdquo;
+                            </p>
+                        )}
+                    </>
+                ) : (
+                    <NoCheckin />
+                )}
             </div>
 
-            {/* Burbujas del checkin — tamaño fijo, alineadas desde el margen derecho */}
-            {checkin && (
-                <div className="flex items-center gap-4 flex-shrink-0 px-3">
-                    <CheckinBubble
-                        Icon={BoltIcon}
-                        value={checkin.energy}
-                        label="Energía"
-                        colors={energyMoodColors(checkin.energy)}
-                    />
-                    <CheckinBubble
-                        Icon={FaceSmileIcon}
-                        value={checkin.mood}
-                        label="Ánimo"
-                        colors={energyMoodColors(checkin.mood)}
-                    />
-                    <CheckinBubble
-                        Icon={HeartIcon}
-                        value={checkin.stress}
-                        label="Estrés"
-                        colors={stressColors(checkin.stress)}
-                    />
+            {/* Bloque derecho: info de la ruta */}
+            <div className="flex flex-col min-w-0">
+                <p className="text-xs text-stone-500 tracking-wide">{formatDate(session.startAt)}</p>
+
+                <div className="truncate mt-0.5">
+                    <Link
+                        href={`/route/${session.slug}`}
+                        className="font-bold text-base text-teal-700 hover:underline decoration-teal-700 transition-all duration-150"
+                    >
+                        {session.title}
+                    </Link>
                 </div>
-            )}
+
+                {(duration || distanceLabel || session.category) && (
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                        {session.category && (
+                            <span className="flex items-center gap-1 bg-lime-50 text-lime-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-lime-100 capitalize">
+                                <TagIcon className="w-3 h-3 shrink-0" />
+                                {session.category}
+                            </span>
+                        )}
+                        {duration && (
+                            <span className="flex items-center gap-1 bg-teal-50 text-teal-700 text-xs font-semibold px-2.5 py-1 rounded-full border border-teal-100">
+                                <ClockIcon className="w-3 h-3 shrink-0" />
+                                {duration}
+                            </span>
+                        )}
+                        {distanceLabel && (
+                            <span className="flex items-center gap-1 bg-sky-50 text-sky-700 text-xs font-medium px-2.5 py-1 rounded-full border border-sky-100">
+                                <MapPinIcon className="w-3 h-3 shrink-0" />
+                                {distanceLabel}
+                            </span>
+                        )}
+                    </div>
+                )}
+            </div>
         </div>
     );
 }

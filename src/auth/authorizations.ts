@@ -73,11 +73,11 @@ export const useCanEdit = (profileUsername: string) => {
     const { data: profile, isLoading } = useProfile(profileUsername);
 
     const canEdit =
-        (!isLoading &&
+        !isLoading &&
         !!profile &&
         currentUser.isAuthenticated &&
-        currentUser.user?.username === profile?.username) ||
-        currentUser.user?.rol === 'ROLE_ADMIN';
+        (currentUser.user?.username === profile?.username ||
+        currentUser.user?.rol === 'ROLE_ADMIN');
 
     return { canEdit, isLoading };
 };
