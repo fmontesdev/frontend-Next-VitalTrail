@@ -4,6 +4,7 @@ import { SetTokenCookie, RemoveTokenCookie } from '@/auth/clientCookies';
 import { useRouter } from 'next/navigation';
 import { IUser, ILogin, IUserLogin, IRegister } from "@/shared/interfaces/entities/user.interface";
 import { AxiosError } from 'axios';
+import { notificationKeys } from '@/queries/notificationQuery';
 
 const key = 'auth'
 
@@ -36,8 +37,8 @@ export const useLoginMutation = () => {
                 isAuthenticated: true
             });
 
-            // Invalida las queries relacionadas con rutas para que las listas/tarjetas
-            // se vuelvan a obtener con los estados actualizados del usuario autenticado
+            // Limpia notificaciones del usuario anterior y invalida rutas
+            queryClient.removeQueries({ queryKey: notificationKeys.mine() });
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: ['filteredRoutes'] }),
                 queryClient.invalidateQueries({ queryKey: ['routes'] }),
@@ -103,8 +104,8 @@ export const useLogoutMutation = () => {
         onSuccess: async () => {
             queryClient.setQueryData([key], { user: null, isAuthenticated: false, isPremium: false });
 
-            // Invalida las queries relacionadas con rutas/favoritos para que las listas/tarjetas
-            // se vuelvan a obtener con el estado de favoritos del usuario autenticado
+            // Limpia notificaciones del usuario saliente e invalida rutas
+            queryClient.removeQueries({ queryKey: notificationKeys.mine() });
             await Promise.all([
                 queryClient.invalidateQueries({ queryKey: ['filteredRoutes'] }),
                 queryClient.invalidateQueries({ queryKey: ['routes'] }),
