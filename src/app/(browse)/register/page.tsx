@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { merienda } from '@/app/fonts';
 import { Formik, Field, Form, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
@@ -30,8 +31,10 @@ const DEFAULT_AVATARS = [
 
 export default function RegisterPage() {
     const { register } = useAuth();
+    const router = useRouter();
     const [selectedAvatar, setSelectedAvatar] = useState<string | null>(null);
     const [avatarOpen, setAvatarOpen] = useState(false);
+    const [registered, setRegistered] = useState(false);
 
     const validationSchema = Yup.object({
         email: Yup.string().email('El correo electrónico no es válido').required('El correo electrónico es obligatorio'),
@@ -55,6 +58,8 @@ export default function RegisterPage() {
         };
         try {
             await register.mutateAsync(registerUser);
+            setRegistered(true);
+            setTimeout(() => router.replace('/login'), 2500);
         } catch {
             // register.isError de useMutation captura el estado
         }
@@ -209,22 +214,34 @@ export default function RegisterPage() {
                             )}
                         </div>
 
-                        {register.isError && (
-                            <p className="text-red-500 text-sm font-semibold text-left px-1">
-                                Error al crear la cuenta. Volvé a intentarlo.
-                            </p>
-                        )}
+                        {registered ? (
+                            <div className="flex items-center gap-3 bg-teal-50 border border-teal-200 rounded-2xl px-4 py-3 text-left">
+                                <CheckCircleIcon className="h-6 w-6 text-teal-600 shrink-0" />
+                                <div>
+                                    <p className="text-teal-700 font-bold text-sm">¡Cuenta creada con éxito!</p>
+                                    <p className="text-teal-600 text-xs mt-0.5">Redirigiendo al login...</p>
+                                </div>
+                            </div>
+                        ) : (
+                            <>
+                                {register.isError && (
+                                    <p className="text-red-500 text-sm font-semibold text-left px-1">
+                                        Error al crear la cuenta. Volvé a intentarlo.
+                                    </p>
+                                )}
 
-                        <button
-                            type="submit"
-                            disabled={register.isPending}
-                            className="
-                                w-full bg-lime-600 text-base text-white font-bold p-2.5 rounded-full
-                                hover:bg-lime-700 transition transform duration-200
-                                disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                            {register.isPending ? 'Creando cuenta...' : 'Regístrate'}
-                        </button>
+                                <button
+                                    type="submit"
+                                    disabled={register.isPending}
+                                    className="
+                                        w-full bg-lime-600 text-base text-white font-bold p-2.5 rounded-full
+                                        hover:bg-lime-700 transition transform duration-200
+                                        disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {register.isPending ? 'Creando cuenta...' : 'Regístrate'}
+                                </button>
+                            </>
+                        )}
                     </Form>
                 </Formik>
 

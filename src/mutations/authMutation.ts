@@ -9,14 +9,9 @@ import { notificationKeys } from '@/queries/notificationQuery';
 const key = 'auth'
 
 export const useRegisterMutation = () => {
-    const router = useRouter();
-
     return useMutation<IUser, AxiosError, IRegister>({
         mutationFn: ( data: IRegister ) => UserService.register(data),
         retry: false, // No reintentar en caso de error
-        onSuccess: () => {
-            router.replace("/login");
-        },
         onError: (error) => {
             console.log(error);
             // toast.error(err.response?.data?.message ?? 'No se pudo registrar');
