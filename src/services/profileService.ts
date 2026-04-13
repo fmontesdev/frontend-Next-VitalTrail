@@ -32,4 +32,15 @@ export const ProfileService = {
     getFavorites: (username: string, params?: { limit?: number; offset?: number }): Promise<IFavoriteRoutes> => {
         return apiService.get<IFavoriteRoutes>(`/profiles/${username}/favorites`, false, { params });
     },
+
+    uploadAvatar(username: string, file: File): Promise<IProfile> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return apiService.post<{ profile: IProfile }>(
+            `/profiles/${username}/avatar`,
+            formData,
+            false,
+            { headers: { 'Content-Type': 'multipart/form-data' } }
+        ).then((response) => response.profile);
+    },
 };

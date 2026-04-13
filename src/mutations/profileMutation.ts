@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ProfileService } from '@/services/profileService';
 import { UserService } from '@/services/userService';
-import { IUser, IProfile, IProfiles } from '@/shared/interfaces/entities/user.interface';
+import { IProfile } from '@/shared/interfaces/entities/user.interface';
 import { IUpdProfile } from '@/shared/interfaces/entities/user.interface';
 
 export const useFollow = (username: string) => {
@@ -86,6 +86,20 @@ export const useUpdateProfile = () => {
         mutationFn: (data: IUpdProfile) => UserService.updateUser(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['profile'] });
+        },
+        onError: (error) => {
+            console.log(error);
+        }
+    });
+};
+
+export const useUploadAvatar = (username: string) => {
+    const queryClient = useQueryClient();
+
+    return useMutation<IProfile, Error, File>({
+        mutationFn: (file: File) => ProfileService.uploadAvatar(username, file),
+        onSuccess: (updatedProfile) => {
+            queryClient.setQueryData(['profile', username], updatedProfile);
         },
         onError: (error) => {
             console.log(error);
