@@ -68,6 +68,7 @@ export interface IDetailsRouteImagesPreviewProps {
 export interface ICommentsListProps {
     routeSlug: string;
     initialComments: IComments;
+    commentsCount: number;
     onCommentsCount: (count: number) => void;
 }
 

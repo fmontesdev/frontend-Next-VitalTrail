@@ -77,9 +77,10 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
 
     return (
         <>
-        <div className="container mx-auto flex flex-row flex-wrap gap-1">
-            <section className="w-full">
-                <p className="text-sm font-medium text-gray-600 flex items-center gap-2 px-4">
+        <div className="container mx-auto flex flex-col">
+            {/* Breadcrumb + título + meta */}
+            <section className="w-full px-4 pt-1 pb-2">
+                <p className="text-sm font-medium text-gray-600 flex items-center gap-2">
                     <MapPinIcon className="w-5 h-5" />
                     <Link
                         href={`/routes?category=${route.category}`}
@@ -97,7 +98,7 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
                 </p>
 
                 {/* Fila título + botón de sesión */}
-                <div className="w-full flex items-end justify-between gap-3 pt-0.5 pb-0.5 md:pb-0.5 px-4">
+                <div className="w-full flex items-end justify-between gap-3 pt-0.5 pb-0.5">
                     <h1 className="text-2xl md:text-3xl font-bold text-teal-700 leading-tight">
                         {CapitalizeFirstLetter(route.title)}
                     </h1>
@@ -113,7 +114,7 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
                 </div>
 
                 {/* Fila meta: reseñas/dificultad + favorito al margen derecho */}
-                <div className="w-full flex items-center justify-between flex-wrap gap-y-1 text-base font-semibold text-gray-700 pb-3 px-4">
+                <div className="w-full flex items-center justify-between flex-wrap gap-y-1 text-base font-semibold text-gray-700 pb-2">
                     <div className="flex flex-wrap items-center gap-x-1">
                         <div className="flex items-center gap-1 shrink-0">
                             <span className="text-sm font-medium text-gray-600">
@@ -141,26 +142,25 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
                 </div>
             </section>
 
-            <section className="w-full md:w-[54.7%] h-[454px] md:order-1 order-2 md:space-y-6 animate-fade-in">
-                {/* Imágenes de la ruta */}
-                {route.images && route.images.length > 0 ? (
-                    <DetailsRouteImagesPreview
-                        images={route.images}
-                    />
-                ) : (
-                    <div className="flex flex-col items-center justify-center h-full rounded-b-2xl md:rounded-br-none md:rounded-l-2xl bg-stone-100 text-stone-400 gap-3">
-                        <PhotoIcon className="w-16 h-16" />
-                        <span className="text-sm font-medium">Sin imágenes disponibles</span>
-                    </div>
-                )}
+            {/* Imágenes + Mapa side-by-side */}
+            <section className="w-full flex gap-1 animate-fade-in">
+                <div className="w-full md:w-[54.7%] h-[454px]">
+                    {route.images && route.images.length > 0 ? (
+                        <DetailsRouteImagesPreview images={route.images} />
+                    ) : (
+                        <div className="flex flex-col items-center justify-center h-full rounded-b-2xl md:rounded-br-none md:rounded-l-2xl bg-stone-100 text-stone-400 gap-3">
+                            <PhotoIcon className="w-16 h-16" />
+                            <span className="text-sm font-medium">Sin imágenes disponibles</span>
+                        </div>
+                    )}
+                </div>
+                <div className="w-full md:w-[44.7%] h-[454px]">
+                    <DetailsRouteMap route={route} />
+                </div>
             </section>
 
-            <section className="w-full md:w-[44.7%] h-[454px] md:order-2 order-1 md:space-y-6 animate-fade-in">
-                {/* Mapa */}
-                <DetailsRouteMap route={route} />
-            </section>
-
-            <section className="w-full flex flex-wrap md:flex-nowrap order-3 pt-6 pb-7 px-4">
+            {/* Descripción + datos de la ruta */}
+            <section className="w-full flex flex-wrap md:flex-nowrap pt-6 pb-7 px-4">
                 {/* Descripción */}
                 <div className="
                     w-full md:w-[55%] min-h-[80px] tracking-wide text-gray-700 font-medium
@@ -237,13 +237,12 @@ export default function DetailsRoute({ slug, initialRoute }: { slug: string, ini
                 </div>
             </section>
 
-            <section className="w-full order-6 border-t border-stone-200 pt-5 px-4">
-                <h2 className="text-lg font-bold text-gray-500 px-24 pt-2 pb-3">
-                    Comentarios ({commentsCount})
-                </h2>
+            {/* Comentarios */}
+            <section className="w-full border-t border-stone-200 pt-5 px-4">
                 <CommentsList
                     routeSlug={route.slug}
                     initialComments={{comments: route.comments || [], averageRatings: route.averageRatings}}
+                    commentsCount={commentsCount}
                     onCommentsCount={(count) => setCommentsCount(count)}
                 />
             </section>
