@@ -169,7 +169,7 @@ export default function RegisterPage() {
                                 className="flex items-center justify-between w-full text-sm font-semibold text-gray-500 text-left hover:text-gray-700 transition-colors"
                             >
                                 <span>
-                                    Elegí tu avatar{' '}
+                                    Elige tu avatar{' '}
                                     <span className="font-normal text-gray-400">(opcional)</span>
                                     {selectedAvatar && (
                                         <span className="ml-2 text-lime-600 font-semibold">✓ seleccionado</span>

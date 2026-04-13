@@ -30,7 +30,7 @@ export default function FollowingList({ username }: { username: string }) {
     if (following.profilesCount === 0) return (
         <div className="flex flex-col items-center justify-center py-12 text-stone-400">
             <UsersIcon className="w-12 h-12 mb-3" />
-            <span className="text-sm font-medium">Todavía no seguís a nadie</span>
+            <span className="text-sm font-medium">Todavía no sigues a nadie</span>
         </div>
     );
 
