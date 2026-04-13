@@ -6,6 +6,7 @@ import { useIsPremium, useIsAdmin } from '@/auth/authorizations';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { SparklesIcon } from '@heroicons/react/24/outline';
 import { GetTokenCookie } from '@/auth/clientCookies';
 import Search from '../search/Search';
 import UserMenu from './UserMenu';
@@ -66,11 +67,19 @@ export default function Header() {
                             <>
                                 {currentUser.isAuthenticated ? (
                                     <div className="flex items-center gap-2">
+                                        {!isPremium && (
+                                            <Link
+                                                href="/premium"
+                                                className="flex items-center gap-1.5 font-semibold text-lime-600 hover:bg-stone-100 px-3 py-2 rounded-full transition-colors"
+                                            >
+                                                <SparklesIcon className="w-5 h-5" />
+                                                Premium
+                                            </Link>
+                                        )}
                                         <NotificationBell variant="default" />
                                         <UserMenu
                                             user={currentUser.user!}
                                             isAdmin={!!isAdmin}
-                                            isPremium={!!isPremium}
                                             onLogout={handleLogout}
                                             variant="default"
                                         />

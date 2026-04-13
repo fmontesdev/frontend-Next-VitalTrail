@@ -13,7 +13,7 @@ import MobileMenuHome from './MobileMenuHome';
 import StatsStrip from '../statsStrip/StatsStrip';
 import UserMenu from './UserMenu';
 import NotificationBell from '../NotificationBell';
-import { Bars4Icon } from '@heroicons/react/24/outline';
+import { Bars4Icon, SparklesIcon } from '@heroicons/react/24/outline';
 import { merienda } from '@/app/fonts';
 import { getImageUrl } from '@/shared/utils/imageUrl';
 
@@ -80,11 +80,19 @@ export default function HeaderHome() {
                                 <>
                                     {currentUser.isAuthenticated ? (
                                         <div className="flex items-center gap-2">
+                                            {!isPremium && (
+                                                <Link
+                                                    href="/premium"
+                                                    className="flex items-center gap-1.5 font-semibold text-white hover:text-lime-400 hover:bg-white/20 px-3 py-2 rounded-full transition-colors"
+                                                >
+                                                    <SparklesIcon className="w-5 h-5" />
+                                                    Premium
+                                                </Link>
+                                            )}
                                             <NotificationBell variant="hero" />
                                             <UserMenu
                                                 user={currentUser.user!}
                                                 isAdmin={!!isAdmin}
-                                                isPremium={!!isPremium}
                                                 onLogout={handleLogout}
                                                 variant="hero"
                                             />
