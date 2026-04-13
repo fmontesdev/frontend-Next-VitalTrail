@@ -11,7 +11,7 @@ export default function ProfileCard({ profile }: { profile: IProfile }) {
     return (
         <div className="
             w-full flex items-center gap-4 p-4 bg-white border border-stone-200 rounded-2xl
-            hover:shadow-md hover:shadow-stone-300 transition-shadow cursor-pointer"
+            hover:shadow hover:shadow-stone-200 transition-shadow cursor-pointer"
         >
             <Link
                 href={`/profile/${profile.username}`}
@@ -31,12 +31,14 @@ export default function ProfileCard({ profile }: { profile: IProfile }) {
 
                 {/* Datos */}
                 <div className="flex flex-col min-w-0">
-                    <span className="text-base text-teal-700 font-bold leading-tight">
-                        {profile.name} {profile.surname}
-                    </span>
-                    <span className="text-sm text-gray-400 font-medium mb-1">
-                        @{profile.username}
-                    </span>
+                    <div className="flex items-baseline gap-2 min-w-0">
+                        <span className="text-base text-teal-700 font-bold leading-tight truncate">
+                            {profile.name} {profile.surname}
+                        </span>
+                        <span className="text-sm text-gray-400 font-medium flex-shrink-0">
+                            @{profile.username}
+                        </span>
+                    </div>
                     {profile.bio && (
                         <span className="text-sm text-gray-500 line-clamp-1">
                             {profile.bio}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { useInfiniteSessionsList } from '@/queries/routeSessionQuery';
 import SessionCard from './components/SessionCard';
 import { IRouteSessionSummary } from '@/shared/interfaces/entities/routeSession.interface';
@@ -16,32 +16,13 @@ export default function MySessionsList() {
         isFetchingNextPage,
     } = useInfiniteSessionsList();
 
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
     const sentinelRef = useRef<HTMLDivElement>(null);
-    const [hasScroll, setHasScroll] = useState(false);
 
     const sessions = data?.pages.flatMap((p) => p.sessions) ?? [];
 
-    // Detecta si el contenedor tiene scroll vertical activo
-    useEffect(() => {
-        const container = scrollContainerRef.current;
-        if (!container) return;
-
-        const checkScroll = () => {
-            setHasScroll(container.scrollHeight > container.clientHeight);
-        };
-
-        checkScroll();
-
-        const observer = new ResizeObserver(checkScroll);
-        observer.observe(container);
-        return () => observer.disconnect();
-    }, [sessions.length]);
-
-    // IntersectionObserver para infinite scroll
+    // IntersectionObserver para infinite scroll — root: null usa el viewport global
     useEffect(() => {
         const sentinel = sentinelRef.current;
-        const root = scrollContainerRef.current;
         if (!sentinel) return;
 
         const observer = new IntersectionObserver(
@@ -50,7 +31,7 @@ export default function MySessionsList() {
                     fetchNextPage();
                 }
             },
-            { root, threshold: 0.1 }
+            { root: null, threshold: 0.1 }
         );
 
         observer.observe(sentinel);
@@ -83,8 +64,8 @@ export default function MySessionsList() {
     );
 
     return (
-        <div ref={scrollContainerRef} className="w-full py-2 animate-fade-in max-h-[616px] overflow-y-auto">
-            <div className={`flex flex-col gap-3 ${hasScroll ? 'pr-4' : ''}`}>
+        <div className="w-full py-2 animate-fade-in">
+            <div className="flex flex-col gap-3">
                 {sessions.map((session: IRouteSessionSummary) => (
                     <SessionCard key={session.idSession} session={session} />
                 ))}

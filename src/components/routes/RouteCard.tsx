@@ -16,7 +16,7 @@ export default function RouteCard({ route, section }: { route: IRoute, section: 
 
     return (
         <div
-            className={`flex w-full min-h-44 ${section === 'routes' ? 'bg-stone-100' : 'bg-white'} border border-stone-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer relative`}
+            className={`flex w-full min-h-44 ${section === 'routes' ? 'bg-stone-100' : 'bg-white'} border border-stone-200 rounded-2xl overflow-hidden hover:shadow transition-shadow duration-300 cursor-pointer relative`}
             onClick={() => router.push(`/route/${route.slug}`)}
         >
             {/* Imagen */}

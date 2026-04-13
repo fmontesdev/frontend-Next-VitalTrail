@@ -148,8 +148,8 @@ function MoodFace({ value }: { value: 1 | 2 | 3 | 4 | 5 }) {
 
 function NoCheckin() {
     return (
-        <div className="flex items-center gap-3">
-            <ChatBubbleBottomCenterTextIcon className="w-14 h-14 flex-shrink-0 text-stone-300" />
+        <div className="flex items-center justify-center gap-3 w-[208px] h-[48px]">
+            <ChatBubbleBottomCenterTextIcon className="w-12 h-12 flex-shrink-0 text-stone-300" />
             <span className="text-base font-semibold text-stone-300 leading-tight">
                 Sin valoración
             </span>
@@ -170,7 +170,7 @@ export default function SessionCard({ session }: ISessionCardProps) {
     const { checkin } = session;
 
     return (
-        <div className="flex items-center bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow-md transition-shadow duration-300 px-4 py-4 gap-5">
+        <div className="flex items-center bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow transition-shadow duration-300 px-5 py-4 gap-6">
 
             {/* Bloque izquierdo: indicadores de estado */}
             <div className="flex flex-col items-center justify-center flex-shrink-0">
@@ -200,6 +200,9 @@ export default function SessionCard({ session }: ISessionCardProps) {
                     <NoCheckin />
                 )}
             </div>
+
+            {/* Separador vertical */}
+            <div className="self-stretch w-px bg-stone-200 flex-shrink-0" />
 
             {/* Bloque derecho: info de la ruta */}
             <div className="flex flex-col min-w-0">

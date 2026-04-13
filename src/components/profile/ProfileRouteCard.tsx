@@ -15,7 +15,7 @@ export default function ProfileRouteCard({ route }: { route: IRoute }) {
 
     return (
         <div
-            className="relative flex flex-col bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+            className="relative flex flex-col bg-white border border-stone-200 rounded-2xl overflow-hidden hover:shadow transition-shadow duration-300 cursor-pointer"
             onClick={() => router.push(`/route/${route.slug}`)}
         >
             {/* Imagen con overlay y controles */}
