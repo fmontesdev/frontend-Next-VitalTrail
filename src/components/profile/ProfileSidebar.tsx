@@ -61,13 +61,14 @@ export default function ProfileSidebar({ username, activeTab, setActiveTab }: Pr
         ">
             <div className="flex justify-between items-start">
                 {/* Avatar */}
-                <div className="rounded-full">
+                <div className="rounded-full overflow-hidden w-20 h-20 shrink-0">
                     <Image
                         src={getImageUrl('avatar', profile.imgUser)}
                         alt={profile.username}
                         width={80}
                         height={80}
-                        sizes="96px"
+                        sizes="80px"
+                        className="w-full h-full object-cover"
                     />
                 </div>
 
