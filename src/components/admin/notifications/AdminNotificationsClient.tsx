@@ -51,18 +51,27 @@ export default function AdminNotificationsClient() {
     };
 
     return (
-        <div className="max-w-2xl">
-            <div className="mb-6">
-                <h1 className="text-2xl font-bold text-teal-700">Enviar Notificaciones</h1>
-                <p className="text-sm text-stone-500 mt-1">
-                    Enviá notificaciones a todos los usuarios, un rol específico o un usuario individual.
-                </p>
+        <div>
+            <div className="flex items-start justify-between mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold text-teal-700">Enviar Notificaciones</h1>
+                    <p className="text-sm text-stone-500 mt-1">
+                        Enviá notificaciones a todos los usuarios, un rol específico o un usuario individual.
+                    </p>
+                </div>
+                <button
+                    type="submit"
+                    form="send-notification-form"
+                    disabled={mutation.isPending}
+                    className="bg-lime-600 hover:bg-lime-700 disabled:opacity-50 text-white text-sm font-semibold px-4 py-2 rounded-full transition-colors"
+                >
+                    {mutation.isPending ? 'Enviando...' : 'Enviar'}
+                </button>
             </div>
 
-            <div className="bg-white border border-stone-200 rounded-2xl px-7 py-6">
+            <div className="bg-white rounded-3xl shadow-sm border border-stone-200 p-8">
                 <SendNotificationForm
                     onValidSubmit={handleValidSubmit}
-                    isSubmitting={mutation.isPending}
                     successMsg={successMsg}
                     errorMsg={errorMsg}
                 />

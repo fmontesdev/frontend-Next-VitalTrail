@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useMemo } from 'react';
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import { useAdminUsers } from '@/queries/adminQuery';
 
 interface IUserSearchSelectProps {
@@ -74,14 +75,14 @@ export default function UserSearchSelect({ onSelect, fieldError }: IUserSearchSe
     return (
         <div ref={containerRef} className="relative">
             {selectedUser ? (
-                <div className="flex items-center justify-between px-3 py-2 border border-stone-300 rounded-lg bg-stone-50">
-                    <span className="text-sm text-stone-700">{selectedUser.name}</span>
+                <div className="flex items-center justify-between px-4 py-3 border border-stone-200 rounded-3xl bg-white">
+                    <span className="text-sm text-stone-800">{selectedUser.name}</span>
                     <button
                         type="button"
                         onClick={handleClear}
-                        className="text-xs text-stone-400 hover:text-stone-600 ml-2"
+                        className="rounded-full p-1 text-gray-500 bg-gray-100 hover:text-white hover:bg-red-300 transition-colors ml-2"
                     >
-                        ✕
+                        <XMarkIcon className="w-5 h-5" />
                     </button>
                 </div>
             ) : (
@@ -90,8 +91,8 @@ export default function UserSearchSelect({ onSelect, fieldError }: IUserSearchSe
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder="Buscar usuario por nombre o email..."
-                    className={`w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-600 ${
-                        fieldError ? 'border-red-400' : 'border-stone-300'
+                    className={`w-full px-4 py-3 border rounded-3xl text-sm text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-1 focus:ring-lime-500 focus:border-lime-600 transition-colors ${
+                        fieldError ? 'border-red-400' : 'border-stone-200'
                     }`}
                 />
             )}
@@ -101,7 +102,7 @@ export default function UserSearchSelect({ onSelect, fieldError }: IUserSearchSe
             )}
 
             {!selectedUser && isOpen && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-stone-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-3 bg-white border border-stone-200 rounded-3xl shadow-lg z-10 max-h-48 overflow-y-auto">
                     {isLoading && (
                         <div className="px-3 py-2 text-sm text-stone-400">Buscando...</div>
                     )}
