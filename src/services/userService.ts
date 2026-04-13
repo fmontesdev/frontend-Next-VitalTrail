@@ -15,7 +15,24 @@ export const UserService = {
     },
 
     register(data: IRegister): Promise<IUser> {
-        return apiService.post<{user: IUser}>(`/users/register`, data).then((registerUser) => {
+        const defaultAvatars = [
+            'avatar-default-m1.png', 'avatar-default-m2.png', 'avatar-default-m3.png',
+            'avatar-default-m4.png', 'avatar-default-m5.png', 'avatar-default-m6.png',
+            'avatar-default-m7.png', 'avatar-default-m8.png', 'avatar-default-m9.png',
+            'avatar-default-f1.png', 'avatar-default-f2.png', 'avatar-default-f3.png',
+            'avatar-default-f4.png', 'avatar-default-f5.png', 'avatar-default-f6.png',
+            'avatar-default-f7.png', 'avatar-default-f8.png', 'avatar-default-f9.png',
+        ];
+        const randomAvatar = defaultAvatars[Math.floor(Math.random() * defaultAvatars.length)];
+        const payload: IRegister = {
+            user: {
+                ...data.user,
+                imgUser: data.user.imgUser || randomAvatar,
+                rol: data.user.rol || 'ROLE_CLIENT',
+                client: data.user.client ?? { phone: null },
+            }
+        };
+        return apiService.post<{user: IUser}>(`/users/register`, payload).then((registerUser) => {
             return registerUser.user;
         });
     },
