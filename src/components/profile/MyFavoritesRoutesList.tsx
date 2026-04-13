@@ -9,11 +9,7 @@ import { ExclamationTriangleIcon, HeartIcon } from '@heroicons/react/24/outline'
 export default function ProfileFavoritesList({ username }: { username: string }) {
     const { data, isLoading, isError, fetchNextPage, hasNextPage, isFetchingNextPage } = useInfiniteProfileFavorites(username);
 
-    // scrollContainerRef apunta al div con overflow-y-auto que actúa como ventana de scroll.
-    // Se pasa como `root` al IntersectionObserver para que el umbral de detección
-    // se calcule relativo a este contenedor y no al viewport de la ventana.
-    const scrollContainerRef = useRef<HTMLDivElement>(null);
-
+    // scrollContainerRef eliminado: el scroll vive en el contenedor padre (ProfileMyContent).
     // sentinelRef es un div invisible situado al final de la lista.
     // Cuando el usuario hace scroll y este div entra en el área visible del contenedor,
     // el observer dispara fetchNextPage() para cargar el siguiente lote de favoritos.
@@ -24,10 +20,9 @@ export default function ProfileFavoritesList({ username }: { username: string })
 
     useEffect(() => {
         const sentinel = sentinelRef.current;
-        const root = scrollContainerRef.current;
         if (!sentinel) return;
 
-        // root: el contenedor con scroll (no el viewport global).
+        // root: null → usa el viewport global (el scroll vive en ProfileMyContent).
         // threshold: 0.1 → se dispara cuando al menos el 10% del sentinel es visible.
         const observer = new IntersectionObserver(
             (entries) => {
@@ -36,7 +31,7 @@ export default function ProfileFavoritesList({ username }: { username: string })
                     fetchNextPage();
                 }
             },
-            { root, threshold: 0.1 }
+            { root: null, threshold: 0.1 }
         );
 
         observer.observe(sentinel);
@@ -77,9 +72,8 @@ export default function ProfileFavoritesList({ username }: { username: string })
     );
 
     return (
-        // max-h-[1056px]: limita el área visible a ~8 cards en grid de 2 columnas (4 filas × 248px + gaps).
-        // overflow-y-auto: activa el scroll vertical dentro del contenedor cuando el contenido supera ese límite.
-        <div ref={scrollContainerRef} className="w-full py-2 animate-fade-in max-h-[1056px] overflow-y-auto">
+        // max-h y overflow eliminados: el scroll vive en el contenedor padre (ProfileMyContent)
+        <div className="w-full py-2 animate-fade-in">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {routes.map((route: IRoute) => (
                     <ProfileRouteCard key={route.idRoute} route={route} />

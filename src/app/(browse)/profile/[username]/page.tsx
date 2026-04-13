@@ -29,7 +29,7 @@ export default function ProfilePage() {
     return (
         <main className="
             container flex items-start flex-grow gap-6
-            min-h-[calc(100vh-64px-64px)] mx-auto md:px-8 lg:px-12 py-10
+            min-h-[calc(100vh-64px)] mx-auto md:px-8 lg:px-12 py-9
         ">
             {/* Columna izquierda: perfil */}
             <ProfileSidebar
